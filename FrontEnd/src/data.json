@@ -1,0 +1,146 @@
+{
+  "shoes": [
+    {
+      "id": 1,
+      "name": "Nike Air Force 1",
+      "img": "https://images.stockx.com/images/Nike-Air-Force-1-Shadow-Triple-White-W-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1607656583",
+      "price": 2500000,
+      "oldprice": 2800000
+    },
+    {
+      "id": 2,
+      "name": "Adidas Ultraboost 22",
+      "img": "https://tse4.mm.bing.net/th?id=OIP.gFlQq0Q79QL2LPZkqQYBvAHaFR&pid=Api&P=0&h=180",
+      "price": 3200000,
+      "oldprice": 3500000
+    },
+    {
+      "id": 3,
+      "name": "Puma RS-X",
+      "img": "https://img-sneaksupincommerce.mncdn.com/Content/Images/Thumbs/0139183_puma-rs-x-geek-black-strong-gray-391174-04.jpeg",
+      "price": 2200000,
+      "oldprice": 2500000
+    },
+    {
+      "id": 4,
+      "name": "Converse Chuck Taylor",
+      "img": "https://www.zappos.com/images/z/3/4/3/5/2/5/3435259-p-4x.jpg",
+      "price": 1500000,
+      "oldprice": 1800000
+    },
+    {
+      "id": 5,
+      "name": "Vans Old Skool",
+      "img": "http://www.zappos.com/images/z/6/4/9/6496-p-4x.jpg",
+      "price": 1400000,
+      "oldprice": 1600000
+    },
+    {
+      "id": 6,
+      "name": "Adidas Stan Smith",
+      "img": "https://assets.adidas.com/images/w_600,f_auto,q_auto/68ae7ea7849b43eca70aac1e00f5146d_9366/Giay_Stan_Smith_trang_FX5502_01_standard.jpg",
+      "price": 182000,
+      "oldprice": 182000
+    },
+    {
+      "id": 7,
+      "name": "Nike Air Max 97",
+      "img": "https://authentic-shoes.com/wp-content/uploads/2023/04/522430_01.jpg_4ef89f29383e45b2a169e183965468e4.jpeg",
+      "price": 2900000,
+      "oldprice": 2900000
+    },
+
+    {
+      "id": 8,
+      "name": "Adidas Originals Superstar",
+      "img": "https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/7ed0855435194229a525aad6009a0497_9366/Giay_Superstar_trang_EG4958_01_standard.jpg",
+      "price": 2600000,
+      "oldprice": 2600000
+    },
+
+    {
+      "id": 9,
+      "name": "Puma Speedcat",
+      "img": "https://product.hstatic.net/200000642277/product/1_513b8b69ac99444ca8ace3bb335ec7e8_grande.png",
+      "price": 3300000,
+      "oldprice": 3300000
+    },
+    {
+      "id": 10,
+      "name": "Reebok Club C",
+      "img": "https://image.hsv-tech.io/987x0/reebok/common/00fc694d-cc8a-4700-bc0d-112134561c7a.webp",
+      "price": 2490000,
+      "oldprice": 2490000
+    },
+    {
+      "id": 11,
+      "name": "New Balance 574",
+      "img": "https://bizweb.dktcdn.net/thumb/1024x1024/100/347/923/products/ml574evg-9.jpg",
+      "price": 2175150,
+      "oldprice": 2175150
+    },
+    {
+      "id": 12,
+      "name": "Nike Dunk Low",
+      "img": "https://bizweb.dktcdn.net/thumb/1024x1024/100/339/085/products/images-1.png",
+      "price": 3599000,
+      "oldprice": 3599000
+    },
+    {
+      "id": 13,
+      "name": "Adidas Gazelle",
+      "img": "https://assets.adidas.com/images/h_840,f_auto,q_auto,fl_lossy,c_fill,g_auto/61f87dec481e4512823ea7fb0080ba1a_9366/Giay_Gazelle_DJen_BB5476_01_standard.jpg",
+      "price": 2500000,
+      "oldprice": 2500000
+    },
+    {
+      "id": 14,
+      "name": "Vans Authentic",
+      "img": "https://bizweb.dktcdn.net/100/140/774/products/vans-authentic-classic-black-vn000ee3blk-2.png?v=1625925620597",
+      "price": 1450000,
+      "oldprice": 1450000
+    },
+    {
+      "id": 15,
+      "name": "Converse One Star",
+      "img": "https://giaysneaker.store/media/catalog/product/cache/47d66d3609f727ab73c995561c27d006/o/n/one-star-pro-black-171327c-1.jpg",
+      "price": 2439000,
+      "oldprice": 2439000
+    },
+    {
+      "id": 16,
+      "name": "Nike Blazer Low",
+      "img": "https://static.nike.com/a/images/t_PDP_936_v1/f_auto,q_auto:eco/fca59736-ff84-4797-9e64-0978d3b43731/BLAZER+LOW+%2777+VNTG.png",
+      "price": 2499000,
+      "oldprice": 2499000
+    },
+    {
+      "id": 17,
+      "name": "Adidas NMD_R1",
+      "img": "https://assets.adidas.com/images/w_600,f_auto,q_auto/62d96641e799450fbbdfad0800cb06ed_9366/Giay_NMD_R1_DJen_GZ9256_01_standard.jpg",
+      "price": 3900000,
+      "oldprice": 3900000
+    },
+    {
+      "id": 18,
+      "name": "Puma Suede Classic",
+      "img": "https://supersports.com.vn/cdn/shop/files/39520502-2_1024x1024.jpg?v=1714986894",
+      "price": 1754000,
+      "oldprice": 1754000
+    },
+    {
+      "id": 19,
+      "name": "Reebok Classic Leather",
+      "img": "https://image.hsv-tech.io/987x0/reebok/common/aa69882b-f0c5-489c-ab64-8743dd11d1a5.webp",
+      "price": 2390000,
+      "oldprice": 2390000
+    },
+    {
+      "id": 20,
+      "name": "New Balance 997",
+      "img": "https://cdn-images.farfetch-contents.com/25/63/68/52/25636852_55803917_1000.jpg",
+      "price": 5230000,
+      "oldprice": 5230000
+    }
+  ]
+}
