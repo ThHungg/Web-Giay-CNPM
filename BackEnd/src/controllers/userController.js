@@ -67,7 +67,81 @@ const loginUser = async (req, res) => {
         });
     }
 }
+
+const updateUser = async (req, res) => {
+    try {   
+        const userId = req.params.id
+        const data = req.body
+        if(!userId){
+            return res.status(200).json({
+                status: "Err",
+                message: 'The userId is required'
+            })
+        }
+        console.log('UserId', userId)
+        const response = await userService.updateUser(userId, data);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+}
+
+const deleteUser = async (req, res) => {
+    try {   
+        const userId = req.params.id
+        if(!userId){
+            return res.status(200).json({
+                status: "Err",
+                message: 'The userId is required'
+            })
+        }
+        console.log('UserId', userId)
+        const response = await userService.deleteUser(userId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+}
+
+const getAllUser = async (req, res) => {
+    try {   
+        const response = await userService.getAllUser();
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+}
+
+const getDetailsUser = async (req, res) => {
+    try {   
+        const userId = req.params.id
+        if(!userId){
+            return res.status(200).json({
+                status: "Err",
+                message: 'The userId is required'
+            })
+        }
+        console.log('UserId', userId)
+        const response = await userService.getDetailsUser(userId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+}
+
 module.exports = {
     createUser,
-    loginUser
+    loginUser,
+    updateUser,
+    deleteUser,
+    getAllUser,
+    getDetailsUser
 };

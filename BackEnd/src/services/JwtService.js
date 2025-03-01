@@ -15,6 +15,7 @@ const genneralRefreshToken = (payload) => {
     }, process.env.REFRESH_TOKEN, { expiresIn: '365d' })
     return refresh_token
 }
+
 module.exports = {
     genneralAccessToken,
     genneralRefreshToken
