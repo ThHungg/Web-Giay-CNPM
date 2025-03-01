@@ -119,9 +119,9 @@ const Header = ({ hasAddToBanner = true }) => {
                 Đăng Nhập
               </li>
             </Link>
+            {/* <FaSearch /> */}
             <Link to={ROUTERS.ADMIN.LOGIN}>
               <li className="mx-4 text-xl cursor-pointer">
-                {/* <FaSearch /> */}
                 Admin
               </li>
             </Link>
