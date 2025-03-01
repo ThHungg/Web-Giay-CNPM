@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import profilePage from "../../profilePage";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-const Header = ({hasAddToBanner = true}) => {
+const Header = ({ hasAddToBanner = true }) => {
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 3000 },
@@ -25,8 +25,7 @@ const Header = ({hasAddToBanner = true}) => {
     },
   };
 
-  const location = useLocation(); // Lấy đường dẫn hiện tại
-
+  const location = useLocation();
   const menus = [
     {
       name: "Trang chủ",
@@ -120,10 +119,16 @@ const Header = ({hasAddToBanner = true}) => {
                 Đăng Nhập
               </li>
             </Link>
+            <Link to={ROUTERS.ADMIN.LOGIN}>
+              <li className="mx-4 text-xl cursor-pointer">
+                {/* <FaSearch /> */}
+                Admin
+              </li>
+            </Link>
           </ul>
         </div>
       </div>
-      <div className="max-w-screen-xl mx-auto my-3">
+      {/* <div className="max-w-screen-xl mx-auto my-3">
         <div className="w-3/4 mx-auto">
           <form action="">
             <input
@@ -139,65 +144,65 @@ const Header = ({hasAddToBanner = true}) => {
             </button>
           </form>
         </div>
-      </div>
+      </div> */}
       {hasAddToBanner && (
-              <div className="max-w-screen-xl mx-auto">
-        <Carousel responsive={responsive}>
-          <div className="relative mx-auto w-full max-w-screen-xl py-3 h-[416px] ">
-            <img
-              src="img/banner/Banner.jpg"
-              alt="Banner"
-              className="w-full h-full rounded-xl"
-            />
-            <div className="absolute inset-y-0 w-full flex justify-between items-center px-4">
-              {/* <i className="fa-solid fa-angle-left text-5xl text-white cursor-pointer"></i>
+        <div className="max-w-screen-xl mx-auto">
+          <Carousel responsive={responsive}>
+            <div className="relative mx-auto w-full max-w-screen-xl py-3 h-[416px] ">
+              <img
+                src="img/banner/Banner.jpg"
+                alt="Banner"
+                className="w-full h-full rounded-xl"
+              />
+              <div className="absolute inset-y-0 w-full flex justify-between items-center px-4">
+                {/* <i className="fa-solid fa-angle-left text-5xl text-white cursor-pointer"></i>
           <i className="fa-solid fa-angle-right text-5xl text-white cursor-pointer"></i> */}
-            </div>
-            <div className="absolute top-1/2 left-[120px] transform -translate-y-1/2 flex justify-between items-center">
-              <img src="img/banner/BannerGiay.svg" alt="" />
-              <div className="space-y-4 pl-12">
-                <h1 className="text-4xl font-bold text-white">
-                  Khuyễn Mãi Có Hạn
-                </h1>
-                <h2 className="text-2xl text-white">Lên đến 50%</h2>
-                <p className="text-white">
-                  Nâng tầm phong cách cở bản với một chút quyến rũ
-                </p>
-                <button className="bg-red-500 p-3 rounded-xl font-bold text-white">
-                  Mua ngay
-                </button>
+              </div>
+              <div className="absolute top-1/2 left-[120px] transform -translate-y-1/2 flex justify-between items-center">
+                <img src="img/banner/BannerGiay.svg" alt="" />
+                <div className="space-y-4 pl-12">
+                  <h1 className="text-4xl font-bold text-white">
+                    Khuyễn Mãi Có Hạn
+                  </h1>
+                  <h2 className="text-2xl text-white">Lên đến 50%</h2>
+                  <p className="text-white">
+                    Nâng tầm phong cách cở bản với một chút quyến rũ
+                  </p>
+                  <button className="bg-red-500 p-3 rounded-xl font-bold text-white">
+                    Mua ngay
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="relative mx-auto w-full max-w-screen-xl py-3 h-[416px] ">
-            <img
-              src="img/banner/Banner.jpg"
-              alt="Banner"
-              className="w-full h-full rounded-xl"
-            />
-            <div className="absolute inset-y-0 w-full flex justify-between items-center px-4">
-              {/* <i className="fa-solid fa-angle-left text-5xl text-white cursor-pointer"></i>
+            <div className="relative mx-auto w-full max-w-screen-xl py-3 h-[416px] ">
+              <img
+                src="img/banner/Banner.jpg"
+                alt="Banner"
+                className="w-full h-full rounded-xl"
+              />
+              <div className="absolute inset-y-0 w-full flex justify-between items-center px-4">
+                {/* <i className="fa-solid fa-angle-left text-5xl text-white cursor-pointer"></i>
           <i className="fa-solid fa-angle-right text-5xl text-white cursor-pointer"></i> */}
-            </div>
-            <div className="absolute top-1/2 left-[120px] transform -translate-y-1/2 flex justify-between items-center">
-              <img src="img/banner/BannerGiay.svg" alt="" />
-              <div className="space-y-4 pl-12">
-                <h1 className="text-4xl font-bold text-white">
-                  Khuyễn Mãi Có Hạn
-                </h1>
-                <h2 className="text-2xl text-white">Lên đến 50%</h2>
-                <p className="text-white">
-                  Nâng tầm phong cách cở bản với một chút quyến rũ
-                </p>
-                <button className="bg-red-500 p-3 rounded-xl font-bold text-white">
-                  Mua ngay
-                </button>
+              </div>
+              <div className="absolute top-1/2 left-[120px] transform -translate-y-1/2 flex justify-between items-center">
+                <img src="img/banner/BannerGiay.svg" alt="" />
+                <div className="space-y-4 pl-12">
+                  <h1 className="text-4xl font-bold text-white">
+                    Khuyễn Mãi Có Hạn
+                  </h1>
+                  <h2 className="text-2xl text-white">Lên đến 50%</h2>
+                  <p className="text-white">
+                    Nâng tầm phong cách cở bản với một chút quyến rũ
+                  </p>
+                  <button className="bg-red-500 p-3 rounded-xl font-bold text-white">
+                    Mua ngay
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </Carousel>
-      </div>
+          </Carousel>
+        </div>
       )}
     </>
   );

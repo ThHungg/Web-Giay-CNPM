@@ -3,9 +3,11 @@ import formatter from "../../../utils/formatter";
 import Quantity from "../../../component/Quantity/index.jsx";
 import { MdDeleteOutline } from "react-icons/md";
 import shoesData from "../../../data.json";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { ROUTERS } from "../../../utils/router.jsx";
 
 const ShoppingCartPage = () => {
+  const navigate = useNavigate();
   const {id} = useParams();
   const product = shoesData.shoes.find((item) => item.id === Number(id));
   return (
@@ -75,7 +77,7 @@ const ShoppingCartPage = () => {
               </li>
             </ul>
             <div className="w-full text-center mt-3">
-              <button className="bg-red-500 w-3/4 py-2 rounded-2xl text-white font-bold text-xl">
+              <button className="bg-red-500 w-3/4 py-2 rounded-2xl text-white font-bold text-xl" onClick={() => navigate(ROUTERS.USER.CHECKOUT)}>
                 Thanh toán
               </button>
             </div>

@@ -1,6 +1,6 @@
 export const ROUTERS = {
     USER: {
-        HOME: "",
+        HOME: "/",
         PROFILE: "thong-tin-ca-nhan",
         PRODUCTS: "/san-pham",
         CONTACT: "/lien-he",
@@ -8,8 +8,10 @@ export const ROUTERS = {
         PROFILEPAGE: "/trang-ca-nhan",
         DETAILPRODUCT: "/thong-tin-san-pham",
         SHOPPINGCARTPAGE: "/gio-hang",
-        LOGINPAGE: "dang-nhap",
+        LOGINPAGE: "/dang-nhap",
+        CHECKOUT: "/thanh-toan",
+    },
+    ADMIN: {
+        LOGIN: "/admin/dang-nhap",
     }
 }
-
-// Link dan vao trang web

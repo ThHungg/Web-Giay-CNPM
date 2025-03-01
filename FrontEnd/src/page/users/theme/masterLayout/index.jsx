@@ -2,10 +2,10 @@ import { memo } from "react";
 import Header from "../header";
 import Footer from "../footer";
 
-const MasterLayout = ({ children, hasAddToBanner, ...props }) => {
+const MasterLayout = ({ children, hasAddToBanner = false }) => {
   return (
-    <div {...props}>
-      <Header />
+    <div>
+      <Header hasAddToBanner={hasAddToBanner} />
       {children}
       <Footer />
     </div>

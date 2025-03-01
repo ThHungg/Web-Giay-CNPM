@@ -13,15 +13,14 @@ import Puma from "../../../assets/users/img/brands/Puma.png";
 import "./index.css";
 import shoesData from "../../../data.json";
 import { useParams } from "react-router-dom";
-
 import { ProductCard } from "../../../component";
+
 const HomePage = () => {
   const { id } = useParams();
   const product = shoesData.shoes.find((item) => item.id === Number(id));
   const relateProducts = shoesData.shoes;
   const responsive = {
     superLargeDesktop: {
-      // the naming can be any, depends on you.
       breakpoint: { max: 4000, min: 3000 },
       items: 5,
     },
