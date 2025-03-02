@@ -49,10 +49,10 @@ const Header = ({ hasAddToBanner = true }) => {
       name: "Liên hệ",
       path: ROUTERS.USER.CONTACT,
     },
-    {
-      name: "Khuyến mãi",
-      path: ROUTERS.USER.VOUCHER,
-    },
+    // {
+    //   name: "Khuyến mãi",
+    //   path: ROUTERS.USER.VOUCHER,
+    // },
   ];
 
   return (
@@ -120,11 +120,11 @@ const Header = ({ hasAddToBanner = true }) => {
               </li>
             </Link>
             {/* <FaSearch /> */}
-            <Link to={ROUTERS.ADMIN.LOGIN}>
+            {/* <Link to={ROUTERS.ADMIN.LOGIN}>
               <li className="mx-4 text-xl cursor-pointer">
                 Admin
               </li>
-            </Link>
+            </Link> */}
           </ul>
         </div>
       </div>

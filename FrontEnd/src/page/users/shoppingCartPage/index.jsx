@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import formatter from "../../../utils/formatter";
 import Quantity from "../../../component/Quantity/index.jsx";
 import { MdDeleteOutline } from "react-icons/md";
@@ -8,8 +8,10 @@ import { ROUTERS } from "../../../utils/router.jsx";
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate();
-  const {id} = useParams();
+  const { id } = useParams();
   const product = shoesData.shoes.find((item) => item.id === Number(id));
+  const [quantity, setQuantity] = useState(1);
+  console.log(quantity);
   return (
     <>
       <div className="max-w-screen-xl mx-auto p-4">
@@ -40,11 +42,14 @@ const ShoppingCartPage = () => {
               </td>
               <td className="px-4 py-2 text-center text-xl">
                 <div className="flex justify-center">
-                  <Quantity Quantity="2" hasAddToCart={false} />
+                  <Quantity
+                    hasAddToCart={false}
+                    onQuantityChange={setQuantity}
+                  />
                 </div>
               </td>
               <td className="px-4 py-2 text-center text-xl">
-                {formatter(4800000)}
+                {formatter(4800000 * quantity)}
               </td>
               <td className="px-4 py-2 text-center text-2xl font-bold">
                 <MdDeleteOutline />
@@ -77,7 +82,10 @@ const ShoppingCartPage = () => {
               </li>
             </ul>
             <div className="w-full text-center mt-3">
-              <button className="bg-red-500 w-3/4 py-2 rounded-2xl text-white font-bold text-xl" onClick={() => navigate(ROUTERS.USER.CHECKOUT)}>
+              <button
+                className="bg-red-500 w-3/4 py-2 rounded-2xl text-white font-bold text-xl"
+                onClick={() => navigate(ROUTERS.USER.CHECKOUT)}
+              >
                 Thanh toán
               </button>
             </div>

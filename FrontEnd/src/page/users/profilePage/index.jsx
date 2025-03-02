@@ -3,7 +3,7 @@ import { memo } from "react";
 const ProfilePage = () => { 
   return (
     <>
-      <div></div>
+      <div>Đây là profile</div>
     </>
   );
 };

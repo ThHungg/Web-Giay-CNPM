@@ -26,7 +26,7 @@ const ProductsCard = ({ img, name, price, oldprice }) => {
           </Link>
           <div className="flex justify-center gap-2 ">
             <h1 className="text-[19px] text-red-500 font-semibold">{formatter(price)}</h1>
-            <h1 className="text-[16px] line-through opacity-50">{formatter(oldprice)}</h1>
+            {oldprice && <h1 className="text-[16px] line-through opacity-50">{formatter(oldprice)}</h1>}
           </div>
         </div>
       </div>

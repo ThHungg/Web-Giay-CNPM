@@ -21,7 +21,7 @@ const renderUserRouter = () => {
       hasAddToBanner: true,
     },
     {
-      path: ROUTERS.USER.PROFILE,
+      path: ROUTERS.USER.PROFILEPAGE,
       component: <ProfilePage />,
       hasAddToBanner: false,
     },

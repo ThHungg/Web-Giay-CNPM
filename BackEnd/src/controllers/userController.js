@@ -1,5 +1,5 @@
 const userService = require('../services/userService');
-
+const JwtService = require('../services/JwtService')
 const createUser = async (req, res) => {
     try {
         console.log(req.body);
@@ -69,10 +69,10 @@ const loginUser = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-    try {   
+    try {
         const userId = req.params.id
         const data = req.body
-        if(!userId){
+        if (!userId) {
             return res.status(200).json({
                 status: "Err",
                 message: 'The userId is required'
@@ -89,9 +89,9 @@ const updateUser = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
-    try {   
+    try {
         const userId = req.params.id
-        if(!userId){
+        if (!userId) {
             return res.status(200).json({
                 status: "Err",
                 message: 'The userId is required'
@@ -108,7 +108,7 @@ const deleteUser = async (req, res) => {
 }
 
 const getAllUser = async (req, res) => {
-    try {   
+    try {
         const response = await userService.getAllUser();
         return res.status(200).json(response);
     } catch (e) {
@@ -119,9 +119,9 @@ const getAllUser = async (req, res) => {
 }
 
 const getDetailsUser = async (req, res) => {
-    try {   
+    try {
         const userId = req.params.id
-        if(!userId){
+        if (!userId) {
             return res.status(200).json({
                 status: "Err",
                 message: 'The userId is required'
@@ -137,11 +137,30 @@ const getDetailsUser = async (req, res) => {
     }
 }
 
+const refreshToken = async (req, res) => {
+    try {
+        const token = req.headers.token.split(' ')[1]
+        if (!token) {
+            return res.status(200).json({
+                status: "Err",
+                message: 'The token is required'
+            })
+        }
+        const response = await JwtService.refreshTokenJwtService(token);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+}
+
 module.exports = {
     createUser,
     loginUser,
     updateUser,
     deleteUser,
     getAllUser,
-    getDetailsUser
+    getDetailsUser,
+    refreshToken
 };

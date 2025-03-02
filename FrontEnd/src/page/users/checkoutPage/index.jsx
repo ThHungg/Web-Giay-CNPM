@@ -94,8 +94,13 @@ const CheckoutPage = () => {
           </li>
           <li className="border-t pt-2"></li>
           <li className="flex justify-between text-xl font-bold">
+            <span>Voucher: </span>
+            <b>{formatter(4000000)}</b>
+          </li>
+          <li className="flex justify-between text-xl font-bold">
             <span>Tổng đơn hàng: </span>
             <b>{formatter(4000000)}</b>
+            <b></b>
           </li>
         </ul>
         <button className="px-4 py-2 w-full bg-red-500 text-white rounded-2xl text-2xl font-bold mt-5">
