@@ -9,6 +9,7 @@ export const ROUTERS = {
         DETAILPRODUCT: "/thong-tin-san-pham",
         SHOPPINGCARTPAGE: "/gio-hang",
         LOGINPAGE: "/dang-nhap",
+        REGISTER: "/dang-ky",
         CHECKOUT: "/thanh-toan",
     },
     ADMIN: {

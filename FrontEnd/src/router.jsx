@@ -12,6 +12,7 @@ import LoginPage from "./page/users/loginPage";
 import CheckoutPage from "./page/users/checkoutPage";
 import LoginADPage from "./page/admin/loginPage";
 import MasterAdLayout from "./page/admin/theme/masterAdLayout";
+import RegisterPage from "./page/users/registerPage";
 
 const renderUserRouter = () => {
   const userRouter = [
@@ -53,6 +54,11 @@ const renderUserRouter = () => {
     {
       path: ROUTERS.USER.LOGINPAGE,
       component: <LoginPage />,
+      hasAddToBanner: false,
+    },
+    {
+      path: ROUTERS.USER.REGISTER,
+      component: <RegisterPage />,
       hasAddToBanner: false,
     },
     {

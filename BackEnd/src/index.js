@@ -3,13 +3,14 @@ const dotenv = require('dotenv');
 const { default: mongoose } = require("mongoose");
 const routes = require('./routes');
 const bodyParser = require("body-parser");
+const cors = require('cors');
 dotenv.config()
-const app = express()
 
+const app = express()
 const port = process.env.PORT || 3001
 
+app.use(cors())
 app.use(bodyParser.json())
-
 
 routes(app)
 

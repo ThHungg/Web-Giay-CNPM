@@ -4,18 +4,19 @@ const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
-        const { name, email, password, phone } = newUser;
+        const { username, name, email, password, phone } = newUser;
         try {
             const checkUser = await User.findOne({ email });
             if (checkUser) {
                 return resolve({
-                    status: "ERR",
+                    status: "checkemail",
                     message: "Email đã tồn tại!"
                 });
             }
             const hash = bcrypt.hashSync(password, 10)
             console.log('hash', hash)
             const createdUser = await User.create({
+                username,
                 name,
                 email,
                 password: hash,
@@ -37,19 +38,19 @@ const createUser = (newUser) => {
 
 const loginUser = (userLogin) => {
     return new Promise(async (resolve, reject) => {
-        const { name, email, password, phone } = userLogin;
+        const { email, password } = userLogin;
         try {
             const checkUser = await User.findOne({ email: email });
             if (checkUser === null) {
                 return resolve({
-                    status: "Ok",
+                    status: "checkUser",
                     message: "The user is not defined"
                 });
             }
             const comparePassword = bcrypt.compareSync(password, checkUser.password);
             if (!comparePassword) {
                 resolve({
-                    status: "Ok",
+                    status: "ERR",
                     message: "Mật khẩu không đúng",
                 })
             }
@@ -107,7 +108,6 @@ const deleteUser = (id) => {
         try {
             const checkUser = await User.findById(id);
 
-            // console.log('CheckUser', checkUser)
             if (checkUser === null) {
                 resolve({
                     status: "Ok",
