@@ -1,7 +1,50 @@
 import { memo } from "react";
 import formatter from "../../../utils/formatter";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const CheckoutPage = () => {
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("https://provinces.open-api.vn/api/p/")
+      .then((res) => {
+        setProvinces(res.data);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi lấy danh sách tỉnh/thành: ", error);
+      });
+  }, []);
+
+  const handleProvinceChange = (e) => {
+    const provinceCode = e.target.value;
+    setSelectedProvince(provinceCode);
+    setSelectedDistrict("");
+    setWards([]);
+
+    axios
+      .get(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+      .then((res) => {
+        setDistricts(res.data.districts);
+      });
+  };
+
+  const handleDistrictChange = (e) => {
+    const districtCode = e.target.value;
+    setSelectedDistrict(districtCode);
+
+    axios
+      .get(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+      .then((res) => {
+        setWards(res.data.wards);
+      });
+  };
+
   return (
     <div className="max-w-screen-xl flex mx-auto gap-5">
       {/* Phần thông tin đặt hàng */}
@@ -19,17 +62,6 @@ const CheckoutPage = () => {
           />
         </div>
 
-        <div className="flex flex-col mt-3">
-          <label className="text-xl m-1">
-            Địa chỉ: <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Nhập địa chỉ"
-          />
-        </div>
-
         <div className="flex gap-5 mt-3">
           <div className="flex-1 flex flex-col">
             <label className="text-xl m-1">
@@ -41,7 +73,6 @@ const CheckoutPage = () => {
               placeholder="Nhập số điện thoại"
             />
           </div>
-
           <div className="flex-1 flex flex-col">
             <label className="text-xl m-1">
               Email: <span className="text-red-500">*</span>
@@ -51,6 +82,69 @@ const CheckoutPage = () => {
               className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Nhập email"
             />
+          </div>
+        </div>
+
+        <div className="flex flex-col mt-3">
+          <label className="text-xl m-1">
+            Địa chỉ: <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Nhập địa chỉ"
+          />
+        </div>
+
+        <div className="flex gap-2">
+          <div className="flex flex-col mt-3 w-1/3">
+            <label className="text-xl m-1">
+              Tỉnh thành: <span className="text-red-500">*</span>
+            </label>
+            <select
+              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleProvinceChange}
+            >
+              <option value="">Chọn tỉnh thành</option>
+              {provinces.map((items) => (
+                <option key={items.code} value={items.code}>
+                  {items.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col mt-3 w-1/3">
+            <label className="text-xl m-1">
+              Quận/Huyện: <span className="text-red-500">*</span>
+            </label>
+            <select
+              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleDistrictChange}
+              disabled={!selectedProvince}
+            >
+              <option value="">Chọn Quận/Huyện</option>
+              {districts.map((items) => (
+                <option key={items.code} value={items.code}>
+                  {items.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col mt-3 w-1/3">
+            <label className="text-xl m-1">
+              Phường/Xã: <span className="text-red-500">*</span>
+            </label>
+            <select
+              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={!selectedDistrict}
+            >
+              <option value="">Chọn phường/xã</option>
+              {wards.map((w) => (
+                <option key={w.code} value={w.code}>
+                  {w.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

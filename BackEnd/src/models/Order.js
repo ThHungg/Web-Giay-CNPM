@@ -5,7 +5,7 @@ const orderSchema = new mongoose.Schema(
         orderItems: [
             {
                 name: { type: String, required: true },
-                amount: { type: Number, required: true }, // Số lượng
+                amount: { type: Number, required: true }, 
                 image: { type: String, required: true },
                 price: { type: Number, required: true },
                 product: {
@@ -19,25 +19,24 @@ const orderSchema = new mongoose.Schema(
             fullName: { type: String, required: true },
             address: { type: String, required: true },
             city: { type: String, required: true },
-            phone: { type: Number, required: true }, // Fix lỗi "NNumber"
+            phone: { type: Number, required: true }, 
         },
-        paymentMethod: { type: String, required: true }, // (COD, Momo, Visa...)
+        paymentMethod: { type: String, required: true },
         paymentStatus: {
             type: String,
             enum: ['Chưa thanh toán', 'Đã thanh toán', 'Hoàn tiền'],
             default: 'Chưa thanh toán',
         },
-        itemsPrice: { type: Number, required: true }, // Giá sản phẩm
-        shippingPrice: { type: Number, required: true }, // Phí ship
-        totalPrice: { type: Number, required: true }, // Tổng đơn hàng
+        itemsPrice: { type: Number, required: true }, 
+        shippingPrice: { type: Number, required: true }, 
+        totalPrice: { type: Number, required: true }, 
         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         status: {
             type: String,
             enum: ['Chờ xác nhận', 'Đang giao', 'Đã giao', 'Đã hủy'],
             default: 'Chờ xác nhận',
         },
-        trackingNumber: { type: String, default: '' }, // Mã vận đơn (nếu có)
-        notes: { type: String, default: '' }, // Ghi chú đơn hàng
+        notes: { type: String, default: '' },
         isPaid: { type: Boolean, default: false },
         paidAt: { type: Date },
         isDelivered: { type: Boolean, default: false },

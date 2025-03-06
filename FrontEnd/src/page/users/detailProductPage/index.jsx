@@ -111,7 +111,7 @@ const DetailProduct = () => {
             </li>
           </ul>
           {/* Sizemap */}
-          <div>
+          <div className="space-y-2">
             {sizes.map((size) => (
               <button
                 key={size}
@@ -126,14 +126,35 @@ const DetailProduct = () => {
               </button>
             ))}
           </div>
-          <Quantity />
+          <div className="my-2 flex justify-center gap-2 flex-col">
+            <b className="text-2xl">Số lượng:</b>
+            <Quantity />
+          </div>
+          <div className="grid grid-rows-2">
+            <button
+              type="submit"
+              className="w-60 h-14 bg-red-500 mt-2 rounded-lg text-xl font-bold"
+            >
+              Mua ngay
+            </button>
+            <button
+              type="submit"
+              className="w-60 h-14 bg-gray-500 mt-2 rounded-lg text-xl font-bold"
+            >
+              Thêm vào giỏ hàng
+            </button>
+          </div>
         </div>
       </div>
       <div className="max-w-screen-xl mx-auto mt-5 text-center">
         <Tabs>
           <TabList>
-            <Tab><h1 className="text-2xl font-bold">Mô tả sản phẩm</h1></Tab>
-            <Tab><h1 className="text-2xl font-bold">Đánh giá</h1></Tab>
+            <Tab>
+              <h1 className="text-2xl font-bold">Mô tả sản phẩm</h1>
+            </Tab>
+            <Tab>
+              <h1 className="text-2xl font-bold">Đánh giá</h1>
+            </Tab>
           </TabList>
 
           <TabPanel>
