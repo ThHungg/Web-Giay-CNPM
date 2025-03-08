@@ -5,11 +5,31 @@ import { Link, useLocation } from "react-router-dom";
 import profilePage from "../../profilePage";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Popover } from "antd";
+import * as userServices from "../../../../services/userServices";
+import { resetUser } from "../../../../redux/slides/userSlide";
 
 const Header = ({ hasAddToBanner = true }) => {
   const user = useSelector((state) => state.user);
-  console.log("user", user);
+
+  const dispatch = useDispatch();
+
+  const hanldeLogout = async () => {
+    localStorage.removeItem("access_token");
+    await userServices.logoutUser();
+    dispatch(resetUser());
+  };
+
+  const content = (
+    <div>
+      <p className="cursor-pointer hover:text-red-500" onClick={hanldeLogout}>
+        Đăng Xuất
+      </p>
+      {/* <p className="cursor-pointer hover:text-red-500">Thông tin người dùng</p> */}
+    </div>
+  );
+
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 3000 },
@@ -30,6 +50,7 @@ const Header = ({ hasAddToBanner = true }) => {
   };
 
   const location = useLocation();
+
   const menus = [
     {
       name: "Trang chủ",
@@ -117,16 +138,20 @@ const Header = ({ hasAddToBanner = true }) => {
                 <FaUser />
               </Link>
             </li>
-            <Link to={ROUTERS.USER.LOGINPAGE}>
-              {user?.name ? (
-                <div>{user.name}</div>
-              ) : (
+            {user?.name ? (
+              <>
+                <Popover content={content} trigger="click">
+                  <div>{user.name}</div>
+                </Popover>
+              </>
+            ) : (
+              <Link to={ROUTERS.USER.LOGINPAGE}>
                 <li className="mx-4 text-xl cursor-pointer">
                   {/* <FaSearch /> */}
                   Đăng Nhập
                 </li>
-              )}
-            </Link>
+              </Link>
+            )}
             {/* <FaSearch /> */}
             {/* <Link to={ROUTERS.ADMIN.LOGIN}>
               <li className="mx-4 text-xl cursor-pointer">
