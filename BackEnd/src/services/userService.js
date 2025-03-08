@@ -14,7 +14,7 @@ const createUser = (newUser) => {
                 });
             }
             const hash = bcrypt.hashSync(password, 10)
-            console.log('hash', hash)
+            // console.log('hash', hash)
             const createdUser = await User.create({
                 username,
                 name,

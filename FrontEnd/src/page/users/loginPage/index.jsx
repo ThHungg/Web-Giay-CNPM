@@ -1,13 +1,39 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router";
-import * as userServices from "../../services/userServices";
+import * as userServices from "../../../services/userServices";
 import { useMutationHooks } from "../../../hooks/useMutation";
 import Loading from "../../../component/Loading";
+import * as message from "../../../component/message";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { updateUser } from "../../../redux/slides/userSlide";
 
 const LoginPage = () => {
   const mutation = useMutationHooks((data) => userServices.loginUser(data));
-  const { data, isLoading } = mutation;
+  const { data, isLoading, isSuccess, isError } = mutation;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/");
+      localStorage.setItem("access_token", JSON.stringify(data?.access_token));
+      if (data?.access_token) {
+        const decoded = jwtDecode(data?.access_token);
+        console.log("deco", decoded);
+        if (decoded?.id) {
+          handleGetDetailsUser(decoded?.id, data?.access_token);
+        }
+      }
+    }
+  }, [isSuccess]);
+
+  const handleGetDetailsUser = async (id, token) => {
+    const res = await userServices.getDetailsUser(id, token);
+    dispatch(updateUser({ ...res?.data, access_token: token }));
+  };
 
   const [formData, setFormData] = useState({
     email: "",

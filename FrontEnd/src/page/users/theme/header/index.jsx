@@ -5,7 +5,11 @@ import { Link, useLocation } from "react-router-dom";
 import profilePage from "../../profilePage";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import { useSelector } from "react-redux";
+
 const Header = ({ hasAddToBanner = true }) => {
+  const user = useSelector((state) => state.user);
+  console.log("user", user);
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 3000 },
@@ -114,10 +118,14 @@ const Header = ({ hasAddToBanner = true }) => {
               </Link>
             </li>
             <Link to={ROUTERS.USER.LOGINPAGE}>
-              <li className="mx-4 text-xl cursor-pointer">
-                {/* <FaSearch /> */}
-                Đăng Nhập
-              </li>
+              {user?.name ? (
+                <div>{user.name}</div>
+              ) : (
+                <li className="mx-4 text-xl cursor-pointer">
+                  {/* <FaSearch /> */}
+                  Đăng Nhập
+                </li>
+              )}
             </Link>
             {/* <FaSearch /> */}
             {/* <Link to={ROUTERS.ADMIN.LOGIN}>

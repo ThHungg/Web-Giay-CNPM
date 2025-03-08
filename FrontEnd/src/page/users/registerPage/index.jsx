@@ -1,13 +1,15 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router";
-import * as userServices from "../../services/userServices";
+import * as userServices from "../../../services/userServices";
 import { useMutationHooks } from "../../../hooks/useMutation";
 import Loading from "../../../component/Loading";
+import * as message from "../../../component/message";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const mutation = useMutationHooks((data) => userServices.registerUser(data));
-  const { data, isLoading } = mutation;
+  const { data, isLoading, isSuccess, isError } = mutation;
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -18,6 +20,7 @@ const RegisterPage = () => {
     confirmPassword: "",
   });
 
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -56,9 +59,10 @@ const RegisterPage = () => {
     // Password
     if (!formData.password) {
       newErr.password = "Vui lòng nhập mật khẩu";
-    } else if (formData.password.length < 6) {
+    } else if (formData.password.length < 8) {
       newErr.password = "Mật khẩu phải có ít nhất 6 ký tự";
     }
+    //Ky tu, Chu viet hoa, trung voi mat khau cu
 
     // Confirm Password
     if (!formData.confirmPassword) {
@@ -74,6 +78,19 @@ const RegisterPage = () => {
     }
 
     return true;
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      message.success();
+      handleNavigateSignIn();
+    } else if (isError) {
+      message.error();
+    }
+  });
+
+  const handleNavigateSignIn = () => {
+    navigate("/dang-nhap");
   };
 
   const handleRegister = (e) => {
@@ -218,7 +235,8 @@ const RegisterPage = () => {
         <Loading isLoading={loading}>
           <div className="mt-6">
             <Link
-              to={ROUTERS.USER.LOGINPAGE} delay={2000}
+              to={ROUTERS.USER.LOGINPAGE}
+              delay={2000}
               className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md font-medium bg-white"
             >
               Đăng nhập

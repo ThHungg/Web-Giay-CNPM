@@ -54,7 +54,13 @@ const loginUser = async (req, res) => {
         }
         console.log('isCheckEmail', isCheckEmail);
         const response = await userService.loginUser(req.body);
-        return res.status(200).json(response);
+        const { refresh_token, ...newResponse } = response
+        // console.log('response', response)
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            Secure: true,
+        })
+        return res.status(200).json(newResponse);
     } catch (e) {
         return res.status(404).json({
             message: 'Lỗi hệ thống, vui lòng thử lại sau!'
@@ -133,7 +139,7 @@ const getDetailsUser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
     try {
-        const token = req.headers.token.split(' ')[1]
+        const token = req.cookies.refresh_token
         if (!token) {
             return res.status(200).json({
                 status: "Err",
