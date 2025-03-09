@@ -3,8 +3,9 @@ import { memo } from "react";
 const Header = () => {
   return (
     <>
-      <div className="h-20 bg-gray-500">
-        <h1>Admin DashBoard</h1>
+      <div className="grid grid-cols-12 h-screen">
+        <div className="col-span-2 h-full bg-black"></div>
+        <div className="col-span-10 bg-yellow-500 h-[40px]"></div>
       </div>
     </>
   );

@@ -14,5 +14,6 @@ export const ROUTERS = {
     },
     ADMIN: {
         LOGIN: "/admin/dang-nhap",
+        USER: "/admin/users",
     }
 }

@@ -13,6 +13,7 @@ import CheckoutPage from "./page/users/checkoutPage";
 import LoginADPage from "./page/admin/loginPage";
 import MasterAdLayout from "./page/admin/theme/masterAdLayout";
 import RegisterPage from "./page/users/registerPage";
+import AdminUser from "./page/admin/adminUser";
 
 const renderUserRouter = () => {
   const userRouter = [
@@ -89,6 +90,10 @@ const renderAdminRouter = () => {
     {
       path: ROUTERS.ADMIN.LOGIN,
       component: <LoginADPage />,
+    },
+    {
+      path: ROUTERS.ADMIN.USER,
+      component: <AdminUser />,
     },
   ];
   return (
