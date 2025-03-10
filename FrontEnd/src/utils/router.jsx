@@ -13,7 +13,7 @@ export const ROUTERS = {
         CHECKOUT: "/thanh-toan",
     },
     ADMIN: {
-        LOGIN: "/admin/dang-nhap",
         USER: "/admin/users",
+        PRODUCT: "/admin/products",
     }
 }

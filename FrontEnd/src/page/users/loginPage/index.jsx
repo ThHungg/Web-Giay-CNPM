@@ -20,9 +20,10 @@ const LoginPage = () => {
     if (isSuccess) {
       navigate("/");
       localStorage.setItem("access_token", JSON.stringify(data?.access_token));
+      // localStorage.setItem("access_token", data?.access_token);
+
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
-        console.log("deco", decoded);
         if (decoded?.id) {
           handleGetDetailsUser(decoded?.id, data?.access_token);
         }
@@ -32,7 +33,7 @@ const LoginPage = () => {
 
   const handleGetDetailsUser = async (id, token) => {
     const res = await userServices.getDetailsUser(id, token);
-    dispatch(updateUser({ ...res?.data, access_token: token }));
+    dispatch(updateUser({ ...res?.data, access_token: token, id }));
   };
 
   const [formData, setFormData] = useState({

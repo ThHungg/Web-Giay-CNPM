@@ -23,16 +23,34 @@ export const getDetailsUser = async (id, access_token) => {
 }
 
 export const refreshToken = async () => {
-    const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/refresh-token`, {}, {
-        withCredentials: true,
+    const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/refresh-token`, {
+        withCredentials: true, // Đảm bảo gửi cookie
     });
+    console.log("Kết quả refresh token:", res.data);
     return res.data;
-}
+};
+
 
 export const logoutUser = async () => {
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/log-out`);
     return res.data;
 }
+
+// export const updateUser = async (id, data) => {
+//     const res = await axios.put(`${process.env.REACT_APP_API_URL}/user/update-user/${id}`, data);
+//     return res.data;
+// }
+export const updateUser = async (id, data, token) => {
+    const res = await axiosJWT.put(
+        `${process.env.REACT_APP_API_URL}/user/update-user/${id}`, 
+        data,
+        {
+            headers: { token: `Bearer ${token}` }
+        }
+    );
+    return res.data;
+};
+
 
 
 

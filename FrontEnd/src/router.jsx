@@ -10,10 +10,11 @@ import ProductsPage from "./page/users/productsPage";
 import ShoppingCartPage from "./page/users/shoppingCartPage";
 import LoginPage from "./page/users/loginPage";
 import CheckoutPage from "./page/users/checkoutPage";
-import LoginADPage from "./page/admin/loginPage";
 import MasterAdLayout from "./page/admin/theme/masterAdLayout";
 import RegisterPage from "./page/users/registerPage";
 import AdminUser from "./page/admin/adminUser";
+import { useSelector } from "react-redux";
+import AdminProduct from "./page/admin/adminProduct";
 
 const renderUserRouter = () => {
   const userRouter = [
@@ -85,15 +86,16 @@ const renderUserRouter = () => {
     </Routes>
   );
 };
+
 const renderAdminRouter = () => {
   const adminRouters = [
     {
-      path: ROUTERS.ADMIN.LOGIN,
-      component: <LoginADPage />,
-    },
-    {
       path: ROUTERS.ADMIN.USER,
       component: <AdminUser />,
+    },
+    {
+      path: ROUTERS.ADMIN.PRODUCT,
+      component: <AdminProduct />,
     },
   ];
   return (

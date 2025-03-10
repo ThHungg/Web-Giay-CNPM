@@ -4,7 +4,23 @@ import { ProductCard } from "../../../component";
 import { Link } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router";
 import shoesData from "../../../data.json";
+import * as productService from "../../../services/productService";
+import { useQuery } from "@tanstack/react-query";
 const Products = () => {
+  const fetchProductAll = async () => {
+    const res = await productService.getAllProduct();
+    return res;
+  };
+  const { isLosading, data: products } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProductAll,
+    retry: 3,
+    retryDelay: 1000,
+  });
+  console.log("Data", products);
+
+
+  
   const shoes = shoesData.shoes;
 
   const brands = ["Adidas", "Nike", "Puma", "Jordan", "Gucci"];
@@ -17,160 +33,161 @@ const Products = () => {
     "Đang giảm giá",
   ];
 
-  const products = [
-    {
-      img: ncat1,
-      name: "Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "2. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
-      oldprice: "4.000.000 đ",
-    },
+  // const products = [
+  //   {
+  //     img: ncat1,
+  //     name: "Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "2. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
 
-    {
-      img: ncat1,
-      name: "3. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
-      oldprice: "4.000.000 đ",
-    },
+  //   {
+  //     img: ncat1,
+  //     name: "3. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
 
-    {
-      img: ncat1,
-      name: "4. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
-      oldprice: "4.000.000 đ",
-    },
+  //   {
+  //     img: ncat1,
+  //     name: "4. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
 
-    {
-      img: ncat1,
-      name: "5. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "6. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //   {
+  //     img: ncat1,
+  //     name: "5. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "6. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "7. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "7. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "8. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "8. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "9. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "9. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-    {
-      img: ncat1,
-      name: "10. Nike Air Force 1 Shadow",
-      price: "3.390.000 đ",
+  //     oldprice: "4.000.000 đ",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "10. Nike Air Force 1 Shadow",
+  //     price: "3.390.000 đ",
 
-      oldprice: "4.000.000 đ",
-    },
-  ];
+  //     oldprice: "4.000.000 đ",
+  //   },
+  // ];
+
   const itemsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(shoes.length / itemsPerPage);
@@ -231,7 +248,8 @@ const Products = () => {
                   />
                 </div>
               ))} */}
-            {currenProducts.map((item, key) => (
+
+            {/* {currenProducts.map((item, key) => (
               <Link to={`${ROUTERS.USER.DETAILPRODUCT}/${item.id}`} key={key}>
                 <div className="">
                   <ProductCard
@@ -242,7 +260,21 @@ const Products = () => {
                   />
                 </div>
               </Link>
-            ))}
+            ))} */}
+
+            {products?.data?.map((product) => {
+              return (
+                <div className="">
+                  <ProductCard
+                    key={product.id}
+                    name={product.name}
+                    img={product.image}
+                    price={product.price}
+                    oldprice={product.oldprice}
+                  />
+                </div>
+              )
+            })}
           </div>
           {/* Pagination */}
           <button

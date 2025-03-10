@@ -140,7 +140,6 @@ const getDetailsUser = async (req, res) => {
 
 const refreshToken = async (req, res) => {
     console.log('Token nhận được:', req.cookies.refresh_token);
-
     try {
         const token = req.cookies.refresh_token
         if (!token) {
@@ -163,8 +162,8 @@ const logoutUser = async (req, res) => {
     try {
         res.clearCookie('refresh_token', {
             httpOnly: true,
-            secure: true,
-            sameSite: 'strict'
+            secure: false,
+            samesite: 'strict'
         });
         return res.status(200).json({
             status: 'Ok',

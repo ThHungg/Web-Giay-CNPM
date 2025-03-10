@@ -10,43 +10,30 @@ import { updateUser } from "./redux/slides/userSlide";
 
 function App() {
   const dispatch = useDispatch();
-  const axiosJWT = axios.create();
-  // Hàm decode token từ localStorage
+
+  useEffect(() => {
+    const { storageData, decoded } = handleDecoded();
+    if (decoded?.id) {
+      handleGetDetailsUser(decoded?.id, storageData);
+    }
+  }, []);
+
   const handleDecoded = () => {
     let storageData = localStorage.getItem("access_token");
     let decoded = {};
     if (storageData && isJsonString(storageData)) {
       storageData = JSON.parse(storageData);
       decoded = jwtDecode(storageData);
+      console.log("decode APp", decoded);
     }
     return { decoded, storageData };
   };
 
-  // Hàm lấy thông tin user từ API
-  const handleGetDetailsUser = async (id, token) => {
-    const res = await userServices.getDetailsUser(id, token);
-    if (!id || !token) return;
-    dispatch(updateUser({ ...res?.data, access_token: token }));
-  };
-  // const handleGetDetailsUser = async (id, token) => {
-  //   if (!id || !token) return; // Nếu không có id hoặc token, thoát luôn
-
-  //   try {
-  //     const res = await userServices.getDetailsUser(id, token);
-  //     if (!res?.data) return; // Nếu API không trả về dữ liệu, thoát luôn
-
-  //     dispatch(updateUser({ ...res.data, access_token: token }));
-  //   } catch (error) {
-  //     console.error("Lỗi lấy thông tin user:", error);
-  //   }
-  // };
-
-  // Cấu hình interceptor cho axiosJWT
   userServices.axiosJWT.interceptors.request.use(
     async (config) => {
       const currentTime = new Date();
-      const { decoded, storageData } = handleDecoded();
-      if (decoded?.exp < currentTime.getTime() / 1000 && storageData) {
+      const { decoded } = handleDecoded();
+      if (decoded?.exp < currentTime.getTime() / 1000) {
         const data = await userServices.refreshToken();
         config.headers["token"] = `Bearer ${data?.access_token}`;
       }
@@ -57,16 +44,10 @@ function App() {
     }
   );
 
-  // useEffect để kiểm tra token khi App load
-  useEffect(() => {
-    const { storageData, decoded } = handleDecoded();
-    console.log("Kiểm tra useEffect:", { storageData, decoded });
-
-    if (decoded?.id && storageData) {
-      handleGetDetailsUser(decoded.id, storageData);
-    }
-  }, []);
-
+  const handleGetDetailsUser = async (id, token) => {
+    const res = await userServices.getDetailsUser(id, token);
+    dispatch(updateUser({ ...res?.data, access_token: token }));
+  };
   return (
     <BrowserRouter>
       <RouterCustome />

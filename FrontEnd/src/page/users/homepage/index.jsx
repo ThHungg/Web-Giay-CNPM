@@ -68,34 +68,34 @@ const HomePage = () => {
       name: "AF1 Shadow",
     },
   ];
-  const products = [
-    {
-      img: ncat1,
-      name: "Nike Air Force 1 Shadow",
-      price: "3390000",
-      oldprice: "4000000",
-    },
-    {
-      img: ncat1,
-      name: "2. Nike Air Force 1 Shadow",
-      price: "3390000",
-      oldprice: "4000000",
-    },
+  // const products = [
+  //   {
+  //     img: ncat1,
+  //     name: "Nike Air Force 1 Shadow",
+  //     price: "3390000",
+  //     oldprice: "4000000",
+  //   },
+  //   {
+  //     img: ncat1,
+  //     name: "2. Nike Air Force 1 Shadow",
+  //     price: "3390000",
+  //     oldprice: "4000000",
+  //   },
 
-    {
-      img: ncat1,
-      name: "3. Nike Air Force 1 Shadow",
-      price: "3390000",
-      oldprice: "4000000",
-    },
+  //   {
+  //     img: ncat1,
+  //     name: "3. Nike Air Force 1 Shadow",
+  //     price: "3390000",
+  //     oldprice: "4000000",
+  //   },
 
-    {
-      img: ncat1,
-      name: "4. Nike Air Force 1 Shadow",
-      price: "3390000",
-      oldprice: "4000000",
-    },
-  ];
+  //   {
+  //     img: ncat1,
+  //     name: "4. Nike Air Force 1 Shadow",
+  //     price: "3390000",
+  //     oldprice: "4000000",
+  //   },
+  // ];
 
   return (
     <>

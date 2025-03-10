@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
 import { ROUTERS } from "../../../../utils/router";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import profilePage from "../../profilePage";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
@@ -14,6 +14,7 @@ const Header = ({ hasAddToBanner = true }) => {
   const user = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const hanldeLogout = async () => {
     localStorage.removeItem("access_token");
@@ -26,6 +27,16 @@ const Header = ({ hasAddToBanner = true }) => {
       <p className="cursor-pointer hover:text-red-500" onClick={hanldeLogout}>
         Đăng Xuất
       </p>
+      {user?.isAdmin && (
+        <p
+          className="cursor-pointer hover:text-red-500"
+          onClick={() => {
+            navigate('/admin/users')
+          }}
+        >
+          Admin
+        </p>
+      )}
       {/* <p className="cursor-pointer hover:text-red-500">Thông tin người dùng</p> */}
     </div>
   );

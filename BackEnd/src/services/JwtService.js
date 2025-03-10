@@ -5,7 +5,7 @@ dotenv.config()
 const genneralAccessToken = (payload) => {
     const access_token = jwt.sign({
         ...payload
-    }, process.env.ACCESS_TOKEN, { expiresIn: '30s' })
+    }, process.env.ACCESS_TOKEN, { expiresIn: '1d' })
     return access_token
 }
 
@@ -16,25 +16,30 @@ const genneralRefreshToken = (payload) => {
     return refresh_token
 }
 
-const refreshTokenJwtService = (token) => {
+const refreshTokenJwtService = (refreshToken) => {
     return new Promise((resolve, reject) => {
         try {
-            jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
+            // Kiểm tra tính hợp lệ của refreshToken
+            jwt.verify(refreshToken, process.env.REFRESH_TOKEN, async (err, user) => {
                 if (err) {
                     console.log(err)
-                    resolve({
+                    return resolve({
                         status: "err",
-                        message: 'The authemtication'
+                        message: 'The authentication has failed. Invalid refresh token.'
                     })
                 }
+
+                // Tạo access token mới
                 const access_token = await genneralAccessToken({
                     id: user?.id,
                     isAdmin: user?.isAdmin
                 })
-                console.log('Access-Token', access_token)
+                console.log('New Access Token:', access_token)
+
+                // Trả về access token mới
                 resolve({
                     status: "Ok",
-                    message: "Sucess",
+                    message: "Success",
                     access_token
                 })
             })
