@@ -6,6 +6,8 @@ import { useMutationHooks } from "../../../hooks/useMutation";
 import Loading from "../../../component/Loading";
 import * as message from "../../../component/message";
 import { useNavigate } from "react-router-dom";
+import ToastNotification from "../../../component/toastNotification";
+import { toast } from "react-toastify";
 
 const RegisterPage = () => {
   const mutation = useMutationHooks((data) => userServices.registerUser(data));
@@ -42,10 +44,10 @@ const RegisterPage = () => {
     }
 
     // Email
-    const email = formData.email?.trim();
-    if (!email) {
+    // const email = formData.email?.trim();
+    if (!formData.email) {
       newErr.email = "Vui lòng điền email";
-    } else if (!/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(email)) {
+    } else if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
       newErr.email = "Vui lòng nhập đúng định dạng email";
     }
 
@@ -57,11 +59,19 @@ const RegisterPage = () => {
     }
 
     // Password
+    // Password
     if (!formData.password) {
       newErr.password = "Vui lòng nhập mật khẩu";
-    } else if (formData.password.length < 8) {
-      newErr.password = "Mật khẩu phải có ít nhất 6 ký tự";
+    } else if (
+      formData.password.length < 8 ||
+      !/[A-Z]/.test(formData.password) ||
+      !/[0-9]/.test(formData.password) ||
+      !/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)
+    ) {
+      newErr.password =
+        "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ và số, một chữ cái in hoa và một ký tự đặc biệt";
     }
+
     //Ky tu, Chu viet hoa, trung voi mat khau cu
 
     // Confirm Password
@@ -73,7 +83,9 @@ const RegisterPage = () => {
 
     if (Object.keys(newErr).length > 0) {
       setErrors(newErr);
-      console.log("Err", newErr);
+      Object.values(newErr).forEach((err) => {
+        toast.error(err); // Hiển thị lỗi bằng toast
+      });
       return false;
     }
 
@@ -82,10 +94,11 @@ const RegisterPage = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      message.success();
+      toast.success("Thêm thành công");
+      mutation.reset();
       handleNavigateSignIn();
     } else if (isError) {
-      message.error();
+      toast.error("Thêm thất bại");
     }
   });
 
@@ -147,7 +160,7 @@ const RegisterPage = () => {
             <div>
               <label htmlFor="email">Email</label>
               <input
-                type="email"
+                type="text"
                 id="email"
                 name="email"
                 value={formData.email}
@@ -244,6 +257,7 @@ const RegisterPage = () => {
           </div>
         </Loading>
       </div>
+      <ToastNotification />
     </div>
   );
 };
