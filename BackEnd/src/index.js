@@ -11,10 +11,7 @@ dotenv.config()
 const app = express()
 const port = process.env.PORT || 3001
 
-app.use(cors({
-    origin: 'http://localhost:3000',  // Chỉ định rõ domain từ client
-    credentials: true,                // Cho phép gửi cookies trong yêu cầu
-}));
+app.use(cors());
 app.use(bodyParser.json())
 app.use(cookieParser())
 
