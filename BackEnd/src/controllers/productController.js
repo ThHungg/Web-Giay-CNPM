@@ -118,6 +118,26 @@ const getAllProduct = async (req, res) => {
     }
 }
 
+// const softDeleteProduct = async (req, res) => {
+//     try {
+//         const id = req.params.id;
+//         const result = await productService.softDeleteProduct(id);
+//         return res.status(200).json(result);
+//     } catch (e) {
+//         return res.status(500).json({ status: "Err", message: e.message });
+//     }
+// };
+
+// const restoreProduct = async (req, res) => {
+//     try {
+//         const id = req.params.id;
+//         const result = await productService.restoreProduct(id);
+//         return res.status(200).json(result);
+//     } catch (e) {
+//         return res.status(500).json({ status: "Err", message: e.message });
+//     }
+// };
+
 
 
 module.exports = {
@@ -125,6 +145,8 @@ module.exports = {
     updateProduct,
     getDetailProduct,
     deleteProduct,
-    getAllProduct
+    getAllProduct,
+    // softDeleteProduct,
+    // restoreProduct
 
 };

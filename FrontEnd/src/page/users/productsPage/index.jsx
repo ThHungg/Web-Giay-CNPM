@@ -17,7 +17,6 @@ const Products = () => {
     retry: 3,
     retryDelay: 1000,
   });
-  console.log("Data", products);
 
 
   

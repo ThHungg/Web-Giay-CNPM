@@ -172,11 +172,51 @@ const getDetailProduct = (id) => {
     });
 };
 
+// const softDeleteProduct = async (id) => {
+//     try {
+//         const checkProduct = await product.findById(id)
+//         if (!checkProduct) {
+//             return {
+//                 status: "Err",
+//                 message: "Sản phẩm không tồn tại"
+//             }
+//         }
+//         await product.findByIdAndUpdate(id, { isDeleted: true })
+//         return {
+//             status: "Ok",
+//             message: "Xóa mềm thành công"
+//         }
+//     } catch (e) {
+//         reject(e);
+//     }
+// }
+
+// const restoreProduct = async (id) => {
+//     try {
+//         const checkProduct = await product.findById(id)
+//         if (!checkProduct) {
+//             return {
+//                 status: "Err",
+//                 message: "Sản phẩm không tồn tại"
+//             }
+//         }
+//         await product.findByIdAndUpdate(id, { isDeleted: false })
+//         return {
+//             status: "Ok",
+//             message: "Khôi phục sản phẩm thành công"
+//         }
+//     } catch (e) {
+//         reject(e);
+//     }
+// }
+
 
 module.exports = {
     createProduct,
     updateProduct,
     getDetailProduct,
     deleteProduct,
-    getAllProduct
+    getAllProduct,
+    // softDeleteProduct,
+    // restoreProduct
 };

@@ -26,7 +26,6 @@ const ProfilePage = () => {
   });
 
   const { data, isLoading, isSuccess, isError } = mutation;
-  console.log("Data", data);
 
   useEffect(() => {
     setEmail(user?.email);

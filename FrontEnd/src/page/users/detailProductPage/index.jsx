@@ -16,7 +16,6 @@ const DetailProduct = () => {
   const { id } = useParams();
   const product = shoesData.shoes.find((item) => item.id === Number(id));
   const relateProducts = shoesData.shoes;
-  console.log(relateProducts);
   const imgs = [ncat2, ncat1, ncat2_2];
   const [selectedSize, setSelectedSize] = useState(null);
 

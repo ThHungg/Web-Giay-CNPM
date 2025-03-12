@@ -24,7 +24,6 @@ function App() {
     if (storageData && isJsonString(storageData)) {
       storageData = JSON.parse(storageData);
       decoded = jwtDecode(storageData);
-      console.log("decode APp", decoded);
     }
     return { decoded, storageData };
   };

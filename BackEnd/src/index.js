@@ -11,14 +11,13 @@ dotenv.config()
 const app = express()
 const port = process.env.PORT || 3001
 
-// app.use(cors());
+app.use(cors());
 
-const cors = require('cors');
-app.use(cors({
-    origin: "https://cute-gumdrop-984ac1.netlify.app",
-    methods: "GET,POST,PUT,DELETE",
-    credentials: true
-}));
+// app.use(cors({
+//     origin: "https://cute-gumdrop-984ac1.netlify.app",
+//     methods: "GET,POST,PUT,DELETE",
+//     credentials: true
+// }));
 
 app.use(bodyParser.json())
 app.use(cookieParser())
