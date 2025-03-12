@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { ROUTERS } from "./utils/router";
-import Homepage from "./page/users/homePage";
+import Homepage from "./page/users/homePage/index";
 import MasterLayout from "./page/users/theme/masterLayout";
 import ProfilePage from "./page/users/profilePage";
 import Contact from "./page/users/contact";
