@@ -5,6 +5,9 @@ import { ROUTERS } from "../../../utils/router";
 import { Link, useLocation } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import { CiShoppingCart } from "react-icons/ci";
+import { AiOutlineProduct } from "react-icons/ai";
+import { MdDiscount } from "react-icons/md";
+import { GoReport } from "react-icons/go";
 
 const MasterLayout = ({ children, ...props }) => {
   const menuItems = [
@@ -14,9 +17,24 @@ const MasterLayout = ({ children, ...props }) => {
       path: ROUTERS.ADMIN.USER,
     },
     {
-      icon: <CiShoppingCart />,
+      icon: <AiOutlineProduct />,
       title: "Product",
       path: ROUTERS.ADMIN.PRODUCT,
+    },
+    {
+      icon: <CiShoppingCart />,
+      title: "Order",
+      // path: ROUTERS.ADMIN.PRODUCT,
+    },
+    {
+      icon: <MdDiscount />,
+      title: "Voucher",
+      // path: ROUTERS.ADMIN.PRODUCT,
+    },
+    {
+      icon: <GoReport />,
+      title: "Report",
+      // path: ROUTERS.ADMIN.PRODUCT,
     },
   ];
 
@@ -48,7 +66,7 @@ const MasterLayout = ({ children, ...props }) => {
               ))}
             </ul>
           </div>
-          <div className="col-span-10 bg-yellow-500 h-[40px]">
+          <div className="col-span-10 bg-white h-[40px]">
             <div className="mt-[50px] ml-[10px] ">{children}</div>
           </div>
         </div>
