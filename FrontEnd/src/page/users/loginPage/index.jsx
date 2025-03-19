@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../../redux/slides/userSlide";
+import { toast } from "react-toastify";
+import ToastNotification from "../../../component/toastNotification";
 
 const LoginPage = () => {
   const mutation = useMutationHooks((data) => userServices.loginUser(data));
@@ -18,15 +20,14 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/");
       localStorage.setItem("access_token", JSON.stringify(data?.access_token));
       // localStorage.setItem("access_token", data?.access_token);
-
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
         if (decoded?.id) {
           handleGetDetailsUser(decoded?.id, data?.access_token);
         }
+        navigate("/");
       }
     }
   }, [isSuccess]);
@@ -103,7 +104,7 @@ const LoginPage = () => {
             className="w-full p-2 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           {data?.status === "ERR" && (
-            <span className="text-red-500">{data?.message}</span>
+            <span className="text-red-500 text-sm">{data?.message}</span>
           )}
           {errors.password && (
             <p className="text-red-500 text-sm">{errors.password}</p>
@@ -123,16 +124,14 @@ const LoginPage = () => {
           <Link to="">Quên mật khẩu ?</Link>
         </div>
 
-        <Loading isLoading={loading}>
-          <div className="mt-6">
-            <button
-              onClick={handleLogin}
-              className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md text-xl font-bold text-white bg-black"
-            >
-              Đăng nhập
-            </button>
-          </div>
-        </Loading>
+        <div className="mt-6">
+          <button
+            onClick={handleLogin}
+            className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md text-xl font-bold text-white bg-black"
+          >
+            Đăng nhập
+          </button>
+        </div>
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">

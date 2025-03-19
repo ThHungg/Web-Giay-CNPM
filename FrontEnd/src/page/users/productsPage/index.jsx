@@ -18,8 +18,6 @@ const Products = () => {
     retryDelay: 1000,
   });
 
-
-  
   const shoes = shoesData.shoes;
 
   const brands = ["Adidas", "Nike", "Puma", "Jordan", "Gucci"];
@@ -32,161 +30,6 @@ const Products = () => {
     "Đang giảm giá",
   ];
 
-  // const products = [
-  //   {
-  //     img: ncat1,
-  //     name: "Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "2. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-  //     oldprice: "4.000.000 đ",
-  //   },
-
-  //   {
-  //     img: ncat1,
-  //     name: "3. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-  //     oldprice: "4.000.000 đ",
-  //   },
-
-  //   {
-  //     img: ncat1,
-  //     name: "4. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-  //     oldprice: "4.000.000 đ",
-  //   },
-
-  //   {
-  //     img: ncat1,
-  //     name: "5. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "6. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "7. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "8. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "9. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "10. Nike Air Force 1 Shadow",
-  //     price: "3.390.000 đ",
-
-  //     oldprice: "4.000.000 đ",
-  //   },
-  // ];
-
   const itemsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(shoes.length / itemsPerPage);
@@ -198,15 +41,17 @@ const Products = () => {
     <>
       <div className="max-w-screen-xl mx-auto grid grid-cols-5">
         <div className="col-span-1">
-          <h1 className="text-2xl font-bold">Thương hiệu</h1>
-          {brands.map((item, key) => (
-            <div
-              className="cursor-pointer bg-white max-w-[180px] m-2 p-1 text-center rounded-xl border-2 hover:font-bold"
-              key={key}
-            >
-              {item}
-            </div>
-          ))}
+          <div className=""> 
+            <h1 className="text-2xl font-bold">Thương hiệu</h1>
+            {brands.map((item, key) => (
+              <div
+                className="cursor-pointer bg-white max-w-[180px] m-2 p-1 text-center rounded-xl border-2 hover:font-bold"
+                key={key}
+              >
+                {item}
+              </div>
+            ))}
+          </div>
           <div className="">
             <h className="text-2xl font-bold">Mức giá</h>
             <p>Từ: </p>
@@ -270,9 +115,10 @@ const Products = () => {
                     img={product.image}
                     price={product.price}
                     oldprice={product.oldprice}
+                    discount = {product.discount}
                   />
                 </div>
-              )
+              );
             })}
           </div>
           {/* Pagination */}

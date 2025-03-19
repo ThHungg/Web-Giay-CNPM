@@ -8,6 +8,8 @@ const Footer = () => {
           <div className="col-span-1">
             <h1>Hỗ trợ khách hàng</h1>
             <p>Hotline: 0348910968</p>
+            <p>Điịa chỉ: Hoàng Mai, Hà Nội</p>
+            <p>Email: ...@gmail.com</p>
           </div>
           <div className="col-span-1">
             <h1>Hợp tác và liên kết</h1>

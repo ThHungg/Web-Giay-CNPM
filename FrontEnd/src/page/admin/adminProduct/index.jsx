@@ -4,11 +4,12 @@ import * as productService from "../../../services/productService";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification";
-import { Form } from "antd";
+import { Form, Switch } from "antd";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import Loading from "../../../component/Loading";
+import formatter from "../../../utils/formatter";
 
 const AdminProduct = () => {
   const fetchProductAll = async () => {
@@ -37,6 +38,7 @@ const AdminProduct = () => {
     price: "",
     description: "",
     brand: "",
+    discount: "",
     image: "",
     sizeStock: {
       size: "",
@@ -45,13 +47,15 @@ const AdminProduct = () => {
   });
 
   const mutation = useMutationHooks(async (data) => {
-    const { name, price, description, brand, image, sizeStock } = data;
+    const { name, price, description, brand, image, discount, sizeStock } =
+      data;
     return await productService.createProduct({
       name,
       price,
       description,
       brand,
       image,
+      discount,
       sizeStock,
     });
   });
@@ -83,6 +87,7 @@ const AdminProduct = () => {
       description: "",
       brand: "",
       image: "",
+      discount: "",
       sizeStock: {
         size: "",
         stock: "",
@@ -131,6 +136,7 @@ const AdminProduct = () => {
     description: "",
     brand: "",
     image: "",
+    discount: "",
     sizeStock: [],
   });
 
@@ -150,6 +156,7 @@ const AdminProduct = () => {
         description: res?.data?.description,
         brand: res?.data?.brand,
         image: res?.data?.image,
+        discount: res?.data?.discount,
         sizeStock: res?.data?.sizeStock || [],
       });
     }
@@ -185,16 +192,16 @@ const AdminProduct = () => {
   } = mutationUpdate;
   console.log("dataUpdated", dataUpdated);
 
-  useEffect(() => {
-    if (isSuccessUpdated) {
-      toast.success("Cập nhật thành công");
-      mutationUpdate.reset();
-      setShowUpdateModal(false);
-    } else if (isErrorUpdated) {
-      toast.error("Thêm thất bại");
-      mutationUpdate.reset();
-    }
-  }, [isSuccessUpdated, isErrorUpdated]);
+    useEffect(() => {
+      if (isSuccessUpdated) {
+        toast.success("Cập nhật thành công");
+        mutationUpdate.reset();
+        setShowUpdateModal(false);
+      } else if (isErrorUpdated) {
+        toast.error("Thêm thất bại");
+        mutationUpdate.reset();
+      }
+    }, [isSuccessUpdated, isErrorUpdated]);
 
   const onUpdateProduct = () => {
     setShowUpdateModal(false);
@@ -211,6 +218,46 @@ const AdminProduct = () => {
       fetchGetDetailsProduct(rowSelected);
     }
   }, [isSuccessUpdated]);
+
+  // const [sortOrder, setSortOrder] = useState("asc");
+
+  // const sortedProducts = [...(products?.data || [])].sort((a, b) => {
+  //   return sortOrder === "asc"
+  //     ? a.name.localeCompare(b.name)
+  //     : b.name.localeCompare(a.name);
+  // });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
+
+  // Lọc sản phẩm theo tên hoặc thương hiệu
+  const filteredProducts = (products?.data || []).filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.brand.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Sắp xếp danh sách sản phẩm
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortField === "name") {
+      return sortOrder === "asc"
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
+    } else if (sortField === "price") {
+      return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+    }
+  });
+
+  // Xử lý sự kiện sắp xếp
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   const CreateModal = useMemo(
     () => (
@@ -263,6 +310,8 @@ const AdminProduct = () => {
                   <input
                     type="text"
                     name="discount"
+                    value={stateProduct.discount}
+                    onChange={handleOnchange}
                     className="border w-full p-2 rounded-lg"
                     placeholder=""
                   />
@@ -375,162 +424,157 @@ const AdminProduct = () => {
 
   const UpdateModal = useMemo(
     () => (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-8 flex flex-col gap-4 w-1/2 shadow-lg rounded-xl">
-            <h1 className="text-2xl font-bold text-center">
-              Thêm sản phẩm mới
-            </h1>
-            <form
-              action=""
-              className="space-y-3"
-              form={form}
-              onSubmit={onFinish}
-            >
-              <div className="grid grid-cols-2 gap-x-6">
-                <div className="">
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Name</p>
-                    <input
-                      type="text"
-                      name="name"
-                      className="border w-full p-2 rounded-lg"
-                      value={stateProductDetails.name}
-                      onChange={handleOnchangeDetails}
-                      placeholder=""
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Brand</p>
-                    <select
-                      className="border w-full p-2 rounded-lg"
-                      name="brand"
-                      value={stateProductDetails.brand}
-                      onChange={handleOnchangeDetails}
-                    >
-                      <option value="">Chọn thương hiệu</option>
-                      <option>Nike</option>
-                      <option>Adidas</option>
-                    </select>
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Price</p>
-                    <input
-                      type="text"
-                      name="price"
-                      className="border w-full p-2 rounded-lg"
-                      value={stateProductDetails.price}
-                      onChange={handleOnchangeDetails}
-                      placeholder=""
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Discount</p>
-                    <input
-                      type="text"
-                      name="discount"
-                      className="border w-full p-2 rounded-lg"
-                      placeholder=""
-                    />
-                  </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="bg-white p-8 flex flex-col gap-4 w-1/2 shadow-lg rounded-xl">
+          <h1 className="text-2xl font-bold text-center">Thêm sản phẩm mới</h1>
+          <form action="" className="space-y-3" form={form} onSubmit={onFinish}>
+            <div className="grid grid-cols-2 gap-x-6">
+              <div className="">
+                <div className="flex flex-col gap-1">
+                  <p className="text-xl font-bold">Name</p>
+                  <input
+                    type="text"
+                    name="name"
+                    className="border w-full p-2 rounded-lg"
+                    value={stateProductDetails.name}
+                    onChange={handleOnchangeDetails}
+                    placeholder=""
+                  />
                 </div>
 
-                <div className="">
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Description</p>
-                    <textarea
-                      rows={2}
-                      name="description"
-                      className="border w-full p-2 rounded-lg"
-                      value={stateProductDetails.description}
-                      onChange={handleOnchangeDetails}
-                    ></textarea>
-                  </div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-xl font-bold">Brand</p>
+                  <select
+                    className="border w-full p-2 rounded-lg"
+                    name="brand"
+                    value={stateProductDetails.brand}
+                    onChange={handleOnchangeDetails}
+                  >
+                    <option value="">Chọn thương hiệu</option>
+                    <option>Nike</option>
+                    <option>Adidas</option>
+                  </select>
+                </div>
 
-                  <div className="flex flex-col gap-y-2 mt-2">
-                    <div className="grid grid-cols-2">
-                      <p className="text-xl font-bold">Size</p>
-                      <div className="flex justify-between">
-                        <p className="text-xl font-bold">Số lượng</p>
-                        <button
-                          className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
-                          onClick={addSizeField}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                    {stateProductDetails.sizeStock.map((item, index) => (
-                      <div key={index} className="grid grid-cols-2 gap-x-6">
-                        <select
-                          name={`size-${index}`}
-                          className="border w-full p-2 rounded-lg"
-                          value={item.size}
-                          onChange={(e) =>
-                            handleSizeStockChange(index, "size", e.target.value)
-                          }
-                        >
-                          <option value="">Chọn size</option>
-                          <option value="36">36</option>
-                          <option value="37">37</option>
-                          <option value="38">38</option>
-                          <option value="39">39</option>
-                          <option value="40">40</option>
-                          <option value="41">41</option>
-                          <option value="42">42</option>
-                        </select>
-                        <div className="flex gap-x-2">
-                          <input
-                            type="text"
-                            name={`stock-${index}`}
-                            className="border w-full p-2 rounded-lg"
-                            value={item.stock}
-                            onChange={(e) =>
-                              handleSizeStockChange(
-                                index,
-                                "stock",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-xl font-bold">Price</p>
+                  <input
+                    type="text"
+                    name="price"
+                    className="border w-full p-2 rounded-lg"
+                    value={stateProductDetails.price}
+                    onChange={handleOnchangeDetails}
+                    placeholder=""
+                  />
+                </div>
 
-                  <div className="flex flex-col gap-y-2 mt-2">
-                    <p className="text-xl font-bold">Ảnh</p>
-                    <input
-                      type="text"
-                      name="image"
-                      className="border w-full p-2 rounded-lg"
-                      value={stateProductDetails.image}
-                      onChange={handleOnchangeDetails}
-                      placeholder=""
-                    />
-                  </div>
+                <div className="flex flex-col gap-1">
+                  <p className="text-xl font-bold">Discount</p>
+                  <input
+                    type="text"
+                    name="discount"
+                    value={stateProductDetails.discount}
+                    onChange={handleOnchangeDetails}
+                    className="border w-full p-2 rounded-lg"
+                    placeholder=""
+                  />
                 </div>
               </div>
-            </form>
 
-            <div className="flex justify-end gap-2 mt-4">
-              <button
-                className="px-4 py-2 bg-white border font-bold w-1/4 rounded-lg"
-                onClick={handleCancel}
-              >
-                Hủy
-              </button>
-              <button
-                className="px-4 py-2 bg-black text-white font-bold w-1/4 rounded-lg"
-                onClick={onUpdateProduct}
-              >
-                Cập nhật
-              </button>
+              <div className="">
+                <div className="flex flex-col gap-1">
+                  <p className="text-xl font-bold">Description</p>
+                  <textarea
+                    rows={2}
+                    name="description"
+                    className="border w-full p-2 rounded-lg"
+                    value={stateProductDetails.description}
+                    onChange={handleOnchangeDetails}
+                  ></textarea>
+                </div>
+
+                <div className="flex flex-col gap-y-2 mt-2">
+                  <div className="grid grid-cols-2">
+                    <p className="text-xl font-bold">Size</p>
+                    <div className="flex justify-between">
+                      <p className="text-xl font-bold">Số lượng</p>
+                      <button
+                        className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
+                        onClick={addSizeField}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  {stateProductDetails.sizeStock.map((item, index) => (
+                    <div key={index} className="grid grid-cols-2 gap-x-6">
+                      <select
+                        name={`size-${index}`}
+                        className="border w-full p-2 rounded-lg"
+                        value={item.size}
+                        onChange={(e) =>
+                          handleSizeStockChange(index, "size", e.target.value)
+                        }
+                      >
+                        <option value="">Chọn size</option>
+                        <option value="36">36</option>
+                        <option value="37">37</option>
+                        <option value="38">38</option>
+                        <option value="39">39</option>
+                        <option value="40">40</option>
+                        <option value="41">41</option>
+                        <option value="42">42</option>
+                      </select>
+                      <div className="flex gap-x-2">
+                        <input
+                          type="text"
+                          name={`stock-${index}`}
+                          className="border w-full p-2 rounded-lg"
+                          value={item.stock}
+                          onChange={(e) =>
+                            handleSizeStockChange(
+                              index,
+                              "stock",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col gap-y-2 mt-2">
+                  <p className="text-xl font-bold">Ảnh</p>
+                  <input
+                    type="text"
+                    name="image"
+                    className="border w-full p-2 rounded-lg"
+                    value={stateProductDetails.image}
+                    onChange={handleOnchangeDetails}
+                    placeholder=""
+                  />
+                </div>
+              </div>
             </div>
+          </form>
+
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              className="px-4 py-2 bg-white border font-bold w-1/4 rounded-lg"
+              onClick={handleCancel}
+            >
+              Hủy
+            </button>
+            <button
+              className="px-4 py-2 bg-black text-white font-bold w-1/4 rounded-lg"
+              onClick={onUpdateProduct}
+            >
+              Cập nhật
+            </button>
           </div>
         </div>
+      </div>
     ),
     [stateProductDetails, sizeList]
   );
@@ -554,6 +598,8 @@ const AdminProduct = () => {
             type="search"
             className="w-full h-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
             placeholder="Tìm kiếm sản phẩm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
@@ -562,38 +608,51 @@ const AdminProduct = () => {
           <thead className="bg-gray-200">
             <tr>
               <th className="border p-2">#</th>
-              <th className="border p-2">Tên</th>
+              <th
+                className="border p-2 cursor-pointer"
+                onClick={() => handleSort("name")}
+              >
+                Tên {sortField === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+              </th>
               <th className="border p-2">Thương hiệu</th>
-              <th className="border p-2">Giá</th>
+              <th
+                className="border p-2 cursor-pointer"
+                onClick={() => handleSort("price")}
+              >
+                Giá {sortField === "price" && (sortOrder === "asc" ? "▲" : "▼")}
+              </th>
+              <th className="border p-2">Trạng thái</th>
               <th className="border p-2">Action</th>
             </tr>
           </thead>
           <tbody className="text-center">
-            {products?.data?.map((product) => {
-              return (
-                <tr
-                  key={product.id}
-                  onClick={() => setRowSelected(product._id)}
-                >
-                  <td className="border p-2"></td>
-                  <td className="border p-2">{product.name}</td>
-                  <td className="border p-2">{product.brand}</td>
-                  <td className="border p-2">{product.price}</td>
-                  <td className="border p-2">
-                    <div className="flex gap-2 text-2xl justify-center ">
-                      <MdDelete className="cursor-pointer" />
-                      <FaEdit
-                        className="cursor-pointer"
-                        onClick={() => {
-                          handleDetailsProduct();
-                          setShowUpdateModal(true);
-                        }}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+            {sortedProducts.map((product) => (
+              <tr key={product.id} onClick={() => setRowSelected(product._id)}>
+                <td className="border p-2"></td>
+                <td className="border p-2">{product.name}</td>
+                <td className="border p-2">{product.brand}</td>
+                <td className="border p-2">{formatter(product.price)}</td>
+                <td className="border p-2">
+                  <Switch
+                    checkedChildren="Đang bán"
+                    unCheckedChildren="Ngưng bán"
+                    defaultChecked
+                  />
+                </td>
+                <td className="border p-2">
+                  <div className="flex gap-2 text-2xl justify-center">
+                    <MdDelete className="cursor-pointer" />
+                    <FaEdit
+                      className="cursor-pointer"
+                      onClick={() => {
+                        handleDetailsProduct();
+                        setShowUpdateModal(true);
+                      }}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

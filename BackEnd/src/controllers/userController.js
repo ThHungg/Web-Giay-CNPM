@@ -4,10 +4,10 @@ const createUser = async (req, res) => {
     try {
         console.log(req.body);
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-        const { username, name, email, password, confirmPassword, phone } = req.body;
+        const { name, email, password, phone } = req.body;
         const isCheckEmail = reg.test(email);
 
-        if (!username || !name || !email || !password || !confirmPassword || !phone) {
+        if (!name || !email || !password || !phone) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Vui lòng nhập đầy đủ thông tin!'
@@ -17,13 +17,7 @@ const createUser = async (req, res) => {
                 status: 'ERR',
                 message: 'Email không hợp lệ!'
             });
-        } else if (password !== confirmPassword) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'Mật khẩu và xác nhận mật khẩu không khớp!'
-            });
         }
-
         console.log('isCheckEmail', isCheckEmail);
         const response = await userService.createUser(req.body);
         return res.status(200).json(response);
@@ -48,11 +42,10 @@ const loginUser = async (req, res) => {
             });
         } else if (!isCheckEmail) {
             return res.status(200).json({
-                status: 'email',
+                status: 'ERR',
                 message: 'Email không hợp lệ!'
             });
         }
-        console.log('isCheckEmail', isCheckEmail);
         const response = await userService.loginUser(req.body);
         const { refresh_token, ...newResponse } = response
         // console.log('response', response)

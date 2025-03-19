@@ -3,7 +3,7 @@ import { AiOutlineEye, AiOutlineShoppingCart } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import formatter from "../../utils/formatter";
 
-const ProductsCard = ({ img, name, price, oldprice }) => {
+const ProductsCard = ({ img, name, price, oldprice, discount }) => {
   return (
     <div className="m-3 bg-white w-[300px] rounded-xl py-2 space-y-3 shadow-lg">
       <div className="w-full h-[280px] p-2 overflow-hidden rounded-xl">
@@ -21,12 +21,28 @@ const ProductsCard = ({ img, name, price, oldprice }) => {
         </ul>
 
         <div className="space-y-1">
-          <Link to="" className="text-[23px] font-bold hover:text-red-500 transition duration-300">
-            {name}
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              to=""
+              className="text-[23px] font-bold hover:text-red-500 transition duration-300"
+            >
+              {name}
+            </Link>
+            {discount && (
+              <h1 className="text-[16px] text-red-500 font-bold">
+                -{discount} %
+              </h1>
+            )}
+          </div>
           <div className="flex justify-center gap-2 ">
-            <h1 className="text-[19px] text-red-500 font-semibold">{formatter(price)}</h1>
-            {oldprice && <h1 className="text-[16px] line-through opacity-50">{formatter(oldprice)}</h1>}
+            <h1 className="text-[19px] text-red-500 font-semibold">
+              {formatter(price)}
+            </h1>
+            {oldprice && (
+              <h1 className="text-[16px] line-through opacity-50">
+                {formatter(oldprice)}
+              </h1>
+            )}
           </div>
         </div>
       </div>

@@ -59,7 +59,6 @@ const RegisterPage = () => {
     }
 
     // Password
-    // Password
     if (!formData.password) {
       newErr.password = "Vui lòng nhập mật khẩu";
     } else if (
@@ -84,7 +83,7 @@ const RegisterPage = () => {
     if (Object.keys(newErr).length > 0) {
       setErrors(newErr);
       Object.values(newErr).forEach((err) => {
-        toast.error(err); // Hiển thị lỗi bằng toast
+        toast.error(err);
       });
       return false;
     }
