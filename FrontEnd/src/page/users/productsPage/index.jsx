@@ -41,7 +41,7 @@ const Products = () => {
     <>
       <div className="max-w-screen-xl mx-auto grid grid-cols-5">
         <div className="col-span-1">
-          <div className=""> 
+          <div className="">
             <h1 className="text-2xl font-bold">Thương hiệu</h1>
             {brands.map((item, key) => (
               <div
@@ -109,14 +109,16 @@ const Products = () => {
             {products?.data?.map((product) => {
               return (
                 <div className="">
-                  <ProductCard
-                    key={product.id}
-                    name={product.name}
-                    img={product.image}
-                    price={product.price}
-                    oldprice={product.oldprice}
-                    discount = {product.discount}
-                  />
+                  <Link to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}>
+                    <ProductCard
+                      key={product.id}
+                      name={product.name}
+                      img={product.image}
+                      price={product.price}
+                      oldprice={product.oldprice}
+                      discount={product.discount}
+                    />
+                  </Link>
                 </div>
               );
             })}

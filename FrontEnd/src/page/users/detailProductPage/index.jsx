@@ -1,25 +1,121 @@
-import { memo, useState } from "react";
-import ncat1 from "../../../assets/users/img/newcategories/ncat1.jpg";
-import ncat2 from "../../../assets/users/img/newcategories/ncat2.jpg";
-import ncat2_1 from "../../../assets/users/img/newcategories/ncat2.jpg";
-import ncat2_2 from "../../../assets/users/img/newcategories/ncat2.jpg";
+import { memo, useEffect, useState } from "react";
 import formatter from "../../../utils/formatter.jsx";
 import Quantity from "../../../component/Quantity/index.jsx";
-import shoesData from "../../../data.json";
 import { useParams } from "react-router-dom";
 import { ProductCard } from "../../../component/index.jsx";
-import Carousel from "react-multi-carousel";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import StarRating from "../../../component/StarRaint/index.jsx";
+import * as productService from "../../../services/productService";
+import * as cartService from "../../../services/cartService.js";
+import { useSelector } from "react-redux";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
+import ToastNotification from "../../../component/toastNotification/index.js";
+import { useMutationHooks } from "../../../hooks/useMutation.js";
+
 const DetailProduct = () => {
   const { id } = useParams();
-  const product = shoesData.shoes.find((item) => item.id === Number(id));
-  const relateProducts = shoesData.shoes;
-  const imgs = [ncat2, ncat1, ncat2_2];
   const [selectedSize, setSelectedSize] = useState(null);
+  const [quantity, setQuantity] = useState(1);
 
-  const sizes = [38, 39, 40, 41, 42, 43, 4];
+  const token = localStorage.getItem("access_token");
+  let userId;
+
+  if (token) {
+    const decoded = jwtDecode(token);
+    userId = decoded.id;
+  }
+
+  const mutationAddToCart = useMutationHooks(
+    async ({ userId, productId, size, quantity, price }) => {
+      const res = await cartService.addToCart(
+        userId,
+        productId,
+        size,
+        quantity,
+        price
+      );
+      return res;
+    }
+  );
+
+  const handleAddToCart = () => {
+    mutationAddToCart.mutate({
+      userId: userId,
+      productId: id,
+      size: selectedSize,
+      quantity: quantity,
+      price:
+        productDetail.discount > 0
+          ? productDetail.price * (1 - productDetail.discount / 100)
+          : productDetail.price,
+    });
+  };
+
+  useEffect(() => {
+    if (mutationAddToCart.isSuccess) {
+      console.log("Thêm vào giỏ hàng thành công:", mutationAddToCart.data);
+    }
+    if (mutationAddToCart.isError) {
+      console.error("Lỗi khi thêm vào giỏ hàng:", mutationAddToCart.error);
+    }
+  }, [mutationAddToCart.isSuccess, mutationAddToCart.isError]);
+
+  // const handleAddToCart = async () => {
+  //   if (!selectedSize) {
+  //     toast("Vui lòng chọn size");
+  //   }
+
+  //   const cartIem = {
+  //     userId,
+  //     productId: id,
+  //     size: selectedSize,
+  //     quantity,
+  //     price: productDetail.price,
+  //   };
+  //   console.log("CartItem", cartIem);
+  //   console.log("CartItem gửi lên:", JSON.stringify(cartIem, null, 2));
+
+  //   try {
+  //     await cartService.addToCart(cartIem);
+  //     toast("Thêm vào giỏ hàng thành công!");
+  //   } catch (error) {
+  //     console.error("Lỗi thêm vào giỏ hàng:", error);
+  //     toast("Có lỗi xảy ra, vui lòng thử lại.");
+  //   }
+  // };
+
+  const [productDetail, setProductDetail] = useState({
+    name: "",
+    price: "",
+    description: "",
+    brand: "",
+    image: "",
+    discount: "",
+    sizeStock: [],
+  });
+
+  const fetchGetDetailsProduct = async (id) => {
+    const res = await productService.getDetailsProduct(id);
+    if (res?.data) {
+      setProductDetail({
+        name: res?.data?.name,
+        price: res?.data?.price,
+        description: res?.data?.description,
+        brand: res?.data?.brand,
+        image: res?.data?.image,
+        discount: res?.data?.discount,
+        sizeStock: res?.data?.sizeStock || [],
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchGetDetailsProduct(id);
+    }
+  }, [id]);
 
   const [name, setName] = useState("");
   const [rating, setRating] = useState(0);
@@ -43,63 +139,72 @@ const DetailProduct = () => {
     },
   ];
 
-  const responsive = {
-    superLargeDesktop: {
-      // the naming can be any, depends on you.
-      breakpoint: { max: 4000, min: 3000 },
-      items: 5,
-    },
-    desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 4,
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 464 },
-      items: 2,
-    },
-    mobile: {
-      breakpoint: { max: 464, min: 0 },
-      items: 1,
-    },
-  };
+  // const responsive = {
+  //   superLargeDesktop: {
+  //     // the naming can be any, depends on you.
+  //     breakpoint: { max: 4000, min: 3000 },
+  //     items: 5,
+  //   },
+  //   desktop: {
+  //     breakpoint: { max: 3000, min: 1024 },
+  //     items: 4,
+  //   },
+  //   tablet: {
+  //     breakpoint: { max: 1024, min: 464 },
+  //     items: 2,
+  //   },
+  //   mobile: {
+  //     breakpoint: { max: 464, min: 0 },
+  //     items: 1,
+  //   },
+  // };
   return (
     <>
-      <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-6">
+      <ToastNotification />
+      <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8">
         {/* image first*/}
-        <div className="col-span-4 mx-auto">
+        <div className="col-span-5 mx-auto">
           <img
-            src={product.img}
+            src={productDetail.image}
             alt=""
             className="h-[500px] w-[800px] object-cover"
           />
           <div className="flex justify-center gap-3 mt-2">
-            {imgs.map((item, key) => (
-              <img
-                src={item}
-                alt=""
-                key={key}
-                className="h-[80px] w-[80px] object-contain"
-              />
-            ))}
+            <img
+              src={productDetail.image}
+              alt=""
+              className="h-[80px] w-[80px] object-contain"
+            />
           </div>
         </div>
         {/* image end*/}
-        <div className="col-span-2 ml-3">
-          <h1 className="uppercase text-4xl font-bold">{product.name}</h1>
+        <div className="col-span-3 ml-3">
+          <h1 className="uppercase text-4xl font-bold w-full">
+            {productDetail.name}
+            {productDetail.discount > 0 && (
+              <span className="text-red-500 text-2xl font-semibold m-5 inline-block">
+                - {productDetail.discount} %
+              </span>
+            )}
+          </h1>
+
           <ul>
             <li className="text-xl">
-              <b>Mã SP: </b> <span>{product.id}</span>
+              <b>Mã SP: </b> <span></span>
             </li>
           </ul>
           <div className="flex gap-5 items-center">
             <h1 className="text-red-500 font-bold text-2xl">
-              {formatter(product.price)}
+              {formatter(
+                productDetail.discount > 0
+                  ? productDetail.price * (1 - productDetail.discount / 100)
+                  : productDetail.price
+              )}
+              {/* {formatter(productDetail.price)} */}
             </h1>
-            {product.oldprice && (
-              <h1 className="text-gray-500 opacity-70 font-bold text-xl line-through">
-                {formatter(product.oldprice)}
-              </h1>
-            )}
+            <h1 className="text-gray-500 opacity-70 font-bold text-xl line-through">
+              {productDetail.discount > 0 && formatter(productDetail.price)}
+            </h1>
           </div>
           <ul>
             <li className="text-xl">
@@ -110,35 +215,43 @@ const DetailProduct = () => {
             </li>
           </ul>
           {/* Sizemap */}
-          <div className="space-y-2">
-            {sizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`px-4 py-2 border rounded transition-all duration-300 m-1 ${
-                  selectedSize === size
-                    ? "text-black border-blue-700"
-                    : "bg-white text-black border-gray-400"
-                }`}
-              >
-                {size}
-              </button>
+          <div className="flex gap-2 items-center">
+            {productDetail.sizeStock.map((item, index) => (
+              <div key={index} className="relative inline-block">
+                <button
+                  className={`px-4 py-2 border rounded-lg font-medium transition-all duration-200 ${
+                    selectedSize === item.size
+                      ? "bg-black text-white shadow-md"
+                      : "bg-white hover:bg-gray-100"
+                  } ${item.stock === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onClick={() => setSelectedSize(item.size)}
+                  disabled={item.stock === 0}
+                >
+                  {item.size}
+                </button>
+                {item.stock > 0 && (
+                  <span className="absolute top-0 right-0 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold shadow-md translate-x-1/2 -translate-y-1/2">
+                    {item.stock}
+                  </span>
+                )}
+              </div>
             ))}
           </div>
           <div className="my-2 flex justify-center gap-2 flex-col">
             <b className="text-2xl">Số lượng:</b>
-            <Quantity />
+            <Quantity quantity={quantity} setQuantity={setQuantity} />
           </div>
           <div className="grid grid-rows-2">
             <button
               type="submit"
-              className="w-60 h-14 bg-red-500 mt-2 rounded-lg text-xl font-bold"
+              className="w-60 h-14 bg-black text-white mt-2 rounded-md shadow-sm text-xl font-bold"
             >
               Mua ngay
             </button>
             <button
               type="submit"
-              className="w-60 h-14 bg-gray-500 mt-2 rounded-lg text-xl font-bold"
+              className="w-60 h-14 bg-white border border-gray-300 rounded-md shadow-sm mt-2 rounded-lg text-xl font-bold"
+              onClick={handleAddToCart}
             >
               Thêm vào giỏ hàng
             </button>
@@ -157,65 +270,9 @@ const DetailProduct = () => {
           </TabList>
 
           <TabPanel>
-            <h2>
-              Giày Air Jordan 1 Low ‘White Dune Red’ FJ3459-160 đem đến sự tinh
-              tế và phong cách đặc trưng của dòng sản phẩm Jordan. Với chất liệu
-              da cao cấp và thiết kế độc đáo, đôi giày này kết hợp màu trắng
-              trang nhã với điểm nhấn màu đỏ dune tạo nên sự cá tính và thu hút.
-              Thiết kế đa lớp của phần thân giày tạo độ sâu và phong phú trong
-              hình thức. Logo Jumpman nổi bật ở ngực giày và mũi giày, thêm phần
-              sang trọng và đẳng cấp cho đôi giày này. Đế được thiết kế để cung
-              cấp sự thoải mái và bền bỉ, phản ánh sự chăm chỉ trong sản xuất.
-              Với màu sắc và kiểu dáng độc đáo, Air Jordan 1 Low ‘White Dune
-              Red’ FJ3459-160 là sự lựa chọn lý tưởng cho những người ưa chuộng
-              phong cách thể thao và đường phố. Sự kết hợp hoàn hảo giữa phong
-              cách và tiện ích, đôi giày này là điểm nhấn thú vị trong bộ sưu
-              tập sneaker của bạn.
-            </h2>
+            <h2>Description</h2>
           </TabPanel>
           <TabPanel>
-            {/* <div className="grid grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <h1 className="text-2xl font-bold">Đánh giá</h1>
-                <div className="bg-white border border-black p-2">
-                  <h1 className="flex">Đặng Thành Hưng</h1>
-                  <div className="flex items-center text-yellow-500 font-bold">
-                    ★★★★★
-                  </div>
-                  <p className="flex">Sản phẩm này đi tốt</p>
-                </div>
-                <div className="bg-white border border-black p-2">
-                  <h1 className="flex">Đặng Thành Hưng</h1>
-                  <div className="flex items-center text-yellow-500 font-bold">
-                    ★★★
-                  </div>
-                  <p className="flex">
-                    Sản phẩm chất lượng, đúng như mô tả. Rất hài lòng!
-                  </p>
-                </div>
-                <div className="bg-white border border-black p-2">
-                  <h1 className="flex">Đặng Thành Hưng</h1>
-                  <div className="flex items-center text-yellow-500 font-bold">
-                    ★
-                  </div>
-                  <p className="flex">
-                    Giao hàng lâu, liên hệ hỗ trợ nhưng phản hồi chậm.
-                  </p>
-                </div>
-              </div>
-              <div className="">
-                <h1 className="text-2xl font-bold">Viết đánh giá của bạn</h1>
-                <div className="mt-2">
-                  <textarea
-                    id="review"
-                    className="border border-gray-300 p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows="3"
-                  ></textarea>
-                </div>
-
-              </div>
-            </div> */}
-
             <div className="grid grid-cols-2 gap-5">
               {/* Danh sách đánh giá */}
               <div className="space-y-2">
@@ -238,17 +295,6 @@ const DetailProduct = () => {
               <div>
                 <h1 className="text-2xl font-bold">Viết đánh giá của bạn</h1>
                 <div className="mt-2 space-y-2">
-                  {/* <select
-                    value={rating}
-                    onChange={(e) => setRating(Number(e.target.value))}
-                    className="border border-gray-300 p-2 rounded-lg w-full"
-                  >
-                    {[5, 4, 3, 2, 1].map((num) => (
-                      <option key={num} value={num}>
-                        {"★".repeat(num)}
-                      </option>
-                    ))}
-                  </select> */}
                   <textarea
                     placeholder="Nhập đánh giá của bạn"
                     value={review}
@@ -269,38 +315,11 @@ const DetailProduct = () => {
           </TabPanel>
         </Tabs>
 
-        {/* <div className="mx-[100px]">
-          <h1 className="text-3xl font-bold">Mô tả sản phẩm</h1>
-          <p className="text-xl">
-            Giày Air Jordan 1 Low ‘White Dune Red’ FJ3459-160 đem đến sự tinh tế
-            và phong cách đặc trưng của dòng sản phẩm Jordan. Với chất liệu da
-            cao cấp và thiết kế độc đáo, đôi giày này kết hợp màu trắng trang
-            nhã với điểm nhấn màu đỏ dune tạo nên sự cá tính và thu hút. Thiết
-            kế đa lớp của phần thân giày tạo độ sâu và phong phú trong hình
-            thức. Logo Jumpman nổi bật ở ngực giày và mũi giày, thêm phần sang
-            trọng và đẳng cấp cho đôi giày này. Đế được thiết kế để cung cấp sự
-            thoải mái và bền bỉ, phản ánh sự chăm chỉ trong sản xuất. Với màu
-            sắc và kiểu dáng độc đáo, Air Jordan 1 Low ‘White Dune Red’
-            FJ3459-160 là sự lựa chọn lý tưởng cho những người ưa chuộng phong
-            cách thể thao và đường phố. Sự kết hợp hoàn hảo giữa phong cách và
-            tiện ích, đôi giày này là điểm nhấn thú vị trong bộ sưu tập sneaker
-            của bạn.
-          </p>
-        </div> */}
         <div>
           <h1 className="text-3xl font-bold mt-5">Sản phẩm liên quan</h1>
-          <Carousel responsive={responsive}>
-            {relateProducts.map((item, key) => (
-              <div key={key}>
-                <ProductCard
-                  img={item.img}
-                  name={item.name}
-                  price={item.price}
-                  oldprice={item.price}
-                />
-              </div>
-            ))}
-          </Carousel>
+          {/* <Carousel responsive={responsive}>
+
+          </Carousel> */}
         </div>
       </div>
     </>
