@@ -94,7 +94,6 @@ const Header = ({ hasAddToBanner = true }) => {
   return (
     <>
       <div
-        id="mainHeader"
         className="bg-white max-w-screen-xl min-h-[100px] mx-auto mt-8 flex justify-between rounded-xl"
       >
         <div className="max-w-full p-4">

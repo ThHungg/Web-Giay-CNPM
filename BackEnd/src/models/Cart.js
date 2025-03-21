@@ -6,7 +6,7 @@ const cartSchema = new mongoose.Schema(
         products: [
             {
                 productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", require: true },
-                quantity: { type: Number, require: true, min: 1 }, // Sửa `quantiy` thành `quantity`
+                quantity: { type: Number, require: true, min: 1 },
                 size: { type: Number },
                 price: { type: Number }
             }

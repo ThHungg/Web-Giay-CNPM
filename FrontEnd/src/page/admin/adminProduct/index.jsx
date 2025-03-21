@@ -453,6 +453,8 @@ const AdminProduct = () => {
                     <option value="">Chọn thương hiệu</option>
                     <option>Nike</option>
                     <option>Adidas</option>
+                    <option>Puma</option>
+                    <option>Vans</option>
                   </select>
                 </div>
 

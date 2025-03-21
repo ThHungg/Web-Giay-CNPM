@@ -83,7 +83,7 @@ const getCart = async (req, res) => {
         const cart = await cartService.getCart(userId);
         console.log("Dữ liệu giỏ hàng:", cart);
 
-        if (!cart || !cart.data) { // Kiểm tra nếu giỏ hàng null
+        if (!cart || !cart.data) {
             return res.status(200).json({
                 status: "Success",
                 message: "Giỏ hàng trống",
@@ -109,16 +109,49 @@ const getCart = async (req, res) => {
 
 const removeFromCart = async (req, res) => {
     try {
-        const { userId, productId, size } = req.body;
-        if (!userId || !productId || !size) {
-            return res.status(400).json({ status: "ERR", message: "Vui lòng nhập đầy đủ thông tin" });
+        const { userId, productId } = req.body;
+        console.log("Request Body:", req.body);
+
+        if (!userId || !productId) {
+            return res.status(400).json({
+                status: "ERR",
+                message: "Thiếu userId hoặc productId"
+            });
         }
 
-        const result = await cartService.removeFromCart(userId, productId, size);
-        return res.status(200).json(result);
+        const updatedCart = await cartService.removeFromCart(userId, productId);
+
+        if (!updatedCart) {
+            return res.status(404).json({
+                status: "ERR",
+                message: "Giỏ hàng không tồn tại hoặc sản phẩm không có trong giỏ"
+            });
+        }
+
+        res.json({
+            message: "Xóa sản phẩm khỏi giỏ hàng thành công",
+            cart: updatedCart
+        });
     } catch (e) {
-        return res.status(500).json({ status: "ERR", message: e.message });
+        res.status(500).json({
+            message: "Lỗi hệ thống vui lòng tử lại sau"
+        });
     }
 };
 
-module.exports = { addToCart, getCart, removeFromCart }
+const updateCart = async (req, res) => {
+    try {
+        const { userId, productId, quantity } = req.body;
+        const updatedCart = await cartService.updateCart(userId, productId, quantity);
+        res.json({
+            status: "OK",
+            nessage: "Cập nhật thành công",
+            cart: updateCart
+        })
+    } catch (e) {
+        res.status(500).json({
+            message: "Lỗi hệ thống vui lòng tử lại sau"
+        });
+    }
+}
+module.exports = { addToCart, getCart, removeFromCart, updateCart }
