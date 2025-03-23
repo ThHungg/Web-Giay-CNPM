@@ -319,6 +319,11 @@ const AdminProduct = () => {
                     <option value="">Chọn thương hiệu</option>
                     <option>Nike</option>
                     <option>Adidas</option>
+                    <option>Puma</option>
+                    <option>Vans</option>
+                    <option>Air Jordan</option>
+                    <option>MLB</option>
+                    <option>Converse</option>
                   </select>
                 </div>
 
@@ -484,6 +489,9 @@ const AdminProduct = () => {
                     <option>Adidas</option>
                     <option>Puma</option>
                     <option>Vans</option>
+                    <option>Air Jordan</option>
+                    <option>MLB</option>
+                    <option>Converse</option>
                   </select>
                 </div>
 
@@ -644,6 +652,35 @@ const AdminProduct = () => {
           />
         </div>
       </div>
+      {/* <div className="flex gap-3 mt-5">
+        <div className="w-[200px]">
+          <select className="border w-full p-2 rounded-lg" name="brand">
+            <option value="">Thương hiệu</option>
+            <option>Nike</option>
+            <option>Adidas</option>
+            <option>Puma</option>
+            <option>Vans</option>
+          </select>
+        </div>
+        <div className="w-[200px]">
+          <select className="border w-full p-2 rounded-lg" name="brand">
+            <option value="">Giá</option>
+            <option>Nike</option>
+            <option>Adidas</option>
+            <option>Puma</option>
+            <option>Vans</option>
+          </select>
+        </div>
+        <div className="w-[200px]">
+          <select className="border w-full p-2 rounded-lg" name="brand">
+            <option value="">Trạng thái</option>
+            <option>Nike</option>
+            <option>Adidas</option>
+            <option>Puma</option>
+            <option>Vans</option>
+          </select>
+        </div>
+      </div> */}
       <div className="bg-white mt-5 mr-2">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200">

@@ -18,6 +18,7 @@ const Products = () => {
     retryDelay: 1000,
   });
 
+
   const brands = ["Adidas", "Nike", "Puma", "Jordan", "Gucci"];
   const sorts = [
     "Giá thấp đến cao",

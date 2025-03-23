@@ -60,7 +60,12 @@ const updateOrderStatus = (orderId, status) => {
 }
 
 const getAllOrder = () => {
-    return new Promise(async (resolve))
+    return new Promise(async (resolve, reject) => {
+        try {
+        } catch (e) {
+            
+        }
+    })
 }
 
 
