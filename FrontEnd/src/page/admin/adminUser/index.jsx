@@ -1,5 +1,5 @@
-import { memo, use, useEffect, useMemo, useState } from "react";
-import * as userSerivces from "../../../services/userServices";
+import { memo, useEffect, useMemo, useState } from "react";
+import * as userServices from "../../../services/userServices";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Form } from "antd";
 import { useMutationHooks } from "../../../hooks/useMutation";
@@ -18,11 +18,11 @@ const AdminUser = () => {
   const itemsPerPage = 10;
 
   const getAllUser = async () => {
-    const res = await userSerivces.getAllUser(user?.access_token);
+    const res = await userServices.getAllUser(user?.access_token);
     return res;
   };
 
-  const { isLosading, data: users } = useQuery({
+  const { data: users } = useQuery({
     queryKey: ["user"],
     queryFn: getAllUser,
     retry: 3,
@@ -46,7 +46,7 @@ const AdminUser = () => {
 
   const mutation = useMutationHooks(async (data) => {
     const { name, phone, email, password } = data;
-    const res = await userSerivces.registerUser(data);
+    const res = await userServices.registerUser(data);
     return res;
   });
 
@@ -79,7 +79,7 @@ const AdminUser = () => {
   };
 
   const fetchGetDetailsUser = async (rowSelected) => {
-    const res = await userSerivces.getDetailsUser(rowSelected);
+    const res = await userServices.getDetailsUser(rowSelected);
     if (res?.data) {
       setStateUserDetails({
         name: res?.data?.name,
@@ -108,7 +108,7 @@ const AdminUser = () => {
   const mutationUpdate = useMutationHooks(async (data) => {
     console.log("Data gửi lên:", data); // Kiểm tra dữ liệu trước khi gọi API
     const { id, token, ...rests } = data;
-    const res = await userSerivces.updateUser(id, token, rests);
+    const res = await userServices.updateUser(id, token, rests);
     console.log(id);
     console.log("Kết quả từ API:", res);
     return res;

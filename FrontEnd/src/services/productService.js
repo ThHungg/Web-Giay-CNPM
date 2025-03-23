@@ -24,3 +24,10 @@ export const updateProduct = async (id, access_token, data) => {
     })
     return res.data
 }
+
+export const reduceStock = async (id, quantity) => {
+    const res = await axios.post(`${process.env.REACT_APP_API_URL}/product/reduceStock`, {
+        id, quantity
+    })
+    return res.data
+}

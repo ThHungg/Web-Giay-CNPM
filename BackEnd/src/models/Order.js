@@ -2,50 +2,38 @@ const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema(
     {
-        orderItems: [
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        items: [
             {
-                name: { type: String, required: true },
-                amount: { type: Number, required: true }, 
-                image: { type: String, required: true },
+                productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+                quantity: { type: Number, required: true, min: 1 },
                 price: { type: Number, required: true },
-                product: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Product',
-                    required: true,
-                },
-            },
+            }
         ],
-        shippingAddress: {
-            fullName: { type: String, required: true },
-            address: { type: String, required: true },
-            city: { type: String, required: true },
-            phone: { type: Number, required: true }, 
-        },
-        paymentMethod: { type: String, required: true },
-        paymentStatus: {
-            type: String,
-            enum: ['Chưa thanh toán', 'Đã thanh toán', 'Hoàn tiền'],
-            default: 'Chưa thanh toán',
-        },
-        itemsPrice: { type: Number, required: true }, 
-        shippingPrice: { type: Number, required: true }, 
-        totalPrice: { type: Number, required: true }, 
-        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+        total: { type: Number, required: true },
         status: {
             type: String,
-            enum: ['Chờ xác nhận', 'Đang giao', 'Đã giao', 'Đã hủy'],
-            default: 'Chờ xác nhận',
+            enum: ["Chờ xác nhận", "Đã xác nhận", "Đang giao", "Đã giao", "Đã hủy"],
+            default: "Chờ xác nhận"
         },
-        notes: { type: String, default: '' },
+        shippingAddress: {
+            street: { type: String, required: true },
+            province: { type: String, required: true },
+            district: { type: String, required: true },
+            ward: { type: String, required: true }
+        },
+        paymentMethod: { type: String, required: true, enum: ["COD", "Banking"] },
         isPaid: { type: Boolean, default: false },
         paidAt: { type: Date },
-        isDelivered: { type: Boolean, default: false },
-        deliveredAt: { type: Date },
+        note: { type: String, default: "" },
+        customerInfo: {
+            nameReceiver: { type: String, required: true },
+            phoneReceiver: { type: String, required: true },
+            emailReceiver: { type: String, required: true },
+        }
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
-const Order = mongoose.model('Order', orderSchema);
+const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;

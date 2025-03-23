@@ -30,3 +30,10 @@ export const updateCart = async (userId, productId, quantity) => {
     })
     return res.data
 }
+
+export const clearCart = async (userId) => {
+    const res = await axios.post(`${process.env.REACT_APP_API_URL}/cart/clear-cart`, {
+        userId
+    })
+    return res.data
+}

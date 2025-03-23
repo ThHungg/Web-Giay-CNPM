@@ -8,11 +8,13 @@ import "react-tabs/style/react-tabs.css";
 import StarRating from "../../../component/StarRaint/index.jsx";
 import * as productService from "../../../services/productService";
 import * as cartService from "../../../services/cartService.js";
+import * as orderService from "../../../services/orderService.js";
 import { useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification/index.js";
 import { useMutationHooks } from "../../../hooks/useMutation.js";
+import Loading from "../../../component/Loading/index.js";
 
 const DetailProduct = () => {
   const { id } = useParams();
@@ -41,6 +43,9 @@ const DetailProduct = () => {
   );
 
   const handleAddToCart = () => {
+    if (!selectedSize) {
+      toast("Vui lòng chọn size!");
+    }
     mutationAddToCart.mutate({
       userId: userId,
       productId: id,
@@ -55,10 +60,7 @@ const DetailProduct = () => {
 
   useEffect(() => {
     if (mutationAddToCart.isSuccess) {
-      console.log("Thêm vào giỏ hàng thành công:", mutationAddToCart.data);
-    }
-    if (mutationAddToCart.isError) {
-      console.error("Lỗi khi thêm vào giỏ hàng:", mutationAddToCart.error);
+      toast("Thêm vào giỏ hàng thành công:", mutationAddToCart.data);
     }
   }, [mutationAddToCart.isSuccess, mutationAddToCart.isError]);
 
@@ -117,6 +119,43 @@ const DetailProduct = () => {
     }
   }, [id]);
 
+  // const handleBuyNow = async () => {
+  //   if (!selectedSize) {
+  //     toast("Vui lòng chọn size");
+  //     return;
+  //   }
+
+  //   const orderData = {
+  //     userId: userId, // Giữ nguyên userId không lồng thêm object
+  //     items: [
+  //       {
+  //         productId: id,
+  //         size: selectedSize,
+  //         quantity: quantity,
+  //         price:
+  //           productDetail.discount > 0
+  //             ? productDetail.price * (1 - productDetail.discount / 100)
+  //             : productDetail.price,
+  //       },
+  //     ],
+  //   };
+
+  //   try {
+  //     const res = await orderService.createOrder(
+  //       orderData.userId,
+  //       orderData.items
+  //     );
+  //     if (res.success) {
+  //       toast("Đặt hàng thành công!");
+  //     } else {
+  //       toast("Đặt hàng thất bại, vui lòng thử lại!");
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi khi đặt hàng:", error);
+  //     toast("Lỗi kết nối, vui lòng thử lại!");
+  //   }
+  // };
+
   const [name, setName] = useState("");
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
@@ -138,26 +177,6 @@ const DetailProduct = () => {
       text: "Giao hàng lâu, liên hệ hỗ trợ nhưng phản hồi chậm.",
     },
   ];
-
-  // const responsive = {
-  //   superLargeDesktop: {
-  //     // the naming can be any, depends on you.
-  //     breakpoint: { max: 4000, min: 3000 },
-  //     items: 5,
-  //   },
-  //   desktop: {
-  //     breakpoint: { max: 3000, min: 1024 },
-  //     items: 4,
-  //   },
-  //   tablet: {
-  //     breakpoint: { max: 1024, min: 464 },
-  //     items: 2,
-  //   },
-  //   mobile: {
-  //     breakpoint: { max: 464, min: 0 },
-  //     items: 1,
-  //   },
-  // };
   return (
     <>
       <ToastNotification />
@@ -245,6 +264,7 @@ const DetailProduct = () => {
             <button
               type="submit"
               className="w-60 h-14 bg-black text-white mt-2 rounded-md shadow-sm text-xl font-bold"
+              // onClick={handleBuyNow}
             >
               Mua ngay
             </button>

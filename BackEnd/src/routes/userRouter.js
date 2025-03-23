@@ -11,6 +11,7 @@ router.delete('/delete-user/:id', authMiddleware, userController.deleteUser);
 router.get('/getAll', authMiddleware, userController.getAllUser);
 router.get('/get-details/:id', userController.getDetailsUser);
 router.post('/refresh-token', userController.refreshToken);
+router.post('/forgot-password', userController.forgotPassword);
 
 router.get('/', (req, res) => {
     res.status(200).json({ message: "User API is working!" });

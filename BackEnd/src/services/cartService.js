@@ -159,6 +159,28 @@ const updateCart = (userId, productId, quantity) => {
     })
 }
 
+const clearCart = (userId) => {
+    new Promise(async (resolve, reject) => {
+        try {
+            const cart = await Cart.findOne({ userId })
+
+            if (!cart) {
+                return reject({
+                    status: "ERR",
+                    message: "Giỏ hàng không tồn tại"
+                })
+            }
+            cart.products = [];
+            cart.totalPrice = 0;
+
+            await cart.save();
+            resolve(cart)
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 
 
-module.exports = { addToCart, getCart, removeFromCart, updateCart };
+
+module.exports = { addToCart, getCart, removeFromCart, updateCart, clearCart };

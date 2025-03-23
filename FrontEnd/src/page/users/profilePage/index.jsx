@@ -68,15 +68,6 @@ const ProfilePage = () => {
     const userId = getUserIdFromToken(user);
     mutation.mutate({ id: userId, email, name, phone });
   };
-
-  const profile = [
-    {
-      img: "https://www.pngmart.com/files/23/Profile-PNG-Photo.png",
-      name: "Đặng Thành Hưng",
-      phone: "0348910968",
-      email: "dth052k4@gmail.com",
-    },
-  ];
   return (
     <>
       <ToastNotification />

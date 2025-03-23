@@ -46,6 +46,16 @@ const AdminProduct = () => {
     },
   });
 
+  const [stateProductDetails, setStateProductDetails] = useState({
+    name: "",
+    price: "",
+    description: "",
+    brand: "",
+    image: "",
+    discount: "",
+    sizeStock: [],
+  });
+
   const mutation = useMutationHooks(async (data) => {
     const { name, price, description, brand, image, discount, sizeStock } =
       data;
@@ -119,6 +129,35 @@ const AdminProduct = () => {
     setSizeStock([...sizeStock, { size: "", stock: "" }]);
   };
 
+  const handleSizeStockChangeDetails = (index, field, value) => {
+    setStateProductDetails((prev) => ({
+      ...prev,
+      sizeStock: prev.sizeStock.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      ),
+    }));
+  };
+
+  const addSizeFieldDetails = (e) => {
+    e.preventDefault();
+    setStateProductDetails((prev) => ({
+      ...prev,
+      sizeStock: [...prev.sizeStock, { size: "", stock: "" }],
+    }));
+  };
+
+  const apartSizeFieldDetails = (id, e) => {
+    e.preventDefault();
+    if (stateProductDetails.sizeStock.length > 1) {
+      setStateProductDetails((prev) => ({
+        ...prev,
+        sizeStock: prev.sizeStock.filter((item) => item.id !== id),
+      }));
+    } else {
+      toast("Bạn phải để lại ít nhất một size");
+    }
+  };
+
   const apartSizeField = (id, e) => {
     e.preventDefault();
     if (sizeList.length > 1) {
@@ -126,19 +165,9 @@ const AdminProduct = () => {
       setSizeList(sizeList.filter((item) => item.id !== id));
       setSizeStock(sizeStock.filter((_, index) => index !== indexToRemove));
     } else {
-      alert("Bạn phải để lại ít nhất một size");
+      toast("Bạn phải để lại ít nhất một size");
     }
   };
-
-  const [stateProductDetails, setStateProductDetails] = useState({
-    name: "",
-    price: "",
-    description: "",
-    brand: "",
-    image: "",
-    discount: "",
-    sizeStock: [],
-  });
 
   const handleOnchangeDetails = (e) => {
     setStateProductDetails({
@@ -192,16 +221,16 @@ const AdminProduct = () => {
   } = mutationUpdate;
   console.log("dataUpdated", dataUpdated);
 
-    useEffect(() => {
-      if (isSuccessUpdated) {
-        toast.success("Cập nhật thành công");
-        mutationUpdate.reset();
-        setShowUpdateModal(false);
-      } else if (isErrorUpdated) {
-        toast.error("Thêm thất bại");
-        mutationUpdate.reset();
-      }
-    }, [isSuccessUpdated, isErrorUpdated]);
+  useEffect(() => {
+    if (isSuccessUpdated) {
+      toast.success("Cập nhật thành công");
+      mutationUpdate.reset();
+      setShowUpdateModal(false);
+    } else if (isErrorUpdated) {
+      toast.error("Thêm thất bại");
+      mutationUpdate.reset();
+    }
+  }, [isSuccessUpdated, isErrorUpdated]);
 
   const onUpdateProduct = () => {
     setShowUpdateModal(false);
@@ -502,7 +531,7 @@ const AdminProduct = () => {
                       <p className="text-xl font-bold">Số lượng</p>
                       <button
                         className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
-                        onClick={addSizeField}
+                        onClick={addSizeFieldDetails}
                       >
                         +
                       </button>
@@ -515,7 +544,11 @@ const AdminProduct = () => {
                         className="border w-full p-2 rounded-lg"
                         value={item.size}
                         onChange={(e) =>
-                          handleSizeStockChange(index, "size", e.target.value)
+                          handleSizeStockChangeDetails(
+                            index,
+                            "size",
+                            e.target.value
+                          )
                         }
                       >
                         <option value="">Chọn size</option>
@@ -534,13 +567,19 @@ const AdminProduct = () => {
                           className="border w-full p-2 rounded-lg"
                           value={item.stock}
                           onChange={(e) =>
-                            handleSizeStockChange(
+                            handleSizeStockChangeDetails(
                               index,
                               "stock",
                               e.target.value
                             )
                           }
                         />
+                        <button
+                          className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
+                          onClick={(e) => apartSizeFieldDetails(item.id, e)}
+                        >
+                          -
+                        </button>
                       </div>
                     </div>
                   ))}

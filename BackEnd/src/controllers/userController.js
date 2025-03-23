@@ -169,6 +169,27 @@ const logoutUser = async (req, res) => {
     }
 }
 
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(200).json({
+                status: "ERR",
+                message: "Vui lòng nhập email"
+            })
+        }
+        const response = await userService.forgotPassword(email)
+        return res.status(200).json(
+            response
+        )
+    } catch (e) {
+        console.log(e)
+        return res.status(500).json({
+            message: "Lỗi hệ thống thử lại sau"
+        })
+    }
+}
+
 
 module.exports = {
     createUser,
@@ -178,5 +199,6 @@ module.exports = {
     getAllUser,
     getDetailsUser,
     refreshToken,
-    logoutUser
+    logoutUser,
+    forgotPassword
 };

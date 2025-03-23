@@ -60,7 +60,8 @@ const ShoppingCartPage = () => {
   return (
     <>
       <div className="grid grid-cols-4 max-w-screen-xl mx-auto mt-5">
-        {cartData?.cart?.data?.products.length === 0 ? (
+        {!cartData?.cart?.data?.products ||
+        cartData?.cart?.data?.products.length === 0 ? (
           <div className="text-center col-span-4 text-2xl font-bold text-gray-500">
             Giỏ hàng trống 🛒
           </div>

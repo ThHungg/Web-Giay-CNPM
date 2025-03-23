@@ -5,13 +5,7 @@ const productSchema = new mongoose.Schema(
         name: { type: String, required: true },
         brand: { type: String, required: true },
         image: { type: String, required: true },
-
-        // images: [{ type: String }],
-        // type: { type: String },
-        // color: { type: String },
-
         price: { type: Number },
-        // oldPrice: { type: Number },
         discount: { type: Number },
         description: { type: String, required: true },
         sizeStock: [
@@ -20,6 +14,24 @@ const productSchema = new mongoose.Schema(
                 stock: { type: Number, required: true, default: 0, min: 0 },
             },
         ],
+    },
+    {
+        timestamps: true,
+    }
+);
+
+const Product = mongoose.model('Product', productSchema);
+
+module.exports = Product;
+
+
+        // images: [{ type: String }],
+        // type: { type: String },
+        // color: { type: String },
+
+        // oldPrice: { type: Number },
+
+
         // deletedAt: { type: Date, default: null }
 
         // totalStock: { type: Number, default: 0 }, 
@@ -62,13 +74,3 @@ const productSchema = new mongoose.Schema(
         //     }
         // ],
         // status: { type: String, enum: ['Còn hàng', 'Hết hàng'], default: 'Còn hàng' },
-
-    },
-    {
-        timestamps: true,
-    }
-);
-
-const Product = mongoose.model('Product', productSchema);
-
-module.exports = Product;

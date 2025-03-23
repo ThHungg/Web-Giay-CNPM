@@ -18,8 +18,6 @@ const Products = () => {
     retryDelay: 1000,
   });
 
-  const shoes = shoesData.shoes;
-
   const brands = ["Adidas", "Nike", "Puma", "Jordan", "Gucci"];
   const sorts = [
     "Giá thấp đến cao",
@@ -30,13 +28,17 @@ const Products = () => {
     "Đang giảm giá",
   ];
 
-  const itemsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(shoes.length / itemsPerPage);
-  const currenProducts = shoes.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const itemsPerPage = 12;
+  const totalPages = products?.data
+    ? Math.ceil(products.data.length / itemsPerPage)
+    : 0;
+  const currentProducts =
+    products?.data?.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    ) || [];
+
   return (
     <>
       <div className="max-w-screen-xl mx-auto grid grid-cols-5">
@@ -82,31 +84,7 @@ const Products = () => {
 
         <div className="col-span-4">
           <div className="grid grid-cols-3">
-            {/* {currenProducts.map((item, key) => (
-                <div className="" key={key}>
-                  <ProductCard
-                    name={item.name}
-                    img={item.img}
-                    price={item.price}
-                    oldprice={item.oldprice}
-                  />
-                </div>
-              ))} */}
-
-            {/* {currenProducts.map((item, key) => (
-              <Link to={`${ROUTERS.USER.DETAILPRODUCT}/${item.id}`} key={key}>
-                <div className="">
-                  <ProductCard
-                    name={item.name}
-                    img={item.img}
-                    price={item.price}
-                    oldprice={item.oldprice}
-                  />
-                </div>
-              </Link>
-            ))} */}
-
-            {products?.data?.map((product) => {
+            {currentProducts.map((product) => {
               return (
                 <div className="">
                   <Link to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}>
@@ -124,25 +102,25 @@ const Products = () => {
             })}
           </div>
           {/* Pagination */}
-          <button
-            className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
-            onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Trước
-          </button>
-          <span className="px-4 py-2">
-            {currentPage}/{totalPages}
-          </span>
-          <button
-            className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
-            onClick={() =>
-              setCurrentPage((page) => Math.min(page + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-          >
-            Sau
-          </button>
+          <div className="mt-5 flex justify-end">
+            <button
+              className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Trước
+            </button>
+            <span className="px-4 py-2">
+              {currentPage}/{totalPages}
+            </span>
+            <button
+              className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Sau
+            </button>
+          </div>
         </div>
       </div>
     </>

@@ -1,6 +1,9 @@
 const User = require("../models/User")
 const bcrypt = require("bcryptjs");
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
+require("dotenv").config();
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
@@ -163,6 +166,61 @@ const getDetailsUser = (id) => {
     });
 };
 
+const forgotPassword = (email) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await User.findOne({ email });
+            if (!user) {
+                return resolve({
+                    status: "ERR",
+                    message: "Email không tồn tại",
+                });
+            }
+
+            const resetToken = crypto.randomBytes(32).toString("hex");
+            user.resetPasswordToken = resetToken;
+            user.resetPasswordExpires = Date.now() + 3600000;
+            console.log("Reset token:", resetToken);
+
+
+            await user.save();
+
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+            
+
+
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: "Yêu cầu đặt lại mật khẩu",
+                text: `Nhấn vào đường link để đặt lại mật khẩu: http://yourfrontend.com/reset-password/${resetToken}`,
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve({
+                    status: "OK",
+                    message: "Email đặt lại mật khẩu đã được gửi!",
+                });
+            });
+        } catch (e) {
+            console.log(e)
+            reject({
+                status: "ERR",
+                message: "Lỗi hệ thống, thử lại sau",
+            });
+        }
+    });
+};
+
 
 
 module.exports = {
@@ -172,4 +230,5 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
+    forgotPassword
 };

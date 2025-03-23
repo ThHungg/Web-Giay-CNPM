@@ -4,9 +4,9 @@ import Footer from "../footer";
 
 const MasterLayout = ({ children, hasAddToBanner = false }) => {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Header hasAddToBanner={hasAddToBanner} />
-      {children}
+      <main className="flex-grow">{children}</main>
       <Footer />
     </div>
   );

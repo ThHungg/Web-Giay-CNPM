@@ -11,14 +11,14 @@ const ProductsCard = ({ img, name, price, oldprice, discount }) => {
       </div>
 
       <div className="flex flex-col items-center text-center space-y-2">
-        <ul className="flex gap-3 text-[29px]">
+        {/* <ul className="flex gap-3 text-[29px]">
           <li className="hover:bg-red-100 p-2 rounded-lg cursor-pointer">
             <AiOutlineEye />
           </li>
           <li className="hover:bg-red-100 p-2 rounded-lg cursor-pointer">
             <AiOutlineShoppingCart />
           </li>
-        </ul>
+        </ul> */}
 
         <div className="space-y-1">
           <div className="flex gap-2">

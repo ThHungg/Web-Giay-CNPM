@@ -1,17 +1,17 @@
-const product = require("../models/Product")
+const Product = require("../models/Product")
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
         const { name, brand, image, price, description, sizeStock, discount } = newProduct;
         try {
-            const checkProduct = await product.findOne({ name })
+            const checkProduct = await Product.findOne({ name })
             if (checkProduct) {
                 return resolve({
                     status: 'Ok',
                     message: 'Tên sản phẩm đã tồn tại'
                 });
             }
-            const createProduct = await product.create({
+            const createProduct = await Product.create({
                 // name, brand, image, images, type, price, oldPrice, discount, description,
                 // sizeStock, stock, totalstock, category, rating, reviews, status
                 name, brand, image, price, description, sizeStock, discount
@@ -63,7 +63,7 @@ const createProduct = (newProduct) => {
 const updateProduct = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const checkProduct = await product.findById(id);
+            const checkProduct = await Product.findById(id);
             if (checkProduct === null) {
                 resolve({
                     status: "Ok",
@@ -71,7 +71,7 @@ const updateProduct = (id, data) => {
                 })
             }
 
-            const updatedProduct = await product.findByIdAndUpdate(id, data, { new: true })
+            const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true })
 
             resolve({
                 status: "Ok",
@@ -87,7 +87,7 @@ const updateProduct = (id, data) => {
 const deleteProduct = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const checkProduct = await product.findById(id);
+            const checkProduct = await Product.findById(id);
             if (checkProduct === null) {
                 resolve({
                     status: "Ok",
@@ -109,10 +109,10 @@ const deleteProduct = (id) => {
 const getAllProduct = (limit, page, sort, filter) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const totalProduct = await product.countDocuments()
+            const totalProduct = await Product.countDocuments()
             if (filter) {
                 const label = filter[0];
-                const allObjectFilter = await product.find({ [label]: { '$regex': filter[1], '$options': "i" } }).limit(limit).skip(page * limit)
+                const allObjectFilter = await Product.find({ [label]: { '$regex': filter[1], '$options': "i" } }).limit(limit).skip(page * limit)
                 resolve({
                     status: "Ok",
                     message: "Success",
@@ -125,7 +125,7 @@ const getAllProduct = (limit, page, sort, filter) => {
             if (sort) {
                 const objectSort = {}
                 objectSort[sort[1]] = sort[0]
-                const allProductSort = await product.find().limit(limit).skip(page * limit).sort(objectSort)
+                const allProductSort = await Product.find().limit(limit).skip(page * limit).sort(objectSort)
                 resolve({
                     status: "Ok",
                     message: "Sucess",
@@ -135,7 +135,7 @@ const getAllProduct = (limit, page, sort, filter) => {
                     totalPage: Math.ceil(totalProduct / limit),
                 })
             }
-            const allProduct = await product.find().limit(limit).skip(page * limit)
+            const allProduct = await Product.find().limit(limit).skip(page * limit)
             resolve({
                 status: "Ok",
                 message: "Success",
@@ -153,7 +153,7 @@ const getAllProduct = (limit, page, sort, filter) => {
 const getDetailProduct = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const detailProduct = await product.findById(id);
+            const detailProduct = await Product.findById(id);
             if (detailProduct === null) {
                 resolve({
                     status: "Ok",
