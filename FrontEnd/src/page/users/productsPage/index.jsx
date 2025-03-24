@@ -1,9 +1,7 @@
 import { memo, useState } from "react";
-import ncat1 from "../../../assets/users/img/newcategories/ncat1.jpg";
 import { ProductCard } from "../../../component";
 import { Link } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router";
-import shoesData from "../../../data.json";
 import * as productService from "../../../services/productService";
 import { useQuery } from "@tanstack/react-query";
 const Products = () => {
@@ -18,8 +16,7 @@ const Products = () => {
     retryDelay: 1000,
   });
 
-
-  const brands = ["Adidas", "Nike", "Puma", "Jordan", "Gucci"];
+  const brands = ["Adidas", "Nike", "Vans", "Air Jordan", "MLB", "Converse"];
   const sorts = [
     "Giá thấp đến cao",
     "Giá cao đến thấp",
@@ -30,12 +27,57 @@ const Products = () => {
   ];
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [priceRange, setPriceRange] = useState("");
   const itemsPerPage = 12;
-  const totalPages = products?.data
-    ? Math.ceil(products.data.length / itemsPerPage)
+
+  const handlePriceFilter = (range) => {
+    if (priceRange === range) {
+      setPriceRange(""); // Bỏ chọn bộ lọc
+    } else {
+      setPriceRange(range); // Chọn bộ lọc mới
+    }
+    setCurrentPage(1); // Đặt lại trang khi thay đổi bộ lọc
+  };
+
+  const filterProductsByPrice = (products) => {
+    if (priceRange === "under1M") {
+      return products.filter((product) => product.price < 1000000);
+    }
+    if (priceRange === "1Mto2M") {
+      return products.filter(
+        (product) => product.price >= 1000000 && product.price <= 2000000
+      );
+    }
+    if (priceRange === "2Mto3M") {
+      return products.filter(
+        (product) => product.price >= 2000000 && product.price <= 3000000
+      );
+    }
+    if (priceRange === "above3M") {
+      return products.filter((product) => product.price > 3000000);
+    }
+    return products;
+  };
+
+  const filteredProducts = selectedBrand
+    ? products?.data.filter((product) => product.brand === selectedBrand)
+    : products?.data;
+
+  const handleBrandClick = (selectedBrand) => {
+    setSelectedBrand(selectedBrand);
+    setCurrentPage(1); // Đặt lại trang khi thay đổi thương hiệu
+  };
+
+  // Áp dụng bộ lọc giá sau khi lọc theo thương hiệu
+  const filteredByPrice = filterProductsByPrice(filteredProducts);
+
+  const totalPages = filteredByPrice?.length
+    ? Math.ceil(filteredByPrice.length / itemsPerPage)
     : 0;
+
   const currentProducts =
-    products?.data?.slice(
+    filteredByPrice?.slice(
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     ) || [];
@@ -45,19 +87,78 @@ const Products = () => {
       <div className="max-w-screen-xl mx-auto grid grid-cols-5">
         <div className="col-span-1">
           <div className="">
-            <h1 className="text-2xl font-bold">Thương hiệu</h1>
-            {brands.map((item, key) => (
-              <div
-                className="cursor-pointer bg-white max-w-[180px] m-2 p-1 text-center rounded-xl border-2 hover:font-bold"
-                key={key}
-              >
-                {item}
-              </div>
-            ))}
+            <h1 className="text-2xl font-bold">Thương hiệu:</h1>
+            <select
+              className="border w-full p-2 rounded-lg"
+              name="brand"
+              onClick={(e) => handleBrandClick(e.target.value)}
+            >
+              <option value="">Thương hiệu</option>
+              {brands.map((item, key) => (
+                <option value={item} key={key}>
+                  {item}
+                </option>
+                // <div
+                //   className="cursor-pointer bg-white max-w-[180px] m-2 p-1 text-center rounded-xl border-2 hover:font-bold"
+                //   key={key}
+                // >
+                //   {item}
+                // </div>
+              ))}
+            </select>
           </div>
           <div className="">
-            <h className="text-2xl font-bold">Mức giá</h>
-            <p>Từ: </p>
+            <h className="text-2xl font-bold">Mức giá:</h>
+            <div className="flex gap-4 mt-2 flex-col">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="priceFilter"
+                  value="under1M"
+                  className="w-4 h-4"
+                  onChange={() => handlePriceFilter("under1M")}
+                  checked={priceRange === "under1M"} // Kiểm tra nếu giá trị đang chọn trùng với giá trị của radio
+                />
+                Dưới 1.000.000 đ
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="priceFilter"
+                  value="1Mto2M"
+                  className="w-4 h-4"
+                  onChange={() => handlePriceFilter("1Mto2M")}
+                  checked={priceRange === "1Mto2M"}
+                />
+                1.000.000 đ - 2.000.000 đ
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="priceFilter"
+                  value="2Mto3M"
+                  className="w-4 h-4"
+                  onChange={() => handlePriceFilter("2Mto3M")}
+                  checked={priceRange === "2Mto3M"}
+                />
+                2.000.000 đ - 3.000.000 đ
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="priceFilter"
+                  value="above3M"
+                  className="w-4 h-4"
+                  onChange={() => handlePriceFilter("above3M")}
+                  checked={priceRange === "above3M"}
+                />
+                Trên 3.000.000 đ
+              </label>
+            </div>
+            {/* <p>Từ: </p>
             <input
               type="number"
               min={0}
@@ -68,9 +169,9 @@ const Products = () => {
               type="number"
               min={0}
               className="text-center border-2 my-2 "
-            />
+            /> */}
           </div>
-          <div>
+          {/* <div>
             <h1 className="text-2xl font-bold">Sắp xếp</h1>
             {sorts.map((item, key) => (
               <div
@@ -80,7 +181,7 @@ const Products = () => {
                 {item}
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
 
         <div className="col-span-4">

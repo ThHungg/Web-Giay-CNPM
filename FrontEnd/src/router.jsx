@@ -15,6 +15,7 @@ import RegisterPage from "./page/users/registerPage";
 import AdminUser from "./page/admin/adminUser";
 import { useSelector } from "react-redux";
 import AdminProduct from "./page/admin/adminProduct";
+import AdminOrder from "./page/admin/adminOrder";
 
 const renderUserRouter = () => {
   const userRouter = [
@@ -96,6 +97,10 @@ const renderAdminRouter = () => {
     {
       path: ROUTERS.ADMIN.PRODUCT,
       component: <AdminProduct />,
+    },
+    {
+      path: ROUTERS.ADMIN.ORDER,
+      component: <AdminOrder />,
     },
   ];
   return (

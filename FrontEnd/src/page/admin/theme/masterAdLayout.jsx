@@ -24,7 +24,7 @@ const MasterLayout = ({ children, ...props }) => {
     {
       icon: <CiShoppingCart />,
       title: "Order",
-      // path: ROUTERS.ADMIN.PRODUCT,
+      path: ROUTERS.ADMIN.ORDER,
     },
     {
       icon: <MdDiscount />,

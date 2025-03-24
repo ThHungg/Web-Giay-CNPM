@@ -290,7 +290,7 @@ const DetailProduct = () => {
           </TabList>
 
           <TabPanel>
-            <h2>Description</h2>
+            <h2>{productDetail.description}</h2>
           </TabPanel>
           <TabPanel>
             <div className="grid grid-cols-2 gap-5">

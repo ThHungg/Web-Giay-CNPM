@@ -62,8 +62,38 @@ const updateOrderStatus = (orderId, status) => {
 const getAllOrder = () => {
     return new Promise(async (resolve, reject) => {
         try {
+            const allOrder = await Order.find()
+            resolve({
+                status: "OK",
+                message: "Success",
+                data: allOrder
+            })
         } catch (e) {
-            
+            reject(e)
+        }
+    })
+}
+
+const updateOrder = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkOrder = await Order.findById(id);
+            if (checkOrder === null) {
+                resolve({
+                    status: "OK",
+                    message: "Người dùng không xác định"
+                })
+            }
+
+            const updateOrder = await Order.findByIdAndUpdate(id, data, { new: true })
+
+            resolve({
+                status: "OK",
+                message: "Success",
+                data: updateOrder
+            })
+        } catch (e) {
+            reject(e)
         }
     })
 }
@@ -73,4 +103,6 @@ module.exports = {
     createOrder,
     getAllOrders,
     updateOrderStatus,
+    getAllOrder,
+    updateOrder
 }

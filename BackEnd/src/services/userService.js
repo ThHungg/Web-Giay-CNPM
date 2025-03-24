@@ -82,7 +82,6 @@ const updateUser = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const checkUser = await User.findById(id);
-            console.log('CheckUser', checkUser)
             if (checkUser === null) {
                 resolve({
                     status: "Ok",
@@ -91,7 +90,6 @@ const updateUser = (id, data) => {
             }
 
             const updateUser = await User.findByIdAndUpdate(id, data, { new: true })
-            console.log('updateUser', updateUser)
 
             resolve({
                 status: "Ok",
@@ -220,8 +218,6 @@ const forgotPassword = (email) => {
         }
     });
 };
-
-
 
 module.exports = {
     createUser,

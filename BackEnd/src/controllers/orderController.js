@@ -65,15 +65,36 @@ const getAllOrder = async (req, res) => {
         const response = await orderService.getAllOrder()
         return res.status(200).json(response);
     } catch (e) {
+        console.log(e)
         return res.status(404).json({
             message: "Lỗi hệ thống vui lòng thử lại sau"
         })
     }
 }
 
+const updateOrder = async (req, res) => {
+    try {
+        const orderId = req.params.id
+        const data = req.body;
+        console.log('userId', orderId);
+        if (!userId) {
+            return res.status(200).json({
+                status: "Err",
+                message: 'Người dùng không tồn tại'
+            })
+        }
+        const response = await orderService.updateOrder(orderId, data);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+}
 module.exports = {
     createOrder,
     getAllOrders,
     updateOrderStatus,
     getAllOrder,
+    updateOrder
 };
