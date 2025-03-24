@@ -74,10 +74,9 @@ const getAllOrder = async (req, res) => {
 
 const updateOrder = async (req, res) => {
     try {
-        const orderId = req.params.id
+        const { orderId } = req.params
         const data = req.body;
-        console.log('userId', orderId);
-        if (!userId) {
+        if (!orderId) {
             return res.status(200).json({
                 status: "Err",
                 message: 'Người dùng không tồn tại'
@@ -86,9 +85,28 @@ const updateOrder = async (req, res) => {
         const response = await orderService.updateOrder(orderId, data);
         return res.status(200).json(response);
     } catch (e) {
+        console.log(e)
         return res.status(404).json({
             message: 'Lỗi hệ thống, vui lòng thử lại sau!'
         });
+    }
+}
+
+const getOrdersByUserId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        if (!userId) {
+            return res.status(400).json({
+                status: "ERR",
+                message: "Người dùng không tồn tại"
+            });
+        }
+        const response = await orderService.getOrdersByUserId(userId);
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(500).json({
+            message: "Lỗi hệ thống vui lòng thử lại sau"
+        })
     }
 }
 module.exports = {
@@ -96,5 +114,6 @@ module.exports = {
     getAllOrders,
     updateOrderStatus,
     getAllOrder,
-    updateOrder
+    updateOrder,
+    getOrdersByUserId
 };

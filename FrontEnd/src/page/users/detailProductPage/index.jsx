@@ -195,8 +195,8 @@ const DetailProduct = () => {
               className="h-[80px] w-[80px] object-contain"
             />
           </div>
-          <Tabs>
-            <TabList>
+          <Tabs >
+            <TabList className="flex justify-center">
               <Tab>
                 <h1 className="text-2xl font-bold">Mô tả sản phẩm</h1>
               </Tab>
@@ -359,7 +359,6 @@ const DetailProduct = () => {
         </div>
       </div>
       <div>
-
         {/* <h1 className="text-3xl font-bold mt-5">Sản phẩm liên quan</h1> */}
         {/* <Carousel responsive={responsive}>
           </Carousel> */}

@@ -32,6 +32,7 @@ const AdminProduct = () => {
   const [form] = Form.useForm();
   const [rowSelected, setRowSelected] = useState("");
   const user = useSelector((state) => state.user);
+  const brands = ["Adidas", "Nike", "Vans", "Air Jordan", "MLB", "Converse"];
 
   const [stateProduct, setSateProduct] = useState({
     name: "",
@@ -76,6 +77,8 @@ const AdminProduct = () => {
     if (isSuccess) {
       toast.success("Thêm thành công");
       mutation.reset();
+      fetchProductAll();
+      queryClient.invalidateQueries("products");
       setShowCreateModal(false);
     } else if (isError) {
       toast.error("Thêm thất bại");
@@ -208,7 +211,6 @@ const AdminProduct = () => {
   };
 
   const mutationUpdate = useMutationHooks(async (data) => {
-    console.log(data);
     const { id, token, ...rests } = data;
     return await productService.updateProduct(id, token, rests);
   });
@@ -219,12 +221,13 @@ const AdminProduct = () => {
     isSuccess: isSuccessUpdated,
     isError: isErrorUpdated,
   } = mutationUpdate;
-  console.log("dataUpdated", dataUpdated);
+  // console.log("dataUpdated", dataUpdated);
 
   useEffect(() => {
     if (isSuccessUpdated) {
       toast.success("Cập nhật thành công");
       mutationUpdate.reset();
+
       setShowUpdateModal(false);
     } else if (isErrorUpdated) {
       toast.error("Thêm thất bại");
@@ -289,14 +292,50 @@ const AdminProduct = () => {
   // };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedDiscount, setSelectedDiscount] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  // const itemsPerPage = 10;
 
-  const totalPages = products?.data?.length
-    ? Math.ceil(products.data.length / itemsPerPage)
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      const itemHeight = 45; // Giả sử mỗi sản phẩm cao 150px
+      const availableHeight = window.innerHeight - 200; // Trừ đi header, footer, padding
+      const items = Math.floor(availableHeight / itemHeight); // Tính số sản phẩm tối đa
+      setItemsPerPage(items > 0 ? items : 1); // Đảm bảo ít nhất 1 sản phẩm/trang
+    };
+
+    updateItemsPerPage(); // Gọi khi load trang
+    window.addEventListener("resize", updateItemsPerPage); // Cập nhật khi resize
+
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
+
+  const filteredProducts =
+    products?.data?.filter((product) => {
+      if (selectedBrand && product.brand !== selectedBrand) {
+        return false;
+      }
+      if (selectedDiscount === "discount" && product.discount <= 0) {
+        return false;
+      }
+      if (selectedDiscount === "no-discount" && product.discount > 0) {
+        return false;
+      }
+      if (searchTerm && !product.name.toLowerCase().includes(searchTerm)) {
+        return false;
+      }
+      return true;
+    }) || [];
+
+  const totalPages = filteredProducts.length
+    ? Math.ceil(filteredProducts.length / itemsPerPage)
     : 0;
 
   const currentProducts =
-    products?.data?.slice(
+    filteredProducts.slice(
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     ) || [];
@@ -330,13 +369,11 @@ const AdminProduct = () => {
                     onChange={handleOnchange}
                   >
                     <option value="">Chọn thương hiệu</option>
-                    <option>Nike</option>
-                    <option>Adidas</option>
-                    <option>Puma</option>
-                    <option>Vans</option>
-                    <option>Air Jordan</option>
-                    <option>MLB</option>
-                    <option>Converse</option>
+                    {brands.map((item, key) => (
+                      <option value={item} key={key}>
+                        {item}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -401,13 +438,17 @@ const AdminProduct = () => {
                         }
                       >
                         <option value="">Chọn size</option>
-                        <option value="36">36</option>
-                        <option value="37">37</option>
-                        <option value="38">38</option>
-                        <option value="39">39</option>
-                        <option value="40">40</option>
-                        <option value="41">41</option>
-                        <option value="42">42</option>
+                        {[36, 37, 38, 39, 40, 41, 42].map((size) => (
+                          <option
+                            key={size}
+                            value={size}
+                            disabled={sizeStock.some(
+                              (item) => item.size === String(size)
+                            )}
+                          >
+                            {size}
+                          </option>
+                        ))}
                       </select>
                       <div className="flex gap-x-2">
                         <input
@@ -498,13 +539,11 @@ const AdminProduct = () => {
                     onChange={handleOnchangeDetails}
                   >
                     <option value="">Chọn thương hiệu</option>
-                    <option>Nike</option>
-                    <option>Adidas</option>
-                    <option>Puma</option>
-                    <option>Vans</option>
-                    <option>Air Jordan</option>
-                    <option>MLB</option>
-                    <option>Converse</option>
+                    {brands.map((item, key) => (
+                      <option value={item} key={key}>
+                        {item}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
@@ -573,13 +612,17 @@ const AdminProduct = () => {
                         }
                       >
                         <option value="">Chọn size</option>
-                        <option value="36">36</option>
-                        <option value="37">37</option>
-                        <option value="38">38</option>
-                        <option value="39">39</option>
-                        <option value="40">40</option>
-                        <option value="41">41</option>
-                        <option value="42">42</option>
+                        {[36, 37, 38, 39, 40, 41, 42].map((size) => (
+                          <option
+                            key={size}
+                            value={size}
+                            disabled={sizeStock.some(
+                              (item) => item.size === String(size)
+                            )}
+                          >
+                            {size}
+                          </option>
+                        ))}
                       </select>
                       <div className="flex gap-x-2">
                         <input
@@ -643,62 +686,76 @@ const AdminProduct = () => {
 
   return (
     <>
-      <div className="flex justify-between m-4">
-        <h1 className="text-2xl font-bold">Product</h1>
-        <button
-          className="px-4 py-2 bg-black text-white rounded-lg text-xl"
-          onClick={() => {
-            setShowCreateModal(true);
-          }}
-        >
-          Create
-        </button>
-      </div>
-      <div className="mx-20">
-        <div className="px-4 h-20 py-4 bg-white w-full shadow rounded-lg">
-          <input
-            type="search"
-            className="w-full h-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-            placeholder="Tìm kiếm sản phẩm"
-            // value={searchTerm}
-            // onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      {/* Lọc tạo tìm  start*/}
+      <div className="flex justify-between items-center mt-3">
+        <div className="flex gap-3 mt-5">
+          {/* brands */}
+          <div className="w-[200px]">
+            <select
+              className="border w-full p-2 rounded-lg"
+              name="brand"
+              onChange={(e) => setSelectedBrand(e.target.value)}
+            >
+              <option value="">Thương hiệu</option>
+              {brands.map((item, key) => (
+                <option value={item} key={key}>
+                  {item}
+                </option>
+              ))}
+              {/* <option>Nike</option>
+              <option>Adidas</option>
+              <option>Puma</option>
+              <option>Vans</option> */}
+            </select>
+          </div>
+          {/* discount */}
+          <div className="w-[200px]">
+            <select
+              className="border w-full p-2 rounded-lg"
+              name="discount"
+              onChange={(e) => setSelectedDiscount(e.target.value)}
+            >
+              <option value="">Giảm giá</option>
+              <option value="discount">Đang giảm giá</option>
+              <option value="no-discount">Không giảm giá</option>
+            </select>
+          </div>
+          {/* status */}
+          <div className="w-[200px]">
+            <select className="border w-full p-2 rounded-lg" name="brand">
+              <option value="">Trạng thái</option>
+              <option>Ngưng bán</option>
+              <option>Đang bán</option>
+            </select>
+          </div>
+        </div>
+        {/* search */}
+        <div className="flex gap-5">
+          <div className="px-2 py-2 bg-white w-[400px] shadow-sm rounded-lg flex items-center">
+            <input
+              type="search"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+              placeholder="Tìm kiếm sản phẩm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+            />
+          </div>
+          <button
+            className="px-4 py-2 bg-black text-white rounded-lg text-xl"
+            onClick={() => {
+              setShowCreateModal(true);
+            }}
+          >
+            Create
+          </button>
         </div>
       </div>
-      {/* <div className="flex gap-3 mt-5">
-        <div className="w-[200px]">
-          <select className="border w-full p-2 rounded-lg" name="brand">
-            <option value="">Thương hiệu</option>
-            <option>Nike</option>
-            <option>Adidas</option>
-            <option>Puma</option>
-            <option>Vans</option>
-          </select>
-        </div>
-        <div className="w-[200px]">
-          <select className="border w-full p-2 rounded-lg" name="brand">
-            <option value="">Giá</option>
-            <option>Nike</option>
-            <option>Adidas</option>
-            <option>Puma</option>
-            <option>Vans</option>
-          </select>
-        </div>
-        <div className="w-[200px]">
-          <select className="border w-full p-2 rounded-lg" name="brand">
-            <option value="">Trạng thái</option>
-            <option>Nike</option>
-            <option>Adidas</option>
-            <option>Puma</option>
-            <option>Vans</option>
-          </select>
-        </div>
-      </div> */}
+      {/* Lọc tạo tìm  end*/}
       <div className="bg-white mt-5 mr-2">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200">
             <tr>
-              <th className="border p-2">#</th>
+              <th className="border p-2">STT</th>
               <th
                 className="border p-2 cursor-pointer"
                 // onClick={() => handleSort("name")}
@@ -719,10 +776,18 @@ const AdminProduct = () => {
             </tr>
           </thead>
           <tbody className="text-center">
-            {currentProducts.map((product) => (
+            {currentProducts.map((product, index) => (
               <tr key={product.id} onClick={() => setRowSelected(product._id)}>
-                <td className="border p-2"></td>
-                <td className="border p-2">{product.name}</td>
+                <td className="border p-2">{index + 1}</td>
+                {product.discount > 0 ? (
+                  <td className="border p-2">
+                    {product.name}{" "}
+                    <span className="text-red-500">- {product.discount}%</span>
+                  </td>
+                ) : (
+                  <td className="border p-2">{product.name}</td>
+                )}
+
                 <td className="border p-2">{product.brand}</td>
                 <td className="border p-2">{formatter(product.price)}</td>
                 <td className="border p-2">

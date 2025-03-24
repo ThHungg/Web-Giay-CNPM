@@ -59,7 +59,6 @@ const updateProduct = async (req, res) => {
         const response = await productService.updateProduct(productId, data);
         return res.status(200).json(response);
     } catch (e) {
-        console.log('E', e)
         return res.status(404).json({
             message: 'Lỗi hệ thống, vui lòng thử lại sau!'
         });

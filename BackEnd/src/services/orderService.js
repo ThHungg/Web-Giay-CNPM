@@ -74,10 +74,10 @@ const getAllOrder = () => {
     })
 }
 
-const updateOrder = (id, data) => {
+const updateOrder = (orderId, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const checkOrder = await Order.findById(id);
+            const checkOrder = await Order.findById(orderId);
             if (checkOrder === null) {
                 resolve({
                     status: "OK",
@@ -85,7 +85,7 @@ const updateOrder = (id, data) => {
                 })
             }
 
-            const updateOrder = await Order.findByIdAndUpdate(id, data, { new: true })
+            const updateOrder = await Order.findByIdAndUpdate(orderId, data, { new: true })
 
             resolve({
                 status: "OK",
@@ -98,11 +98,27 @@ const updateOrder = (id, data) => {
     })
 }
 
+const getOrdersByUserId = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const orders = await Order.find({ userId }).populate('items.productId', 'name price').sort({ createdAt: -1 });
+            resolve({
+                status: "OK",
+                message: "Lấy danh sách đơn hàng thành công",
+                data: orders
+            });
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 
 module.exports = {
     createOrder,
     getAllOrders,
     updateOrderStatus,
     getAllOrder,
-    updateOrder
+    updateOrder,
+    getOrdersByUserId
 }

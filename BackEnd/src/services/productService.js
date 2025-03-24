@@ -66,7 +66,7 @@ const updateProduct = (id, data) => {
             const checkProduct = await Product.findById(id);
             if (checkProduct === null) {
                 resolve({
-                    status: "Ok",
+                    status: "ERR",
                     message: 'Sản phẩm không xác định'
                 })
             }

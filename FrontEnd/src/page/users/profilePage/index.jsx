@@ -151,7 +151,65 @@ const ProfilePage = () => {
             </Tabs.TabPane>
 
             <Tabs.TabPane tab="Lịch sử đặt hàng" key="item-2">
-              <p>Lịch sử đặt hàng hiển thị tại đây...</p>
+              <div className="">
+                <table className="w-full border-collapse">
+                  <thead className="bg-gray-200">
+                    <tr>
+                      <th className="border p-2">STT</th>
+                      <th className="border p-2">Sản phẩm</th>
+                      <th className="border p-2">Ngày đặt</th>
+                      <th className="border p-2">Trạng thái</th>
+                      <th className="border p-2">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th>1</th>
+                      <th>
+                        <div className="flex gap-3">
+                          <img
+                            src="https://supersports.com.vn/cdn/shop/files/FJ7765-101-1.jpg?v=1721988921"
+                            alt=""
+                            className="h-[60px] w-[80px]"
+                          />
+                          <div className="">
+                            <h1>Nike Air Force 1 Shadow </h1>
+                            <h1>Size: 34 | SL: 1</h1>
+                            <h1>Gía: 4.000.000 đ</h1>
+                          </div>
+                        </div>
+                        <div className="flex gap-3">
+                          <img
+                            src="https://supersports.com.vn/cdn/shop/files/FJ7765-101-1.jpg?v=1721988921"
+                            alt=""
+                            className="h-[60px] w-[80px]"
+                          />
+                          <div className="">
+                            <h1>Nike Air Force 1 Shadow </h1>
+                            <h1>Size: 34 | SL: 1</h1>
+                            <h1>Gía: 4.000.000 đ</h1>
+                          </div>
+                        </div>
+                        <div className="flex gap-3">
+                          <img
+                            src="https://supersports.com.vn/cdn/shop/files/FJ7765-101-1.jpg?v=1721988921"
+                            alt=""
+                            className="h-[60px] w-[80px]"
+                          />
+                          <div className="">
+                            <h1>Nike Air Force 1 Shadow </h1>
+                            <h1>Size: 34 | SL: 1</h1>
+                            <h1>Gía: 4.000.000 đ</h1>
+                          </div>
+                        </div>
+                      </th>
+                      <th>23/24/2025, 12:23:07 AM	</th>
+                      <th>Đang giao hàng</th>
+                      <th><button className="px-4 px-2 bg-red-500 rounded-lg">Hủy</button></th>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </Tabs.TabPane>
 
             <Tabs.TabPane tab="Thông tin khác" key="item-3">

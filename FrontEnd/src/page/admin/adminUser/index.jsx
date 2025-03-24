@@ -15,7 +15,23 @@ const AdminUser = () => {
   const [form] = Form.useForm();
   const user = useSelector((state) => state?.user);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  // const itemsPerPage = 10;
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      const itemHeight = 45;
+      const availableHeight = window.innerHeight - 200;
+      const items = Math.floor(availableHeight / itemHeight);
+      setItemsPerPage(items > 0 ? items : 1);
+    };
+
+    updateItemsPerPage(); // Gọi khi load trang
+    window.addEventListener("resize", updateItemsPerPage);
+
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
 
   const getAllUser = async () => {
     const res = await userServices.getAllUser(user?.access_token);
@@ -160,14 +176,33 @@ const AdminUser = () => {
     });
   };
 
-  const totalPages = users?.data
-    ? Math.ceil(users.data.length / itemsPerPage)
+  const filteredUsers =
+    users?.data?.filter((user) => {
+      if (selectedRole === "Admin") return user.isAdmin === true;
+      if (selectedRole === "User") return user.isAdmin === false;
+      if (searchTerm && !user.name.toLowerCase().includes(searchTerm)) {
+        return false;
+      }
+      return true; 
+    }) || [];
+
+  const totalPages = filteredUsers.length
+    ? Math.ceil(filteredUsers.length / itemsPerPage)
     : 0;
   const currentUsers =
-    users?.data?.slice(
+    filteredUsers.slice(
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     ) || [];
+
+  // const totalPages = users?.data
+  //   ? Math.ceil(users.data.length / itemsPerPage)
+  //   : 0;
+  // const currentUsers =
+  //   users?.data?.slice(
+  //     (currentPage - 1) * itemsPerPage,
+  //     currentPage * itemsPerPage
+  //   ) || [];
 
   const CreateModal = useMemo(
     () => (
@@ -297,25 +332,42 @@ const AdminUser = () => {
 
   return (
     <>
-      <div className="flex justify-between m-4">
-        <h1 className="text-2xl font-bold">Users</h1>
-        <button
-          className="px-4 py-2 bg-black text-white text-xl rounded-2xl"
-          onClick={() => setShowCreateModel(true)}
-        >
-          Create
-        </button>
-      </div>
-      <div className="mx-20">
-        <div className="px-4 h-20 py-4 bg-white w-full shadow rounded-lg">
-          <input
-            type="search"
-            className="w-full h-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-            placeholder="Tìm kiếm người dùng"
-          />
+      <div className="flex justify-between items-center mt-3">
+        <div className="flex gap-3 mt-5">
+          <div className="w-[200px]">
+            <select
+              className="border w-full p-2 rounded-lg"
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+            >
+              <option value="">Role</option>
+              <option value="Admin">Admin</option>
+              <option value="User">User</option>
+            </select>
+          </div>
+        </div>
+        {/* search */}
+        <div className="flex gap-5">
+          <div className="px-2 py-2 bg-white w-[400px] shadow-sm rounded-lg flex items-center">
+            <input
+              type="search"
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+              placeholder="Tìm kiếm sản phẩm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+            />
+          </div>
+          <button
+            className="px-4 py-2 bg-black text-white rounded-lg text-xl"
+            onClick={() => {
+              setShowCreateModel(true);
+            }}
+          >
+            Create
+          </button>
         </div>
       </div>
-      <div className="p-2 mt-10">
+      <div className="bg-white mt-5 mr-2">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200">
             <tr>
@@ -362,27 +414,27 @@ const AdminUser = () => {
             ))}
           </tbody>
         </table>
-        <div className="mt-5 flex justify-end">
-          <button
-            className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Trước
-          </button>
-          <span className="px-4 py-2">
-            {currentPage}/{totalPages}
-          </span>
-          <button
-            className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Sau
-          </button>
-        </div>
         {showCreateModal && CreateModal}
         {showUpdateModal && UpdateModal}
+      </div>
+      <div className="mt-5 flex justify-end">
+        <button
+          className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Trước
+        </button>
+        <span className="px-4 py-2">
+          {currentPage}/{totalPages}
+        </span>
+        <button
+          className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Sau
+        </button>
       </div>
       <ToastNotification />
     </>
