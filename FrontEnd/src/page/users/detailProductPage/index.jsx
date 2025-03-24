@@ -195,9 +195,89 @@ const DetailProduct = () => {
               className="h-[80px] w-[80px] object-contain"
             />
           </div>
+          <Tabs>
+            <TabList>
+              <Tab>
+                <h1 className="text-2xl font-bold">Mô tả sản phẩm</h1>
+              </Tab>
+              <Tab>
+                <h1 className="text-2xl font-bold">Đánh giá</h1>
+              </Tab>
+              <Tab>
+                <h1 className="text-2xl font-bold">Hướng dẫn bảo quản</h1>
+              </Tab>
+            </TabList>
+
+            <TabPanel>
+              <h2 className="text-lg text-gray-700 leading-relaxed">
+                {productDetail.description}
+              </h2>
+            </TabPanel>
+            <TabPanel>
+              <div className="grid grid-cols-2 gap-5">
+                {/* Danh sách đánh giá */}
+                <div className="space-y-2">
+                  <h1 className="text-2xl font-bold">Đánh giá</h1>
+                  {reviewer.map((item, index) => (
+                    <div
+                      key={index}
+                      className="bg-white border border-black p-2 rounded-lg"
+                    >
+                      <h1 className="font-bold">{item.user}</h1>
+                      <div className="text-yellow-500 font-bold">
+                        {"★".repeat(item.stars)}
+                      </div>
+                      <p>{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Form nhập đánh giá */}
+                <div>
+                  <h1 className="text-2xl font-bold">Viết đánh giá của bạn</h1>
+                  <div className="mt-2 space-y-2">
+                    <textarea
+                      placeholder="Nhập đánh giá của bạn"
+                      value={review}
+                      onChange={(e) => setReview(e.target.value)}
+                      className="border border-gray-300 p-2 rounded-lg w-full"
+                      rows="3"
+                    ></textarea>
+                    <StarRating rating={rating} setRating={setRating} />
+                    <button
+                      className="w-full bg-blue-500 text-white p-2 rounded-lg"
+                      onClick={() => console.log({ name, rating, review })} // Sau này thay bằng API call
+                    >
+                      Gửi đánh giá
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </TabPanel>
+            <TabPanel>
+              <ul className="list-disc space-y-2 text-lg text-gray-700 pl-5">
+                <li className="hover:text-black transition-all duration-200">
+                  Vệ sinh bằng khăn mềm
+                </li>
+                <li className="hover:text-black transition-all duration-200">
+                  Tránh vật sắc nhọn và nơi có nhiệt độ cao
+                </li>
+                <li className="hover:text-black transition-all duration-200">
+                  Tránh tiếp xúc với môi trường xăng dầu, kiềm
+                </li>
+                <li className="hover:text-black transition-all duration-200">
+                  Không phơi sản phẩm nơi ánh nắng gắt
+                </li>
+                <li className="hover:text-black transition-all duration-200">
+                  Để nơi khô thoáng khi không sử dụng
+                </li>
+              </ul>
+            </TabPanel>
+          </Tabs>
         </div>
         {/* image end*/}
-        <div className="col-span-3 ml-3">
+
+        <div className="col-span-3 ml-3 sticky top-5 self-start">
           <h1 className="uppercase text-4xl font-bold w-full">
             {productDetail.name}
             {productDetail.discount > 0 && (
@@ -278,69 +358,11 @@ const DetailProduct = () => {
           </div>
         </div>
       </div>
-      <div className="max-w-screen-xl mx-auto mt-5 text-center">
-        <Tabs>
-          <TabList>
-            <Tab>
-              <h1 className="text-2xl font-bold">Mô tả sản phẩm</h1>
-            </Tab>
-            <Tab>
-              <h1 className="text-2xl font-bold">Đánh giá</h1>
-            </Tab>
-          </TabList>
+      <div>
 
-          <TabPanel>
-            <h2>{productDetail.description}</h2>
-          </TabPanel>
-          <TabPanel>
-            <div className="grid grid-cols-2 gap-5">
-              {/* Danh sách đánh giá */}
-              <div className="space-y-2">
-                <h1 className="text-2xl font-bold">Đánh giá</h1>
-                {reviewer.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-white border border-black p-2 rounded-lg"
-                  >
-                    <h1 className="font-bold">{item.user}</h1>
-                    <div className="text-yellow-500 font-bold">
-                      {"★".repeat(item.stars)}
-                    </div>
-                    <p>{item.text}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Form nhập đánh giá */}
-              <div>
-                <h1 className="text-2xl font-bold">Viết đánh giá của bạn</h1>
-                <div className="mt-2 space-y-2">
-                  <textarea
-                    placeholder="Nhập đánh giá của bạn"
-                    value={review}
-                    onChange={(e) => setReview(e.target.value)}
-                    className="border border-gray-300 p-2 rounded-lg w-full"
-                    rows="3"
-                  ></textarea>
-                  <StarRating rating={rating} setRating={setRating} />
-                  <button
-                    className="w-full bg-blue-500 text-white p-2 rounded-lg"
-                    onClick={() => console.log({ name, rating, review })} // Sau này thay bằng API call
-                  >
-                    Gửi đánh giá
-                  </button>
-                </div>
-              </div>
-            </div>
-          </TabPanel>
-        </Tabs>
-
-        <div>
-          <h1 className="text-3xl font-bold mt-5">Sản phẩm liên quan</h1>
-          {/* <Carousel responsive={responsive}>
-
+        {/* <h1 className="text-3xl font-bold mt-5">Sản phẩm liên quan</h1> */}
+        {/* <Carousel responsive={responsive}>
           </Carousel> */}
-        </div>
       </div>
     </>
   );

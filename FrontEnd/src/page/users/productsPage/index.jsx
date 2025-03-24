@@ -32,12 +32,8 @@ const Products = () => {
   const itemsPerPage = 12;
 
   const handlePriceFilter = (range) => {
-    if (priceRange === range) {
-      setPriceRange(""); // Bỏ chọn bộ lọc
-    } else {
-      setPriceRange(range); // Chọn bộ lọc mới
-    }
-    setCurrentPage(1); // Đặt lại trang khi thay đổi bộ lọc
+    setPriceRange((prev) => (prev === range ? "" : range)); // Nếu đang chọn thì bỏ chọn, nếu chưa chọn thì chọn
+    setCurrentPage(1);
   };
 
   const filterProductsByPrice = (products) => {
@@ -116,7 +112,7 @@ const Products = () => {
                   name="priceFilter"
                   value="under1M"
                   className="w-4 h-4"
-                  onChange={() => handlePriceFilter("under1M")}
+                  onClick={() => handlePriceFilter("under1M")}
                   checked={priceRange === "under1M"} // Kiểm tra nếu giá trị đang chọn trùng với giá trị của radio
                 />
                 Dưới 1.000.000 đ
@@ -128,7 +124,7 @@ const Products = () => {
                   name="priceFilter"
                   value="1Mto2M"
                   className="w-4 h-4"
-                  onChange={() => handlePriceFilter("1Mto2M")}
+                  onClick={() => handlePriceFilter("1Mto2M")}
                   checked={priceRange === "1Mto2M"}
                 />
                 1.000.000 đ - 2.000.000 đ
@@ -140,7 +136,7 @@ const Products = () => {
                   name="priceFilter"
                   value="2Mto3M"
                   className="w-4 h-4"
-                  onChange={() => handlePriceFilter("2Mto3M")}
+                  onClick={() => handlePriceFilter("2Mto3M")}
                   checked={priceRange === "2Mto3M"}
                 />
                 2.000.000 đ - 3.000.000 đ
@@ -152,7 +148,7 @@ const Products = () => {
                   name="priceFilter"
                   value="above3M"
                   className="w-4 h-4"
-                  onChange={() => handlePriceFilter("above3M")}
+                  onClick={() => handlePriceFilter("above3M")}
                   checked={priceRange === "above3M"}
                 />
                 Trên 3.000.000 đ

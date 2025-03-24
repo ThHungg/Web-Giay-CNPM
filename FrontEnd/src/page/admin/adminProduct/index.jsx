@@ -256,37 +256,50 @@ const AdminProduct = () => {
   //     : b.name.localeCompare(a.name);
   // });
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortField, setSortField] = useState("name");
-  const [sortOrder, setSortOrder] = useState("asc");
+  // const [searchTerm, setSearchTerm] = useState("");
+  // const [sortField, setSortField] = useState("name");
+  // const [sortOrder, setSortOrder] = useState("asc");
 
-  // Lọc sản phẩm theo tên hoặc thương hiệu
-  const filteredProducts = (products?.data || []).filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.brand.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // // Lọc sản phẩm theo tên hoặc thương hiệu
+  // const filteredProducts = (products?.data || []).filter(
+  //   (product) =>
+  //     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     product.brand.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
-  // Sắp xếp danh sách sản phẩm
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortField === "name") {
-      return sortOrder === "asc"
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
-    } else if (sortField === "price") {
-      return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
-    }
-  });
+  // // Sắp xếp danh sách sản phẩm
+  // const sortedProducts = [...filteredProducts].sort((a, b) => {
+  //   if (sortField === "name") {
+  //     return sortOrder === "asc"
+  //       ? a.name.localeCompare(b.name)
+  //       : b.name.localeCompare(a.name);
+  //   } else if (sortField === "price") {
+  //     return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+  //   }
+  // });
 
-  // Xử lý sự kiện sắp xếp
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-  };
+  // // Xử lý sự kiện sắp xếp
+  // const handleSort = (field) => {
+  //   if (sortField === field) {
+  //     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  //   } else {
+  //     setSortField(field);
+  //     setSortOrder("asc");
+  //   }
+  // };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const totalPages = products?.data?.length
+    ? Math.ceil(products.data.length / itemsPerPage)
+    : 0;
+
+  const currentProducts =
+    products?.data?.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    ) || [];
 
   const CreateModal = useMemo(
     () => (
@@ -647,8 +660,8 @@ const AdminProduct = () => {
             type="search"
             className="w-full h-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
             placeholder="Tìm kiếm sản phẩm"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            // value={searchTerm}
+            // onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
       </div>
@@ -688,23 +701,25 @@ const AdminProduct = () => {
               <th className="border p-2">#</th>
               <th
                 className="border p-2 cursor-pointer"
-                onClick={() => handleSort("name")}
+                // onClick={() => handleSort("name")}
               >
-                Tên {sortField === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+                Tên
+                {/* {sortField === "name" && (sortOrder === "asc" ? "▲" : "▼")} */}
               </th>
               <th className="border p-2">Thương hiệu</th>
               <th
                 className="border p-2 cursor-pointer"
-                onClick={() => handleSort("price")}
+                // onClick={() => handleSort("price")}
               >
-                Giá {sortField === "price" && (sortOrder === "asc" ? "▲" : "▼")}
+                Giá
+                {/* {sortField === "price" && (sortOrder === "asc" ? "▲" : "▼")} */}
               </th>
               <th className="border p-2">Trạng thái</th>
               <th className="border p-2">Action</th>
             </tr>
           </thead>
           <tbody className="text-center">
-            {sortedProducts.map((product) => (
+            {currentProducts.map((product) => (
               <tr key={product.id} onClick={() => setRowSelected(product._id)}>
                 <td className="border p-2"></td>
                 <td className="border p-2">{product.name}</td>
@@ -734,15 +749,26 @@ const AdminProduct = () => {
           </tbody>
         </table>
       </div>
-      <div className="flex justify-end mt-5">
-        <button className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50">
+      <div className="mt-5 flex justify-end">
+        <button
+          className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
           Trước
         </button>
-        <span className="px-4 py-2">1/2</span>
-        <button className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50">
+        <span className="px-4 py-2">
+          {currentPage}/{totalPages}
+        </span>
+        <button
+          className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
           Sau
         </button>
       </div>
+
       {showCreateModal && CreateModal}
       {showUpdateModal && UpdateModal}
       <ToastNotification />

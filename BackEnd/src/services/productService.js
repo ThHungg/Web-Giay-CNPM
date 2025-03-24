@@ -14,7 +14,7 @@ const createProduct = (newProduct) => {
             const createProduct = await Product.create({
                 // name, brand, image, images, type, price, oldPrice, discount, description,
                 // sizeStock, stock, totalstock, category, rating, reviews, status
-                name, brand, image, price, description, sizeStock, discount
+                name, brand, image, price, description, sizeStock, discount, createdAt: Date.now()
             })
             if (createProduct) {
                 resolve({
@@ -109,7 +109,7 @@ const deleteProduct = (id) => {
 const getAllProduct = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allProduct = await Product.find()
+            const allProduct = await Product.find().sort({ createdAt: -1 });
             resolve({
                 status: "Ok",
                 message: "Success",

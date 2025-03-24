@@ -6,8 +6,13 @@ import formatter from "../../utils/formatter";
 const ProductsCard = ({ img, name, price, oldprice, discount }) => {
   return (
     <div className="m-3 bg-white w-[300px] rounded-xl py-2 space-y-3 shadow-lg">
-      <div className="w-full h-[280px] p-2 overflow-hidden rounded-xl">
+      <div className="w-full h-[280px] p-2 overflow-hidden rounded-xl relative">
         <img src={img} alt={name} className="w-full h-full object-contain" />
+        {discount && (
+          <h1 className="absolute top-2 right-2 bg-red-500 text-white text-[16px] font-bold px-2 py-1 rounded-md">
+            -{discount}%
+          </h1>
+        )}
       </div>
 
       <div className="flex flex-col items-center text-center space-y-2">
@@ -28,11 +33,6 @@ const ProductsCard = ({ img, name, price, oldprice, discount }) => {
             >
               {name}
             </Link>
-            {discount && (
-              <h1 className="text-[16px] text-red-500 font-bold">
-                -{discount} %
-              </h1>
-            )}
           </div>
           <div className="flex justify-center gap-2 ">
             <h1 className="text-[19px] text-red-500 font-semibold">
