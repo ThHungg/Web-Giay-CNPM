@@ -1,13 +1,11 @@
 import { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as userService from "../../../services/userServices";
+import * as orderServices from "../../../services/orderService";
 import { useMutationHooks } from "../../../hooks/useMutation";
-import * as message from "../../../component/message";
 import { jwtDecode } from "jwt-decode";
 import { updateUser } from "../../../redux/slides/userSlide";
-import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification";
-import { Tabs } from "antd";
 
 const ProfilePage = () => {
   const user = useSelector((state) => state.user);
@@ -15,6 +13,12 @@ const ProfilePage = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const dispatch = useDispatch();
+  const token = localStorage.getItem("access_token");
+  let userId;
+  if (token) {
+    const decoded = jwtDecode(token);
+    userId = decoded.id;
+  }
 
   const getUserIdFromToken = (user) => {
     const decoded = jwtDecode(user.access_token);
@@ -40,14 +44,12 @@ const ProfilePage = () => {
       const userId = getUserIdFromToken(user);
       handleGetDetailsUser(userId, user?.access_token);
     }
-  }, [isSuccess]);;
+  }, [isSuccess]);
 
   const handleGetDetailsUser = async (id, token) => {
     const res = await userService.getDetailsUser(id, token);
-    console.log("Dữ liệu trả về từ API:", res?.data); // Kiểm tra dữ liệu
     dispatch(updateUser({ ...res?.data, access_token: token, id }));
-};
-
+  };
 
   // Email
   const handleOnchangeEmail = (e) => {
@@ -67,9 +69,23 @@ const ProfilePage = () => {
     const userId = getUserIdFromToken(user);
     mutation.mutate({ id: userId, email, name, phone });
   };
-  
 
   const [activeTab, setActiveTab] = useState("edit");
+
+  const [orderDetails, setOrderDetails] = useState();
+  const fetchGetHistoryOrder = async (userId) => {
+    const res = await orderServices.getHistoryOrder(userId);
+    setOrderDetails(res);
+    return res;
+  };
+  useEffect(() => {
+    if (userId) {
+      fetchGetHistoryOrder(userId);
+    }
+  }, [userId]);
+
+  console.log(orderDetails);
+
   return (
     <>
       <ToastNotification />
@@ -214,7 +230,31 @@ const ProfilePage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
+                      <tr>
+                        <td className="border p-2">1</td>
+                        <td className="border p-2">
+                          <div className="flex gap-3">
+                            <img
+                              src="https://supersports.com.vn/cdn/shop/files/FJ7765-101-1.jpg?v=1721988921"
+                              alt=""
+                              className="h-[60px] w-[80px]"
+                            />
+                            <div>
+                              <h1>{orderDetails?.data?.[0].total}</h1>
+                              <h1>{orderDetails?.data?.[0].total} | SL: 1</h1>
+                              <h1>Giá: 4.000.000 đ</h1>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="border p-2">23/24/2025, 12:23:07 AM</td>
+                        <td className="border p-2">Đang giao hàng</td>
+                        <td className="border p-2">
+                          <button className="px-4 py-2 bg-red-500 rounded-lg text-white">
+                            Hủy
+                          </button>
+                        </td>
+                      </tr>
+                    {/* <tr>
                       <td className="border p-2">1</td>
                       <td className="border p-2">
                         <div className="flex gap-3">
@@ -237,7 +277,7 @@ const ProfilePage = () => {
                           Hủy
                         </button>
                       </td>
-                    </tr>
+                    </tr> */}
                   </tbody>
                 </table>
               </div>

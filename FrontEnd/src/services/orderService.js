@@ -1,7 +1,7 @@
 import axios from "axios"
 import { axiosJWT } from "./userServices"
 
-export const createOrder = async (userId, items, shippingAddress, paymentMethod, note, total, customerInfo) => {
+export const createOrder = async (userId, items, shippingAddress, paymentMethod, note, total, customerInfo, size) => {
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/order/create-order`, {
         userId,
         items,
@@ -10,6 +10,7 @@ export const createOrder = async (userId, items, shippingAddress, paymentMethod,
         note,
         total,
         customerInfo,
+        size
     });
     return res.data;
 };
@@ -32,10 +33,16 @@ export const updateOrder = async (orderId, access_token, data) => {
     return res.data
 }
 
-export const getOrdersByUserId = async (userId) => {
+export const getOrdersByUserId = async (orderId) => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/order/getDetailOrder/${orderId}`,
+        orderId
+    );
+    return res.data;
+};
+
+export const getHistoryOrder = async (userId) => {
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/order/historyOrder/${userId}`,
         userId
     );
     return res.data;
 };
-

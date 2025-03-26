@@ -98,10 +98,25 @@ const updateOrder = (orderId, data) => {
     })
 }
 
-const getOrdersByUserId = (userId) => {
+const getDetailOrder = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const orders = await Order.find({ userId }).populate('items.productId', 'name price').sort({ createdAt: -1 });
+            const orders = await Order.findById(id).populate('items.productId', 'name price image')
+            resolve({
+                status: "OK",
+                message: "Lấy danh sách đơn hàng thành công",
+                data: orders
+            });
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+const getHistoryOrder = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const orders = await Order.find({ userId }).populate('items.productId', 'name price image')
             resolve({
                 status: "OK",
                 message: "Lấy danh sách đơn hàng thành công",
@@ -120,5 +135,6 @@ module.exports = {
     updateOrderStatus,
     getAllOrder,
     updateOrder,
-    getOrdersByUserId
+    getDetailOrder,
+    getHistoryOrder
 }

@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import * as orderServices from "../../../services/orderService";
 import { useQuery } from "@tanstack/react-query";
 import { useMutationHooks } from "../../../hooks/useMutation";
+import { Spin } from "antd";
+import formatter from "../../../utils/formatter";
 
 const AdminOrder = () => {
   const user = useSelector((state) => state?.user);
@@ -10,6 +12,8 @@ const AdminOrder = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [rowSelected, setRowSelected] = useState();
+  const [orderDetails, setOrderDetails] = useState();
   const mutation = useMutationHooks(async (data) => {
     const { orderId, token, ...rests } = data;
     return await orderServices.updateOrder(orderId, token, rests);
@@ -40,6 +44,18 @@ const AdminOrder = () => {
       refetch();
     }
   }, [mutation.isSuccess, refetch]);
+
+  const fetchGetDetailsOrder = async (rowSelected) => {
+    const res = await orderServices.getOrdersByUserId(rowSelected);
+    setOrderDetails(res);
+    return res;
+  };
+
+  useEffect(() => {
+    if (rowSelected) {
+      fetchGetDetailsOrder(rowSelected);
+    }
+  }, [rowSelected]);
 
   const filteredOrders = orders?.filter((order) => {
     return selectedStatus === "" || order.status === selectedStatus;
@@ -72,44 +88,55 @@ const AdminOrder = () => {
   const handleCancel = () => {
     setShowDetailModal(false);
   };
-  const detailOrder = [
-    {
-      title: "Mã đơn hàng",
-      value: 123,
-    },
-    {
-      title: "Người đặt hàng",
-      value: 123,
-    },
-    {
-      title: "Người nhận hàng",
-      value: "Đặng Thành Hưng",
-    },
-    {
-      title: "Số điện thoại",
-      value: "0348910968",
-    },
-    {
-      title: "Phương thức thanh toán",
-      value: "COD",
-    },
-    {
-      title: "Trạng thái thanh toán",
-      value: "Chưa thanh toán",
-    },
-    {
-      title: "Địa chỉ nhận hàng",
-      value: "Thăng Long University",
-    },
-    {
-      title: "Tổng tiền",
-      value: "10.000.000 đ",
-    },
-    // {
-    //   title: "Địa chỉ nhận hàng",
-    //   value: "Thăng Long University",
-    // },
-  ];
+
+  const [loadingDetail, setLoadingDetail] = useState(true);
+
+  useEffect(() => {
+    if (orderDetails) {
+      setLoadingDetail(false);
+    } else {
+      setLoadingDetail(true);
+    }
+  }, [orderDetails]);
+
+  // const detailOrder = [
+  //   {
+  //     title: "Mã đơn hàng",
+  //     value: 123,
+  //   },
+  //   {
+  //     title: "Người đặt hàng",
+  //     value: orderDetails?.data?.customerInfo?.nameReceiver,
+  //   },
+  //   // {
+  //   //   title: "Người nhận hàng",
+  //   //   value: "Đặng Thành Hưng",
+  //   // },
+  //   {
+  //     title: "Số điện thoại",
+  //     value: orderDetails?.data?.customerInfo?.phoneReceiver,
+  //   },
+  //   {
+  //     title: "Phương thức thanh toán",
+  //     value: orderDetails?.data?.paymentMethod,
+  //   },
+  //   {
+  //     title: "Trạng thái thanh toán",
+  //     value: orderDetails?.data?.status,
+  //   },
+  //   // {
+  //   //   title: "Địa chỉ nhận hàng",
+  //   //   value: `${orderDetails?.data?.shippingAddress.street}, ${orderDetails?.data?.shippingAddress.ward}, ${orderDetails?.data?.shippingAddress.district}, ${orderDetails?.data?.shippingAddress.province}`
+  //   // },
+  //   {
+  //     title: "Tổng tiền",
+  //     // value: orderDetails?.data?.total,
+  //   },
+  //   // {
+  //   //   title: "Địa chỉ nhận hàng",
+  //   //   value: "Thăng Long University",
+  //   // },
+  // ];
 
   const DetailModal = useMemo(
     () => (
@@ -117,133 +144,71 @@ const AdminOrder = () => {
         <div className="w-1/2 bg-white p-8 shadow-lg rounded-xl flex flex-col">
           <h1 className="text-2xl font-bold text-center">Thông tin đơn hàng</h1>
           <div className="">
-            {detailOrder.map((order, key) => (
-              <p className="font-bold">
-                {order.title}:{" "}
-                <span className="font-normal">{order.value}</span>
-              </p>
-            ))}
+            <p className="font-bold">
+              Người đặt hàng:{" "}
+              <span className="font-normal">
+                {orderDetails?.data.customerInfo?.nameReceiver}
+              </span>
+            </p>
+
+            <p className="font-bold">
+              Số điện thoại:{" "}
+              <span className="font-normal">
+                {orderDetails?.data.customerInfo?.phoneReceiver}
+              </span>
+            </p>
+
+            <p className="font-bold">
+              Phương thức thanh toán:{" "}
+              <span className="font-normal">
+                {orderDetails?.data.paymentMethod}
+              </span>
+            </p>
+
+            <p className="font-bold">
+              Trạng thái thanh toán:{" "}
+              <span className="font-normal">{orderDetails?.data.status}</span>
+            </p>
+
+            <p className="font-bold">
+              Địa chỉ nhận hàng:{" "}
+              <span className="font-normal">
+                {orderDetails?.data?.shippingAddress.street + " , "}
+                {orderDetails?.data?.shippingAddress.ward + " , "}
+                {orderDetails?.data?.shippingAddress.district + " , "}
+                {orderDetails?.data?.shippingAddress.province}
+              </span>
+            </p>
+
+            <p className="font-bold">
+              Tổng tiền:{" "}
+              <span className="font-normal">
+                {formatter(orderDetails?.data?.total)}
+              </span>
+            </p>
             <div className="">
               <p className="font-bold ">Danh sách sản phẩm</p>
               <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto">
-                <div className="flex gap-2 mt-3 border p-2 rounded-lg">
-                  <div className="">
-                    <img
-                      src="https://images.stockx.com/images/Nike-Air-Force-1-Shadow-Triple-White-W-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1607656583"
-                      alt=""
-                      className="w-[120px] h-[80px] object-cover"
-                    />
+                {orderDetails?.data?.items?.map((order, key) => (
+                  <div
+                    key={key}
+                    className="flex gap-2 mt-3 border p-2 rounded-lg"
+                  >
+                    <div className="">
+                      <img
+                        src={order.productId.image}
+                        alt={order.productId.name}
+                        className="w-[120px] h-[80px] object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <p className="font-bold">{order.productId.name}</p>
+                      <p>Size: {order.size}</p>
+                      <p>SL: {order.quantity}</p>
+                      <p>Giá: {order.price.toLocaleString()} đ</p>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <p className="font-bold">Nike Air Force One Shadow </p>
-                    <p>Size: 42 | SL: 4</p>
-                    <p>Giá: 2.400.000 đ</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 mt-3 border p-2 rounded-lg">
-                  <div className="">
-                    <img
-                      src="https://images.stockx.com/images/Nike-Air-Force-1-Shadow-Triple-White-W-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1607656583"
-                      alt=""
-                      className="w-[120px] h-[80px] object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-bold">Nike Air Force One Shadow </p>
-                    <p>Size: 42 | SL: 4</p>
-                    <p>Giá: 2.400.000 đ</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 mt-3 border p-2 rounded-lg">
-                  <div className="">
-                    <img
-                      src="https://images.stockx.com/images/Nike-Air-Force-1-Shadow-Triple-White-W-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1607656583"
-                      alt=""
-                      className="w-[120px] h-[80px] object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-bold">Nike Air Force One Shadow </p>
-                    <p>Size: 42 | SL: 4</p>
-                    <p>Giá: 2.400.000 đ</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 mt-3 border p-2 rounded-lg">
-                  <div className="">
-                    <img
-                      src="https://images.stockx.com/images/Nike-Air-Force-1-Shadow-Triple-White-W-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1607656583"
-                      alt=""
-                      className="w-[120px] h-[80px] object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-bold">Nike Air Force One Shadow </p>
-                    <p>Size: 42 | SL: 4</p>
-                    <p>Giá: 2.400.000 đ</p>
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-3 border p-2 rounded-lg">
-                  <div className="">
-                    <img
-                      src="https://images.stockx.com/images/Nike-Air-Force-1-Shadow-Triple-White-W-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1607656583"
-                      alt=""
-                      className="w-[120px] h-[80px] object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-bold">Nike Air Force One Shadow </p>
-                    <p>Size: 42 | SL: 4</p>
-                    <p>Giá: 2.400.000 đ</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 mt-3 border p-2 rounded-lg">
-                  <div className="">
-                    <img
-                      src="https://images.stockx.com/images/Nike-Air-Force-1-Shadow-Triple-White-W-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1607656583"
-                      alt=""
-                      className="w-[120px] h-[80px] object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-bold">Nike Air Force One Shadow </p>
-                    <p>Size: 42 | SL: 4</p>
-                    <p>Giá: 2.400.000 đ</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 mt-3 border p-2 rounded-lg">
-                  <div className="">
-                    <img
-                      src="https://images.stockx.com/images/Nike-Air-Force-1-Shadow-Triple-White-W-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1607656583"
-                      alt=""
-                      className="w-[120px] h-[80px] object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-bold">Nike Air Force One Shadow </p>
-                    <p>Size: 42 | SL: 4</p>
-                    <p>Giá: 2.400.000 đ</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 mt-3 border p-2 rounded-lg">
-                  <div className="">
-                    <img
-                      src="https://images.stockx.com/images/Nike-Air-Force-1-Shadow-Triple-White-W-Product.jpg?fit=fill&bg=FFFFFF&w=700&h=500&auto=format,compress&q=90&dpr=2&trim=color&updated_at=1607656583"
-                      alt=""
-                      className="w-[120px] h-[80px] object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-bold">Nike Air Force One Shadow </p>
-                    <p>Size: 42 | SL: 4</p>
-                    <p>Giá: 2.400.000 đ</p>
-                  </div>
-                </div>
+                ))}
               </div>
               {/* <table className="">
                   <thead>
@@ -269,7 +234,7 @@ const AdminOrder = () => {
         </div>
       </div>
     ),
-    []
+    [orderDetails]
   );
 
   return (
@@ -325,7 +290,11 @@ const AdminOrder = () => {
           <tbody>
             {currentOrders.map((order, index) => {
               return (
-                <tr key={order.id} className="text-center">
+                <tr
+                  key={order.id}
+                  className="text-center"
+                  onClick={() => setRowSelected(order._id)}
+                >
                   <td className="border p-2">{index + 1}</td>
                   <td className="border p-2">
                     {order.customerInfo.nameReceiver}
@@ -403,7 +372,14 @@ const AdminOrder = () => {
           Sau
         </button>
       </div>
-      {showDetailModal && DetailModal}
+      {showDetailModal &&
+        (loadingDetail ? (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <Spin size="large" />
+          </div>
+        ) : (
+          DetailModal
+        ))}
     </>
   );
 };

@@ -84,6 +84,7 @@ const CheckoutPage = () => {
         productId: item.productId._id,
         quantity: item.quantity,
         price: item.price,
+        size: item.size,
       })),
       shippingAddress: {
         street: street,
@@ -130,6 +131,7 @@ const CheckoutPage = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [size, setSize] = useState("");
 
   const handleNameChange = (e) => {
     setName(e.target.value);

@@ -3,7 +3,7 @@ const Order = require('../models/Order');
 
 const createOrder = async (req, res) => {
     try {
-        const { userId, items, total, shippingAddress, paymentMethod, note, customerInfo } = req.body;
+        const { userId, items, total, shippingAddress, paymentMethod, note, customerInfo, size } = req.body;
 
         if (!userId || !items || !total || !shippingAddress || !paymentMethod || !customerInfo) {
             return res.status(400).json({ success: "ERR", message: "Thiếu trường bắt buộc." });
@@ -16,7 +16,8 @@ const createOrder = async (req, res) => {
             shippingAddress,
             paymentMethod,
             note,
-            customerInfo
+            customerInfo,
+            size
         });
 
         await order.save();
@@ -92,7 +93,27 @@ const updateOrder = async (req, res) => {
     }
 }
 
-const getOrdersByUserId = async (req, res) => {
+const getDetailOrder = async (req, res) => {
+    try {
+        const orderId = req.params.orderId
+        console.log(orderId)
+        if (!orderId) {
+            return res.status(400).json({
+                status: "ERR",
+                message: "Đơn hàng không tồn tại"
+            });
+        }
+        console.log("orderId", orderId)
+        const response = await orderService.getDetailOrder(orderId);
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(500).json({
+            message: "Lỗi hệ thống vui lòng thử lại sau"
+        })
+    }
+}
+
+const getHistoryOrder = async (req, res) => {
     try {
         const { userId } = req.params;
         if (!userId) {
@@ -101,19 +122,23 @@ const getOrdersByUserId = async (req, res) => {
                 message: "Người dùng không tồn tại"
             });
         }
-        const response = await orderService.getOrdersByUserId(userId);
+        console.log("orderId", userId)
+        const response = await orderService.getHistoryOrder(userId);
         return res.status(200).json(response)
     } catch (e) {
+        console.log(e)
         return res.status(500).json({
             message: "Lỗi hệ thống vui lòng thử lại sau"
         })
     }
 }
+
 module.exports = {
     createOrder,
     getAllOrders,
     updateOrderStatus,
     getAllOrder,
     updateOrder,
-    getOrdersByUserId
+    getDetailOrder,
+    getHistoryOrder
 };
