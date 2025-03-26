@@ -16,6 +16,7 @@ import AdminUser from "./page/admin/adminUser";
 import { useSelector } from "react-redux";
 import AdminProduct from "./page/admin/adminProduct";
 import AdminOrder from "./page/admin/adminOrder";
+import ForgotPasswordPage from "./page/users/forgotPasswordPage";
 
 const renderUserRouter = () => {
   const userRouter = [
@@ -62,6 +63,11 @@ const renderUserRouter = () => {
     {
       path: ROUTERS.USER.REGISTER,
       component: <RegisterPage />,
+      hasAddToBanner: false,
+    },
+    {
+      path: ROUTERS.USER.FORGOTPASS,
+      component: <ForgotPasswordPage />,
       hasAddToBanner: false,
     },
     {

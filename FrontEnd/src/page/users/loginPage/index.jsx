@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router";
 import * as userServices from "../../../services/userServices";
@@ -13,10 +13,17 @@ import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification";
 
 const LoginPage = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const mutation = useMutationHooks((data) => userServices.loginUser(data));
   const { data, isLoading, isSuccess, isError } = mutation;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showForgotPassModal, setShowForgotPassModal] = useState(false);
 
   useEffect(() => {
     if (isSuccess) {
@@ -36,14 +43,6 @@ const LoginPage = () => {
     const res = await userServices.getDetailsUser(id, token);
     dispatch(updateUser({ ...res?.data, access_token: token, id }));
   };
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -71,6 +70,36 @@ const LoginPage = () => {
       console.log("Đăng nhập với:", formData);
     }
   };
+  const handleCancel = () => {
+    setShowForgotPassModal(false);
+  };
+  const ForgotPassModal = useMemo(
+    () => (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="w-1/4 bg-white p-8 shadow-lg rounded-xl flex flex-col">
+          <h1 className="text-2xl font-bold text-center">Quên mật khẩu</h1>
+          <input
+            type="text"
+            className="border w-full p-2 rounded-lg mt-3"
+            name=""
+            placeholder="Nhập email để lấy lại mật khẩu"
+          />
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              className="px-4 py-2 bg-white border font-bold w-1/4 rounded-lg"
+              onClick={handleCancel}
+            >
+              Hủy
+            </button>
+            <button className="px-4 py-2 bg-black text-white border font-bold w-1/4 rounded-lg">
+              Xác nhận
+            </button>
+          </div>
+        </div>
+      </div>
+    ),
+    []
+  );
 
   return (
     <div className="max-w-screen-xl mx-auto flex justify-center my-5">
@@ -121,7 +150,8 @@ const LoginPage = () => {
               Lưu thông tin đăng nhập
             </label>
           </div>
-          <Link to="">Quên mật khẩu ?</Link>
+          {/* <p onClick={() => setShowForgotPassModal(true)}>Quên mật khẩu ?</p> */}
+          <Link to={ROUTERS.USER.FORGOTPASS}>Quên mật khẩu ?</Link>
         </div>
 
         <div className="mt-6">
@@ -153,6 +183,7 @@ const LoginPage = () => {
           </Link>
         </div>
       </div>
+      {showForgotPassModal && ForgotPassModal}
     </div>
   );
 };

@@ -168,26 +168,52 @@ const logoutUser = async (req, res) => {
     }
 }
 
-const forgotPassword = async (req, res) => {
+// const forgotPassword = async (req, res) => {
+//     try {
+//         const { email } = req.body;
+//         if (!email) {
+//             return res.status(400).json({
+//                 status: "ERR",
+//                 message: "Vui lòng nhập email",
+//             });
+//         }
+//         const response = await userService.forgotPassword(email);
+//         return res.status(200).json(response);
+//     } catch (e) {
+//         console.error(e);
+//         return res.status(500).json({
+//             status: "ERR",
+//             message: "Lỗi hệ thống, thử lại sau",
+//         });
+//     }
+// };
+
+const sendOtp = async (req, res) => {
     try {
         const { email } = req.body;
         if (!email) {
-            return res.status(200).json({
-                status: "ERR",
-                message: "Vui lòng nhập email"
-            })
+            return res.status(400).json({ status: 'ERR', message: 'Vui lòng nhập email!' });
         }
-        const response = await userService.forgotPassword(email)
-        return res.status(200).json(
-            response
-        )
+        const response = await userService.sendOtp(email);
+        return res.status(200).json(response);
     } catch (e) {
-        console.log(e)
-        return res.status(500).json({
-            message: "Lỗi hệ thống thử lại sau"
-        })
+        return res.status(500).json({ message: 'Lỗi hệ thống!' });
     }
-}
+};
+
+const verifyOtpAndResetPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ status: 'ERR', message: 'Thiếu thông tin!' });
+        }
+        const response = await userService.verifyOtpAndResetPassword(email, otp, newPassword);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({ message: 'Lỗi hệ thống!' });
+    }
+};
+
 
 
 module.exports = {
@@ -199,5 +225,6 @@ module.exports = {
     getDetailsUser,
     refreshToken,
     logoutUser,
-    forgotPassword
+    sendOtp,
+    verifyOtpAndResetPassword
 };

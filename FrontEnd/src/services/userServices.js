@@ -57,6 +57,19 @@ export const updateUser = async (id, access_token, data) => {
     return res.data;
 };
 
+export const sendOtp = async (email) => {
+    const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/reset-password`, { email });
+    return res.data;
+};
+
+export const resetPass = async (email, otp, newPassword) => {
+    const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/verify-otp-reset-password`, { email, otp, newPassword });
+    return res.data;
+};
+
+
+
+
 
 
 

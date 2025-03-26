@@ -10,6 +10,7 @@ export const ROUTERS = {
     SHOPPINGCARTPAGE: "/gio-hang",
     LOGINPAGE: "/dang-nhap",
     REGISTER: "/dang-ky",
+    FORGOTPASS: "/quen-mat-khau",
     CHECKOUT: "/thanh-toan",
   },
   ADMIN: {
