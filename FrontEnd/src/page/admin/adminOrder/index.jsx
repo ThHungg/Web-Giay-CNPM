@@ -99,51 +99,19 @@ const AdminOrder = () => {
     }
   }, [orderDetails]);
 
-  // const detailOrder = [
-  //   {
-  //     title: "Mã đơn hàng",
-  //     value: 123,
-  //   },
-  //   {
-  //     title: "Người đặt hàng",
-  //     value: orderDetails?.data?.customerInfo?.nameReceiver,
-  //   },
-  //   // {
-  //   //   title: "Người nhận hàng",
-  //   //   value: "Đặng Thành Hưng",
-  //   // },
-  //   {
-  //     title: "Số điện thoại",
-  //     value: orderDetails?.data?.customerInfo?.phoneReceiver,
-  //   },
-  //   {
-  //     title: "Phương thức thanh toán",
-  //     value: orderDetails?.data?.paymentMethod,
-  //   },
-  //   {
-  //     title: "Trạng thái thanh toán",
-  //     value: orderDetails?.data?.status,
-  //   },
-  //   // {
-  //   //   title: "Địa chỉ nhận hàng",
-  //   //   value: `${orderDetails?.data?.shippingAddress.street}, ${orderDetails?.data?.shippingAddress.ward}, ${orderDetails?.data?.shippingAddress.district}, ${orderDetails?.data?.shippingAddress.province}`
-  //   // },
-  //   {
-  //     title: "Tổng tiền",
-  //     // value: orderDetails?.data?.total,
-  //   },
-  //   // {
-  //   //   title: "Địa chỉ nhận hàng",
-  //   //   value: "Thăng Long University",
-  //   // },
-  // ];
-
   const DetailModal = useMemo(
     () => (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="w-1/2 bg-white p-8 shadow-lg rounded-xl flex flex-col">
           <h1 className="text-2xl font-bold text-center">Thông tin đơn hàng</h1>
           <div className="">
+            <p className="font-bold">
+              Mã đơn hàng:{" "}
+              <span className="font-normal">
+                {orderDetails?.data.orderCode}
+              </span>
+            </p>
+
             <p className="font-bold">
               Người đặt hàng:{" "}
               <span className="font-normal">

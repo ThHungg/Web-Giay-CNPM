@@ -4,21 +4,37 @@ import { MdOutlinePayment, MdSupportAgent } from "react-icons/md";
 import { RiRefund2Line } from "react-icons/ri";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import ncat1 from "../../../assets/users/img/newcategories/ncat1.jpg";
-import ncat2 from "../../../assets/users/img/newcategories/ncat2.jpg";
 import Adidas from "../../../assets/users/img/brands/Adidas.webp";
 import Jordan from "../../../assets/users/img/brands/Jordan.png";
 import Nike from "../../../assets/users/img/brands/Nike.png";
 import Puma from "../../../assets/users/img/brands/Puma.png";
 import "./index.css";
-import shoesData from "../../../data.json";
-import { useParams } from "react-router-dom";
 import { ProductCard } from "../../../component";
+import { useQuery } from "@tanstack/react-query";
+import * as productService from "../../../services/productService";
+import { Link } from "react-router-dom";
+import { ROUTERS } from "../../../utils/router";
 
 const HomePage = () => {
-  const { id } = useParams();
-  const product = shoesData.shoes.find((item) => item.id === Number(id));
-  const relateProducts = shoesData.shoes;
+  const fetchProductAll = async () => {
+    const res = await productService.getActiveProducts();
+    const products = res.data || [];
+
+    // Lấy 5 sản phẩm đầu tiên (nếu API trả về các sản phẩm đã sắp xếp đúng)
+    return products.slice(0, 5);
+  };
+
+  const { data: products } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchProductAll,
+    retry: 3,
+    retryDelay: 1000,
+  });
+
+  if (!Array.isArray(products)) {
+    return <div>Invalid data format</div>;
+  }
+
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 3000 },
@@ -37,65 +53,6 @@ const HomePage = () => {
       items: 1,
     },
   };
-
-  const sliderItems = [
-    {
-      bgImg: ncat1,
-      name: "AF1 Shadow",
-    },
-    {
-      bgImg: ncat2,
-      name: "AF1 Shadow",
-    },
-    {
-      bgImg: ncat1,
-      name: "AF1 Shadow",
-    },
-    {
-      bgImg: ncat1,
-      name: "AF1 Shadow",
-    },
-    {
-      bgImg: ncat1,
-      name: "AF1 Shadow",
-    },
-    {
-      bgImg: ncat1,
-      name: "AF1 Shadow",
-    },
-    {
-      bgImg: ncat1,
-      name: "AF1 Shadow",
-    },
-  ];
-  // const products = [
-  //   {
-  //     img: ncat1,
-  //     name: "Nike Air Force 1 Shadow",
-  //     price: "3390000",
-  //     oldprice: "4000000",
-  //   },
-  //   {
-  //     img: ncat1,
-  //     name: "2. Nike Air Force 1 Shadow",
-  //     price: "3390000",
-  //     oldprice: "4000000",
-  //   },
-
-  //   {
-  //     img: ncat1,
-  //     name: "3. Nike Air Force 1 Shadow",
-  //     price: "3390000",
-  //     oldprice: "4000000",
-  //   },
-
-  //   {
-  //     img: ncat1,
-  //     name: "4. Nike Air Force 1 Shadow",
-  //     price: "3390000",
-  //     oldprice: "4000000",
-  //   },
-  // ];
 
   return (
     <>
@@ -131,7 +88,7 @@ const HomePage = () => {
       <div className="max-w-screen-xl mx-auto mt-5">
         <h1 className="text-4xl text-center font-bold my-10">Sản phẩm mới</h1>
         <Carousel responsive={responsive}>
-          {sliderItems.map((item, key) => (
+          {/* {sliderItems.map((item, key) => (
             <div className="bg-white max-h-[380px] mx-2 rounded-xl pt-1">
               <div
                 className="h-[270px] m-2 bg-white rounded-xl"
@@ -146,6 +103,18 @@ const HomePage = () => {
                 {item.name}
               </p>
             </div>
+          ))} */}
+          {products.map((product) => (
+            <Link to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}>
+              <ProductCard
+                key={product.id}
+                name={product.name}
+                img={product.image}
+                price={product.price}
+                oldprice={product.oldPrice}
+                discount={product.discount}
+              />
+            </Link>
           ))}
         </Carousel>
       </div>
@@ -165,16 +134,11 @@ const HomePage = () => {
           ))}
         </div> */}
         <Carousel responsive={responsive}>
-          {relateProducts.map((item, key) => (
-            <div key={key} className="m-1">
-              <ProductCard
-                img={item.img}
-                name={item.name}
-                price={item.price}
-                oldprice={item.price}
-              />
-            </div>
-          ))}
+          <ProductCard></ProductCard>
+          <ProductCard></ProductCard>
+          <ProductCard></ProductCard>
+          <ProductCard></ProductCard>
+          <ProductCard></ProductCard>
         </Carousel>
       </div>
 

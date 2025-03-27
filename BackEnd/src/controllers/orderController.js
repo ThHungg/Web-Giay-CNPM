@@ -1,5 +1,6 @@
 const orderService = require('../services/orderService');
 const Order = require('../models/Order');
+const { generateOrderCode } = require('../utils/generateCode');
 
 const createOrder = async (req, res) => {
     try {
@@ -8,6 +9,7 @@ const createOrder = async (req, res) => {
         if (!userId || !items || !total || !shippingAddress || !paymentMethod || !customerInfo) {
             return res.status(400).json({ success: "ERR", message: "Thiếu trường bắt buộc." });
         }
+        const orderCode = generateOrderCode()
 
         const order = new Order({
             userId,
@@ -17,7 +19,8 @@ const createOrder = async (req, res) => {
             paymentMethod,
             note,
             customerInfo,
-            size
+            size,
+            orderCode
         });
 
         await order.save();

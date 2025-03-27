@@ -1,6 +1,6 @@
 const Product = require("../models/Product")
 const { updateTotalStock } = require('../utils/totalStockUtils')
-const { generateProductCode } = require('../utils/generateProductCode')
+const { generateProductCode } = require('../utils/generateCode')
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
@@ -18,6 +18,7 @@ const createProduct = (newProduct) => {
             const oldPrice = price;
             const totalStock = updateTotalStock(sizeStock);
             const finalPrice = discount > 0 ? Math.round(price * (1 - discount / 100)) : price;
+            const productCode = generateProductCode()
 
             const createProduct = await Product.create({
                 name, brand, image, price: finalPrice, oldPrice, description, sizeStock, discount, totalStock, productCode, createdAt: Date.now()
