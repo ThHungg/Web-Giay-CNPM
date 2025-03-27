@@ -136,6 +136,42 @@ const getHistoryOrder = async (req, res) => {
     }
 }
 
+const cancalOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+
+        const order = await Order.findById(orderId)
+        if (!order) {
+            return res.status(404).json({
+                status: "ERR",
+                message: "Đơn hàng không tồn tại",
+            })
+        }
+
+        if (order.status === "Đã hủy") {
+            return res.status(400).json({
+                status: "ERR",
+                message: "ĐƠn hàng đã hủy"
+            })
+        }
+
+        order.status = "Đã hủy";
+        await order.save()
+
+        return res.status(200).json({
+            status: "OK",
+            message: "Đơn hàng đã được hủy",
+            data: order
+        });
+    } catch (e) {
+        return res.status(500).json({
+            message: "Lỗi hệ thống, vui lòng thử lại sau"
+        });
+    }
+}
+
+
+
 module.exports = {
     createOrder,
     getAllOrders,
@@ -143,5 +179,6 @@ module.exports = {
     getAllOrder,
     updateOrder,
     getDetailOrder,
-    getHistoryOrder
+    getHistoryOrder,
+    cancalOrder
 };

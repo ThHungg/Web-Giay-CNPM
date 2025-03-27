@@ -5,7 +5,6 @@ const { generateProductCode } = require('../utils/generateCode')
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
         const { name, brand, image, price, description, sizeStock, discount } = newProduct;
-        const productCode = generateProductCode();
         try {
             const checkProduct = await Product.findOne({ name })
             if (checkProduct) {
@@ -36,37 +35,6 @@ const createProduct = (newProduct) => {
     });
 };
 
-// const createProduct = (newProduct) => {
-//     return new Promise(async (resolve, reject) => {
-//         const { name, brand, image, images, type, price, oldPrice, discount, description,
-//             sizeStock, stock, totalstock, category, rating, reviews, status } = newProduct;
-//         try {
-//             const checkProduct = await product.findOne({
-//                 name: name
-//             })
-//             if (checkProduct !== null) {
-//                 return resolve({
-//                     status: 'Ok',
-//                     message: 'Tên sản phẩm đã tồn tại'
-//                 });
-//             }
-//             const createProduct = await product.create({
-//                 name, brand, image, images, type, price, oldPrice, discount, description,
-//                 sizeStock, stock, totalstock, category, rating, reviews, status
-//             })
-//             if (createProduct) {
-//                 resolve({
-//                     status: 'Ok',
-//                     message: 'Tạo sản phẩm thành công',
-//                     data: createProduct
-//                 })
-//             }
-//         } catch (e) {
-//             reject(e);
-//         }
-//     });
-// };
-
 const updateProduct = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -82,8 +50,10 @@ const updateProduct = (id, data) => {
                 data.totalStock = updateTotalStock(data.sizeStock);
             }
             if (data.discount !== undefined && data.price !== undefined) {
-                data.oldPrice = checkProduct.oldPrice || checkProduct.price;
-                data.price = Math.round(data.price * (1 - data.discount / 100));
+                if (data.price <= 0) {
+                    return reject({ status: 'ERR', message: 'Giá sản phẩm không hợp lệ' });
+                }
+                data.price = Math.round(checkProduct.oldPrice * (1 - data.discount / 100));
             }
 
             const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true })

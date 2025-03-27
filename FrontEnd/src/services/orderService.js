@@ -46,3 +46,11 @@ export const getHistoryOrder = async (userId) => {
     );
     return res.data;
 };
+
+export const cancelOrder = async (orderId) => {
+    const res = await axios.put(`${process.env.REACT_APP_API_URL}/order/cancelOrder/${orderId}`,
+        orderId
+    );
+    return res.data;
+};
+

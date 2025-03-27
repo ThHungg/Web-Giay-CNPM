@@ -10,6 +10,7 @@ router.get('/getAllOrder', authMiddleware, orderController.getAllOrder);
 router.put('/updateOrder/:orderId', authMiddleware, orderController.updateOrder);
 router.get('/getDetailOrder/:orderId', orderController.getDetailOrder);
 router.get('/historyOrder/:userId', orderController.getHistoryOrder);
+router.put('/cancelOrder/:orderId', orderController.cancalOrder);
 // router.delete('/orders/:orderId', orderController.deleteOrder);
 
 module.exports = router;

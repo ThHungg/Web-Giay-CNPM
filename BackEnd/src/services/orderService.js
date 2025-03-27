@@ -128,6 +128,40 @@ const getHistoryOrder = (userId) => {
     })
 }
 
+const cancelOrder = (orderId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const order = await Order.findById(orderId);
+
+            if (!order) {
+                resolve({
+                    status: "ERR",
+                    message: "Đơn hàng không tồn tại"
+                });
+            }
+
+            if (order.status === "Đã hủy") {
+                resolve({
+                    status: "ERR",
+                    message: "Đơn hàng đã hủy"
+                });
+            }
+
+            order.status = "Đã hủy";
+            await order.save();
+
+            resolve({
+                status: "OK",
+                message: "Đơn hàng đã được hủy",
+                data: order
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+
 
 module.exports = {
     createOrder,
@@ -136,5 +170,6 @@ module.exports = {
     getAllOrder,
     updateOrder,
     getDetailOrder,
-    getHistoryOrder
+    getHistoryOrder,
+    cancelOrder
 }

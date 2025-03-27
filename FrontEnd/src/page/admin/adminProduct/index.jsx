@@ -832,7 +832,6 @@ const AdminProduct = () => {
                 </td>
                 <td className="border p-2">
                   <div className="flex gap-2 text-2xl justify-center">
-                    <MdDelete className="cursor-pointer" />
                     <FaEdit
                       className="cursor-pointer"
                       onClick={() => {
