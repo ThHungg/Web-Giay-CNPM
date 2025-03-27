@@ -1,3 +1,4 @@
+const Product = require('../models/Product');
 const productService = require('../services/productService')
 
 const createProduct = async (req, res) => {
@@ -113,25 +114,54 @@ const getAllProduct = async (req, res) => {
     }
 }
 
-// const softDeleteProduct = async (req, res) => {
-//     try {
-//         const id = req.params.id;
-//         const result = await productService.softDeleteProduct(id);
-//         return res.status(200).json(result);
-//     } catch (e) {
-//         return res.status(500).json({ status: "Err", message: e.message });
-//     }
-// };
+const softDeleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByIdAndUpdate(
+            id,
+            { deletedAt: new Date() },
+            { new: true }
+        );
+        if (!product) {
+            return res.status(404).json({ status: "Error", message: "Sản phẩm không tồn tại" });
+        }
+        res.json({ status: "OK", message: "Sản phẩm đã được xóa mềm", data: product });
+    } catch (error) {
+        res.status(500).json({ status: "Error", message: error.message });
+    }
+};
 
-// const restoreProduct = async (req, res) => {
-//     try {
-//         const id = req.params.id;
-//         const result = await productService.restoreProduct(id);
-//         return res.status(200).json(result);
-//     } catch (e) {
-//         return res.status(500).json({ status: "Err", message: e.message });
-//     }
-// };
+const getActiveProduct = async (req, res) => {
+    try {
+        const response = await productService.getActiveProduct();
+        return res.status(200).json(response);
+    } catch (e) {
+        console.error("Lỗi khi lấy sản phẩm hoạt động:", e);
+        return res.status(500).json({
+            message: "Lỗi hệ thống, vui lòng thử lại sau!",
+        });
+    }
+};
+
+
+const restoreProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByIdAndUpdate(
+            id,
+            { deletedAt: null },
+            { new: true }
+        );
+        if (!product) {
+            return res.status(404).json({ status: "Error", message: "Sản phẩm không tồn tại" });
+        }
+        res.json({ status: "OK", message: "Sản phẩm đã được khôi phục", data: product });
+    } catch (error) {
+        res.status(500).json({ status: "Error", message: error.message });
+    }
+};
+
+
 
 module.exports = {
     createProduct,
@@ -139,7 +169,8 @@ module.exports = {
     getDetailProduct,
     deleteProduct,
     getAllProduct,
-    // softDeleteProduct,
-    // restoreProduct
+    softDeleteProduct,
+    restoreProduct,
+    getActiveProduct
 
 };

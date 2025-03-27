@@ -32,6 +32,7 @@ const AdminProduct = () => {
   const [rowSelected, setRowSelected] = useState("");
   const user = useSelector((state) => state.user);
   const brands = ["Adidas", "Nike", "Vans", "Air Jordan", "MLB", "Converse"];
+  const [checked, setChecked] = useState(products ? !products.deletedAt : true);
 
   const [stateProduct, setSateProduct] = useState({
     name: "",
@@ -90,6 +91,40 @@ const AdminProduct = () => {
     mutation.mutate(stateProduct);
   };
 
+  // const handleChangeSoftDelete = async (checked, id) => {
+  //   if (!id) {
+  //     toast.error("Vui lòng chọn sản phẩm!");
+  //     return;
+  //   }
+
+  //   setChecked(checked);
+  //   await productService.softDelete(id);
+  //   toast.success(
+  //     checked ? "Sản phẩm đã được bán trở lại" : "Sản phẩm đã ngừng bán"
+  //   );
+  // };
+
+  const [checkedItems, setCheckedItems] = useState({});
+
+  const handleChangeSoftDelete = async (checked, id) => {
+    setCheckedItems((prev) => ({
+      ...prev,
+      [id]: checked,
+    }));
+
+    try {
+      if (checked) {
+        await productService.restore(id);
+        toast.success("Sản phẩm đã được kích hoạt");
+      } else {
+        await productService.softDelete(id);
+        toast.success("Sản phẩm đã ngừng bán");
+      }
+    } catch (e) {
+      toast.error("Có lỗi xảy ra, vui lòng thử lại!");
+    }
+  };
+
   const handleCancel = () => {
     setShowCreateModal(false);
     setShowUpdateModal(false);
@@ -131,6 +166,17 @@ const AdminProduct = () => {
     setSizeStock([...sizeStock, { size: "", stock: "" }]);
   };
 
+  const apartSizeField = (id, e) => {
+    e.preventDefault();
+    if (sizeList.length > 1) {
+      const indexToRemove = sizeList.findIndex((item) => item.id === id);
+      setSizeList(sizeList.filter((item) => item.id !== id));
+      setSizeStock(sizeStock.filter((_, index) => index !== indexToRemove));
+    } else {
+      toast("Bạn phải để lại ít nhất một size");
+    }
+  };
+
   const handleSizeStockChangeDetails = (index, field, value) => {
     setStateProductDetails((prev) => ({
       ...prev,
@@ -148,24 +194,13 @@ const AdminProduct = () => {
     }));
   };
 
-  const apartSizeFieldDetails = (id, e) => {
+  const apartSizeFieldDetails = (index, e) => {
     e.preventDefault();
     if (stateProductDetails.sizeStock.length > 1) {
       setStateProductDetails((prev) => ({
         ...prev,
-        sizeStock: prev.sizeStock.filter((item) => item.id !== id),
+        sizeStock: prev.sizeStock.filter((_, i) => i !== index),
       }));
-    } else {
-      toast("Bạn phải để lại ít nhất một size");
-    }
-  };
-
-  const apartSizeField = (id, e) => {
-    e.preventDefault();
-    if (sizeList.length > 1) {
-      const indexToRemove = sizeList.findIndex((item) => item.id === id);
-      setSizeList(sizeList.filter((item) => item.id !== id));
-      setSizeStock(sizeStock.filter((_, index) => index !== indexToRemove));
     } else {
       toast("Bạn phải để lại ít nhất một size");
     }
@@ -216,7 +251,6 @@ const AdminProduct = () => {
 
   const { isSuccess: isSuccessUpdated, isError: isErrorUpdated } =
     mutationUpdate;
-  // console.log("dataUpdated", dataUpdated);
 
   useEffect(() => {
     if (isSuccessUpdated) {
@@ -611,14 +645,15 @@ const AdminProduct = () => {
                           <option
                             key={size}
                             value={size}
-                            disabled={sizeStock.some(
-                              (item) => item.size === String(size)
-                            )}
+                            disabled={stateProductDetails.sizeStock
+                              .filter((_, i) => i !== index) // Loại bỏ chính nó ra khỏi kiểm tra
+                              .some((s) => s.size === String(size))}
                           >
                             {size}
                           </option>
                         ))}
                       </select>
+
                       <div className="flex gap-x-2">
                         <input
                           type="text"
@@ -635,7 +670,7 @@ const AdminProduct = () => {
                         />
                         <button
                           className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
-                          onClick={(e) => apartSizeFieldDetails(item.id, e)}
+                          onClick={(e) => apartSizeFieldDetails(index, e)}
                         >
                           -
                         </button>
@@ -776,8 +811,7 @@ const AdminProduct = () => {
                 <td className="border p-2">{index + 1}</td>
                 {product.discount > 0 ? (
                   <td className="border p-2">
-                    {product.productCode} | 
-                    {" "}{product.name}{" "}
+                    {product.productCode} | {product.name}{" "}
                     <span className="text-red-500">- {product.discount}%</span>
                   </td>
                 ) : (
@@ -788,9 +822,12 @@ const AdminProduct = () => {
                 <td className="border p-2">{formatter(product.price)}</td>
                 <td className="border p-2">
                   <Switch
+                    checked={checkedItems[product._id] ?? !product.deletedAt}
                     checkedChildren="Đang bán"
                     unCheckedChildren="Ngưng bán"
-                    defaultChecked
+                    onChange={(checked) =>
+                      handleChangeSoftDelete(checked, product._id)
+                    }
                   />
                 </td>
                 <td className="border p-2">

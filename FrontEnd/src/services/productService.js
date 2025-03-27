@@ -31,3 +31,18 @@ export const reduceStock = async (id, quantity) => {
     })
     return res.data
 }
+
+export const softDelete = async (id) => {
+    const res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/product/softDelete/${id}`);
+    return res.data
+}
+
+export const restore = async (id) => {
+    const res = await axiosJWT.patch(`${process.env.REACT_APP_API_URL}/product/restore/${id}`);
+    return res.data
+}
+
+export const getActiveProducts = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/product/getActive`)
+    return res.data
+}

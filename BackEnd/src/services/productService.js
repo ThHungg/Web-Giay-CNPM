@@ -1,13 +1,6 @@
 const Product = require("../models/Product")
 const { updateTotalStock } = require('../utils/totalStockUtils')
-
-const generateProductCode = () => {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0'); // Lấy giờ, đảm bảo 2 chữ số
-    const minutes = String(now.getMinutes()).padStart(2, '0'); // Lấy phút, đảm bảo 2 chữ số
-    const seconds = String(now.getSeconds()).padStart(2, '0'); // Lấy giây, đảm bảo 2 chữ số
-    return `SP${hours}${minutes}${seconds}`;
-};
+const { generateProductCode } = require('../utils/generateProductCode')
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
@@ -164,44 +157,71 @@ const getDetailProduct = (id) => {
     });
 };
 
-// const softDeleteProduct = async (id) => {
-//     try {
-//         const checkProduct = await product.findById(id)
-//         if (!checkProduct) {
-//             return {
-//                 status: "Err",
-//                 message: "Sản phẩm không tồn tại"
-//             }
-//         }
-//         await product.findByIdAndUpdate(id, { isDeleted: true })
-//         return {
-//             status: "Ok",
-//             message: "Xóa mềm thành công"
-//         }
-//     } catch (e) {
-//         reject(e);
-//     }
-// }
+const softDeleteProduct = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const product = await Product.findById(id)
+            if (!product) {
+                return resolve({
+                    status: "ERR",
+                    message: "Sản phẩm không tồn tại"
+                })
+            }
+            product.deletedAt = new Date()
+            await product.save()
 
-// const restoreProduct = async (id) => {
-//     try {
-//         const checkProduct = await product.findById(id)
-//         if (!checkProduct) {
-//             return {
-//                 status: "Err",
-//                 message: "Sản phẩm không tồn tại"
-//             }
-//         }
-//         await product.findByIdAndUpdate(id, { isDeleted: false })
-//         return {
-//             status: "Ok",
-//             message: "Khôi phục sản phẩm thành công"
-//         }
-//     } catch (e) {
-//         reject(e);
-//     }
-// }
+            resolve({
+                status: "OK",
+                message: "Sản phẩm đã được ẩn đi",
+                data: product
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 
+const getActiveProduct = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const activeProducts = await Product.find({ deletedAt: null }).sort({ createdAt: -1 });
+            resolve({
+                status: "OK",
+                message: "Danh sách sản phẩm đang hoạt động",
+                data: activeProducts,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+
+
+const restoreProduct = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const product = await Product.findById(id)
+            if (!product || product === null) {
+                return resolve({
+                    status: "ERR",
+                    message: "Sản phẩm không tồn tại hoặc chưa bị xóa"
+                })
+            }
+
+            product.deletedAt = null
+            await product.save()
+
+            resolve({
+                status: "OK",
+                message: "Sản phẩm đã được khôi phục",
+                data: product
+            })
+        } catch (e) {
+
+        }
+    })
+}
 
 module.exports = {
     createProduct,
@@ -209,6 +229,7 @@ module.exports = {
     getDetailProduct,
     deleteProduct,
     getAllProduct,
-    // softDeleteProduct,
-    // restoreProduct
+    softDeleteProduct,
+    restoreProduct,
+    getActiveProduct
 };

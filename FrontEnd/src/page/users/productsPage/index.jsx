@@ -6,7 +6,7 @@ import * as productService from "../../../services/productService";
 import { useQuery } from "@tanstack/react-query";
 const Products = () => {
   const fetchProductAll = async () => {
-    const res = await productService.getAllProduct();
+    const res = await productService.getActiveProducts();
     return res;
   };
   const { data: products } = useQuery({
@@ -24,7 +24,7 @@ const Products = () => {
   const itemsPerPage = 12;
 
   const handlePriceFilter = (range) => {
-    setPriceRange((prev) => (prev === range ? "" : range)); // Nếu đang chọn thì bỏ chọn, nếu chưa chọn thì chọn
+    setPriceRange((prev) => (prev === range ? "" : range)); 
     setCurrentPage(1);
   };
 
