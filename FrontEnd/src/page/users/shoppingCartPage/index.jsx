@@ -2,8 +2,7 @@ import { memo, useState } from "react";
 import formatter from "../../../utils/formatter";
 import Quantity from "../../../component/Quantity/index.jsx";
 import { MdDeleteOutline } from "react-icons/md";
-import shoesData from "../../../data.json";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router.jsx";
 import * as cartService from "../../../services/cartService.js";
 import { jwtDecode } from "jwt-decode";
@@ -14,9 +13,7 @@ import { toast } from "react-toastify";
 
 const ShoppingCartPage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
   const [quantity, setQuantity] = useState({});
-  const [cart, setCart] = useState([]);
   const [isRemoving, setIsRemoving] = useState(null);
 
   const handleQuantityChange = async (productId, newQuantity) => {

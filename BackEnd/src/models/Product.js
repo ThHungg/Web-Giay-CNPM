@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema(
     {
+        productCode: { type: String, unique: true },
         name: { type: String, required: true },
         brand: { type: String, required: true },
         image: { type: String, required: true },
+        images: [{ type: String }],
         price: { type: Number },
+        oldPrice: { type: Number },
         discount: { type: Number },
         description: { type: String, required: true },
         sizeStock: [
@@ -14,6 +17,17 @@ const productSchema = new mongoose.Schema(
                 stock: { type: Number, required: true, default: 0, min: 0 },
             },
         ],
+        totalStock: {type: Number, default: 0,  min:0, required: true},
+        status: { type: String, enum: ['Còn hàng', 'Hết hàng'], default: 'Còn hàng' },
+        rating: { type: Number, default: 0, min: 0, max: 5 },
+        reviews: [
+            {
+                user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+                comment: { type: String },
+                rating: { type: Number, min: 1, max: 5 },
+            }
+        ],
+        deletedAt: { type: Date, default: null }
     },
     {
         timestamps: true,

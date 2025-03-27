@@ -9,7 +9,7 @@ const Products = () => {
     const res = await productService.getAllProduct();
     return res;
   };
-  const { isLosading, data: products } = useQuery({
+  const { data: products } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProductAll,
     retry: 3,
@@ -17,14 +17,6 @@ const Products = () => {
   });
 
   const brands = ["Adidas", "Nike", "Vans", "Air Jordan", "MLB", "Converse"];
-  const sorts = [
-    "Giá thấp đến cao",
-    "Giá cao đến thấp",
-    "Cũ đến mới",
-    "Mới đến cũ",
-    "Bán chạy nhất",
-    "Đang giảm giá",
-  ];
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBrand, setSelectedBrand] = useState("");
@@ -191,7 +183,7 @@ const Products = () => {
                       name={product.name}
                       img={product.image}
                       price={product.price}
-                      oldprice={product.oldprice}
+                      oldprice={product.oldPrice}
                       discount={product.discount}
                     />
                   </Link>

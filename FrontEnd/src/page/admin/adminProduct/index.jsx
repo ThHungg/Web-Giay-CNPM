@@ -8,7 +8,6 @@ import { Form, Switch } from "antd";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import Loading from "../../../component/Loading";
 import formatter from "../../../utils/formatter";
 
 const AdminProduct = () => {
@@ -17,7 +16,7 @@ const AdminProduct = () => {
     return res;
   };
 
-  const { isLosading, data: products } = useQuery({
+  const { data: products } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProductAll,
     retry: 3,
@@ -71,7 +70,7 @@ const AdminProduct = () => {
     });
   });
 
-  const { data, isLoading, isSuccess, isError } = mutation;
+  const { isSuccess, isError } = mutation;
 
   useEffect(() => {
     if (isSuccess) {
@@ -215,12 +214,8 @@ const AdminProduct = () => {
     return await productService.updateProduct(id, token, rests);
   });
 
-  const {
-    data: dataUpdated,
-    isLoading: isLoadingUpdated,
-    isSuccess: isSuccessUpdated,
-    isError: isErrorUpdated,
-  } = mutationUpdate;
+  const { isSuccess: isSuccessUpdated, isError: isErrorUpdated } =
+    mutationUpdate;
   // console.log("dataUpdated", dataUpdated);
 
   useEffect(() => {
@@ -781,7 +776,8 @@ const AdminProduct = () => {
                 <td className="border p-2">{index + 1}</td>
                 {product.discount > 0 ? (
                   <td className="border p-2">
-                    {product.name}{" "}
+                    {product.productCode} | 
+                    {" "}{product.name}{" "}
                     <span className="text-red-500">- {product.discount}%</span>
                   </td>
                 ) : (

@@ -1,7 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import RouterCustome from "./router";
 import { useEffect } from "react";
-import axios from "axios";
 import { isJsonString } from "./utils/isJsonString";
 import { jwtDecode } from "jwt-decode";
 import * as userServices from "./services/userServices";

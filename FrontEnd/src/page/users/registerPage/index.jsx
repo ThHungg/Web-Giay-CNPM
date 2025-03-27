@@ -4,14 +4,13 @@ import { ROUTERS } from "../../../utils/router";
 import * as userServices from "../../../services/userServices";
 import { useMutationHooks } from "../../../hooks/useMutation";
 import Loading from "../../../component/Loading";
-import * as message from "../../../component/message";
 import { useNavigate } from "react-router-dom";
 import ToastNotification from "../../../component/toastNotification";
 import { toast } from "react-toastify";
 
 const RegisterPage = () => {
   const mutation = useMutationHooks((data) => userServices.registerUser(data));
-  const { data, isLoading, isSuccess, isError } = mutation;
+  const { data, isSuccess, isError } = mutation;
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",

@@ -1,8 +1,18 @@
 const Product = require("../models/Product")
+const { updateTotalStock } = require('../utils/totalStockUtils')
+
+const generateProductCode = () => {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0'); // Lấy giờ, đảm bảo 2 chữ số
+    const minutes = String(now.getMinutes()).padStart(2, '0'); // Lấy phút, đảm bảo 2 chữ số
+    const seconds = String(now.getSeconds()).padStart(2, '0'); // Lấy giây, đảm bảo 2 chữ số
+    return `SP${hours}${minutes}${seconds}`;
+};
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
         const { name, brand, image, price, description, sizeStock, discount } = newProduct;
+        const productCode = generateProductCode();
         try {
             const checkProduct = await Product.findOne({ name })
             if (checkProduct) {
@@ -11,11 +21,14 @@ const createProduct = (newProduct) => {
                     message: 'Tên sản phẩm đã tồn tại'
                 });
             }
+
+            const oldPrice = price;
+            const totalStock = updateTotalStock(sizeStock);
+            const finalPrice = discount > 0 ? Math.round(price * (1 - discount / 100)) : price;
+
             const createProduct = await Product.create({
-                // name, brand, image, images, type, price, oldPrice, discount, description,
-                // sizeStock, stock, totalstock, category, rating, reviews, status
-                name, brand, image, price, description, sizeStock, discount, createdAt: Date.now()
-            })
+                name, brand, image, price: finalPrice, oldPrice, description, sizeStock, discount, totalStock, productCode, createdAt: Date.now()
+            });
             if (createProduct) {
                 resolve({
                     status: 'Ok',
@@ -69,6 +82,14 @@ const updateProduct = (id, data) => {
                     status: "ERR",
                     message: 'Sản phẩm không xác định'
                 })
+            }
+
+            if (data.sizeStock) {
+                data.totalStock = updateTotalStock(data.sizeStock);
+            }
+            if (data.discount !== undefined && data.price !== undefined) {
+                data.oldPrice = checkProduct.oldPrice || checkProduct.price;
+                data.price = Math.round(data.price * (1 - data.discount / 100));
             }
 
             const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true })

@@ -1,12 +1,11 @@
 import { memo } from "react";
-import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
+import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { ROUTERS } from "../../../../utils/router";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import profilePage from "../../profilePage";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Popover } from "antd";
+import { Popover } from "antd";
 import * as userServices from "../../../../services/userServices";
 import { resetUser } from "../../../../redux/slides/userSlide";
 

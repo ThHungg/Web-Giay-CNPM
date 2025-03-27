@@ -26,7 +26,8 @@ const addToCart = (userId, productId, size, quantity, price) => {
                 cart.products.push({ productId, size, quantity, price });
             }
 
-            cart.totalPrice += product.price * quantity;
+            cart.totalPrice += product.price * quantity
+
             await cart.save()
 
             resolve({

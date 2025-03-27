@@ -31,7 +31,7 @@ const ProfilePage = () => {
     return res;
   });
 
-  const { data, isLoading, isSuccess, isError } = mutation;
+  const { isSuccess } = mutation;
 
   useEffect(() => {
     setEmail(user?.email);
@@ -230,30 +230,30 @@ const ProfilePage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                      <tr>
-                        <td className="border p-2">1</td>
-                        <td className="border p-2">
-                          <div className="flex gap-3">
-                            <img
-                              src="https://supersports.com.vn/cdn/shop/files/FJ7765-101-1.jpg?v=1721988921"
-                              alt=""
-                              className="h-[60px] w-[80px]"
-                            />
-                            <div>
-                              <h1>{orderDetails?.data?.[0].total}</h1>
-                              <h1>{orderDetails?.data?.[0].total} | SL: 1</h1>
-                              <h1>Giá: 4.000.000 đ</h1>
-                            </div>
+                    <tr>
+                      <td className="border p-2">1</td>
+                      <td className="border p-2">
+                        <div className="flex gap-3">
+                          <img
+                            src="https://supersports.com.vn/cdn/shop/files/FJ7765-101-1.jpg?v=1721988921"
+                            alt=""
+                            className="h-[60px] w-[80px]"
+                          />
+                          <div>
+                            <h1>{orderDetails?.data?.[0].total}</h1>
+                            <h1>{orderDetails?.data?.[0].total} | SL: 1</h1>
+                            <h1>Giá: 4.000.000 đ</h1>
                           </div>
-                        </td>
-                        <td className="border p-2">23/24/2025, 12:23:07 AM</td>
-                        <td className="border p-2">Đang giao hàng</td>
-                        <td className="border p-2">
-                          <button className="px-4 py-2 bg-red-500 rounded-lg text-white">
-                            Hủy
-                          </button>
-                        </td>
-                      </tr>
+                        </div>
+                      </td>
+                      <td className="border p-2">23/24/2025, 12:23:07 AM</td>
+                      <td className="border p-2">Đang giao hàng</td>
+                      <td className="border p-2">
+                        <button className="px-4 py-2 bg-red-500 rounded-lg text-white">
+                          Hủy
+                        </button>
+                      </td>
+                    </tr>
                     {/* <tr>
                       <td className="border p-2">1</td>
                       <td className="border p-2">

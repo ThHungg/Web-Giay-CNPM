@@ -1,9 +1,7 @@
 import { memo } from "react";
-import { AiOutlineEye, AiOutlineShoppingCart } from "react-icons/ai";
-import { Link } from "react-router-dom";
 import formatter from "../../utils/formatter";
 
-const ProductsCard = ({ img, name, price, discount }) => {
+const ProductsCard = ({ img, name, price, discount, oldprice }) => {
   return (
     <div className="m-3 bg-white w-[300px] h-[400px] rounded-xl py-2 space-y-3 shadow-lg">
       <div className="w-full h-[280px] p-2 overflow-hidden rounded-xl relative">
@@ -36,11 +34,11 @@ const ProductsCard = ({ img, name, price, discount }) => {
           </div>
           <div className="flex justify-center gap-2">
             <h1 className="text-[19px] text-red-500 font-semibold">
-              {formatter(discount > 0 ? price * (1 - discount / 100) : price)}
+                {formatter(price)}
             </h1>
             {discount > 0 && (
               <h1 className="text-[16px] line-through opacity-50">
-                {formatter(price)}
+                {formatter(oldprice)}
               </h1>
             )}
           </div>

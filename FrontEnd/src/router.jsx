@@ -13,7 +13,6 @@ import CheckoutPage from "./page/users/checkoutPage";
 import MasterAdLayout from "./page/admin/theme/masterAdLayout";
 import RegisterPage from "./page/users/registerPage";
 import AdminUser from "./page/admin/adminUser";
-import { useSelector } from "react-redux";
 import AdminProduct from "./page/admin/adminProduct";
 import AdminOrder from "./page/admin/adminOrder";
 import ForgotPasswordPage from "./page/users/forgotPasswordPage";

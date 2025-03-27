@@ -2,19 +2,15 @@ import { memo, useEffect, useState } from "react";
 import formatter from "../../../utils/formatter.jsx";
 import Quantity from "../../../component/Quantity/index.jsx";
 import { useParams } from "react-router-dom";
-import { ProductCard } from "../../../component/index.jsx";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import StarRating from "../../../component/StarRaint/index.jsx";
 import * as productService from "../../../services/productService";
 import * as cartService from "../../../services/cartService.js";
-import * as orderService from "../../../services/orderService.js";
-import { useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification/index.js";
 import { useMutationHooks } from "../../../hooks/useMutation.js";
-import Loading from "../../../component/Loading/index.js";
 
 const DetailProduct = () => {
   const { id } = useParams();
@@ -51,10 +47,7 @@ const DetailProduct = () => {
       productId: id,
       size: selectedSize,
       quantity: quantity,
-      price:
-        productDetail.discount > 0
-          ? productDetail.price * (1 - productDetail.discount / 100)
-          : productDetail.price,
+      price: productDetail.price,
     });
   };
 
@@ -91,6 +84,7 @@ const DetailProduct = () => {
   const [productDetail, setProductDetail] = useState({
     name: "",
     price: "",
+    oldPrice: "",
     description: "",
     brand: "",
     image: "",
@@ -104,6 +98,7 @@ const DetailProduct = () => {
       setProductDetail({
         name: res?.data?.name,
         price: res?.data?.price,
+        oldPrice: res?.data?.oldPrice,
         description: res?.data?.description,
         brand: res?.data?.brand,
         image: res?.data?.image,
@@ -186,7 +181,7 @@ const DetailProduct = () => {
           <img
             src={productDetail.image}
             alt=""
-            className="h-[500px] w-[800px] object-cover"
+            className="h-2/6 w-full object-contain"
           />
           <div className="flex justify-center gap-3 mt-2">
             <img
@@ -195,7 +190,7 @@ const DetailProduct = () => {
               className="h-[80px] w-[80px] object-contain"
             />
           </div>
-          <Tabs >
+          <Tabs>
             <TabList className="flex justify-center">
               <Tab>
                 <h1 className="text-2xl font-bold">Mô tả sản phẩm</h1>
@@ -209,7 +204,7 @@ const DetailProduct = () => {
             </TabList>
 
             <TabPanel>
-              <h2 className="text-lg text-gray-700 leading-relaxed">
+              <h2 className="text-lg text-gray-700 leading-relaxed whitespace-pre-line">
                 {productDetail.description}
               </h2>
             </TabPanel>
@@ -294,15 +289,11 @@ const DetailProduct = () => {
           </ul>
           <div className="flex gap-5 items-center">
             <h1 className="text-red-500 font-bold text-2xl">
-              {formatter(
-                productDetail.discount > 0
-                  ? productDetail.price * (1 - productDetail.discount / 100)
-                  : productDetail.price
-              )}
+              {formatter(productDetail.price)}
               {/* {formatter(productDetail.price)} */}
             </h1>
             <h1 className="text-gray-500 opacity-70 font-bold text-xl line-through">
-              {productDetail.discount > 0 && formatter(productDetail.price)}
+              {productDetail.discount > 0 && formatter(productDetail.oldPrice)}
             </h1>
           </div>
           <ul>
