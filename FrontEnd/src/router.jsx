@@ -16,6 +16,7 @@ import AdminUser from "./page/admin/adminUser";
 import AdminProduct from "./page/admin/adminProduct";
 import AdminOrder from "./page/admin/adminOrder";
 import ForgotPasswordPage from "./page/users/forgotPasswordPage";
+import CheckPayment from "./page/users/checkPaymentPage";
 
 const renderUserRouter = () => {
   const userRouter = [
@@ -72,6 +73,11 @@ const renderUserRouter = () => {
     {
       path: ROUTERS.USER.CHECKOUT,
       component: <CheckoutPage />,
+      hasAddToBanner: false,
+    },
+    {
+      path: ROUTERS.USER.CHECKPAYMENT,
+      component: <CheckPayment />,
       hasAddToBanner: false,
     },
   ];

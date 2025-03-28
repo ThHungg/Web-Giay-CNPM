@@ -1,13 +1,17 @@
 import { memo } from "react";
+import { useLocation } from "react-router-dom";
 import Header from "../header";
 import Footer from "../footer";
 
 const MasterLayout = ({ children, hasAddToBanner = false }) => {
+  const location = useLocation();
+  const isCheckPaymentPage = location.pathname === "/payment-result"; 
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Header hasAddToBanner={hasAddToBanner} />
+      {!isCheckPaymentPage && <Header hasAddToBanner={hasAddToBanner} />}
       <main className="flex-grow">{children}</main>
-      <Footer />
+      {!isCheckPaymentPage && <Footer />}
     </div>
   );
 };

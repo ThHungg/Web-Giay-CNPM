@@ -12,6 +12,7 @@ export const ROUTERS = {
     REGISTER: "/dang-ky",
     FORGOTPASS: "/quen-mat-khau",
     CHECKOUT: "/thanh-toan",
+    CHECKPAYMENT: "/payment-result",
   },
   ADMIN: {
     USER: "/admin/users",

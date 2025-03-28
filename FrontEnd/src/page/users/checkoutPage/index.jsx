@@ -3,6 +3,7 @@ import formatter from "../../../utils/formatter";
 import { useState, useEffect } from "react";
 import * as cartService from "../../../services/cartService.js";
 import * as orderService from "../../../services/orderService.js";
+import * as paymentService from "../../../services/paymentService.js";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +11,12 @@ import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification/index.js";
 
 const CheckoutPage = () => {
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("COD");
+  const [note, setNote] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [size, setSize] = useState("");
   const token = localStorage.getItem("access_token");
   let userId;
   if (token) {
@@ -27,111 +34,79 @@ const CheckoutPage = () => {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+  console.log(totalAmount);
+  console.log("Payment", selectedPaymentMethod);
 
-  // const validateForm = () => {
-  //   let errors = {};
+  // const handleOrder = async () => {
+  //   if (
+  //     !userId ||
+  //     !cartData ||
+  //     !selectedPaymentMethod ||
+  //     !name ||
+  //     !phone ||
+  //     !email
+  //   ) {
+  //     toast.error("Vui lòng nhập đầy đủ thông tin.");
+  //     return;
+  //   }
+  //   const orderData = {
+  //     userId: userId,
+  //     items: cartData.cart.data.products.map((item) => ({
+  //       productId: item.productId._id,
+  //       quantity: item.quantity,
+  //       price: item.price,
+  //       size: item.size,
+  //     })),
+  //     shippingAddress: {
+  //       street: street,
+  //       province: selectedProvince,
+  //       district: selectedDistrict,
+  //       ward: selectedWard,
+  //     },
+  //     paymentMethod: selectedPaymentMethod,
+  //     note: note,
+  //     total: totalAmount,
+  //     customerInfo: {
+  //       nameReceiver: name,
+  //       phoneReceiver: phone,
+  //       emailReceiver: email,
+  //     },
+  //   };
 
-  //   // Kiểm tra họ tên
-  //   if (!name) {
-  //     errors.name = "Họ và tên là bắt buộc!";
+  //   if (orderData.items.length === 0) {
+  //     toast.error("Giỏ hàng của bạn đang trống.");
+  //     return;
   //   }
 
-  //   // Kiểm tra số điện thoại
-  //   if (!phone) {
-  //     errors.phone = "Số điện thoại là bắt buộc!";
-  //   } else if (!/^[0-9]{10}$/.test(phone)) {
-  //     errors.phone = "Số điện thoại không hợp lệ!";
+  //   const createOrder = await orderService.createOrder(
+  //     orderData.userId,
+  //     orderData.items,
+  //     orderData.shippingAddress,
+  //     orderData.paymentMethod,
+  //     orderData.note,
+  //     orderData.total,
+  //     orderData.customerInfo
+  //   );
+
+  //   if (createOrder && createOrder.success) {
+  //     toast.success("Đặt hàng thành công");
+  //     await cartService.clearCart(orderData.userId);
+  //   } else {
+  //     toast.error("Đặt hàng thất bại");
   //   }
-  //   if (!email) {
-  //     errors.email = "Email là bắt buộc!";
-  //   }
-  //   // else if (!/\S+@\S+\.\S+/.test(email)) {
-  //   //   errors.email = "Email không hợp lệ!";
-  //   // }
-
-  //   // if (!street) {
-  //   //   errors.street = "Địa chỉ cụ thể là bắt buộc!";
-  //   // }
-
-  //   // if (!selectedProvince) {
-  //   //   errors.province = "Tỉnh/Thành phố là bắt buộc!";
-  //   // }
-  //   // if (!selectedDistrict) {
-  //   //   errors.district = "Quận/Huyện là bắt buộc!";
-  //   // }
-  //   // if (!selectedWard) {
-  //   //   errors.ward = "Phường/Xã là bắt buộc!";
-  //   // }
-
-  //   return errors;
+  //   refetch();
   // };
 
-  const handleOrder = async () => {
-    if (
-      !userId ||
-      !cartData ||
-      !selectedPaymentMethod ||
-      !name ||
-      !phone ||
-      !email
-    ) {
-      toast.error("Vui lòng nhập đầy đủ thông tin.");
-      return;
+  const handlePayment = async () => {
+    // totalAmount
+    if (selectedPaymentMethod && selectedPaymentMethod === "Banking") {
+      try {
+        const data = await paymentService.createVNPayPayment(totalAmount);
+        console.log("data", data);
+        window.location.href = data.paymentUrl;
+      } catch (e) {}
     }
-    const orderData = {
-      userId: userId,
-      items: cartData.cart.data.products.map((item) => ({
-        productId: item.productId._id,
-        quantity: item.quantity,
-        price: item.price,
-        size: item.size,
-      })),
-      shippingAddress: {
-        street: street,
-        province: selectedProvince,
-        district: selectedDistrict,
-        ward: selectedWard,
-      },
-      paymentMethod: selectedPaymentMethod,
-      note: note,
-      total: totalAmount,
-      customerInfo: {
-        nameReceiver: name,
-        phoneReceiver: phone,
-        emailReceiver: email,
-      },
-    };
-
-    if (orderData.items.length === 0) {
-      toast.error("Giỏ hàng của bạn đang trống.");
-      return;
-    }
-
-    const createOrder = await orderService.createOrder(
-      orderData.userId,
-      orderData.items,
-      orderData.shippingAddress,
-      orderData.paymentMethod,
-      orderData.note,
-      orderData.total,
-      orderData.customerInfo
-    );
-
-    if (createOrder && createOrder.success) {
-      toast.success("Đặt hàng thành công");
-      await cartService.clearCart(orderData.userId);
-    } else {
-      toast.error("Đặt hàng thất bại");
-    }
-    refetch();
   };
-
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("COD");
-  const [note, setNote] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [size, setSize] = useState("");
 
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -213,6 +188,44 @@ const CheckoutPage = () => {
 
     setSelectedWard(selectedWard ? selectedWard.name : "");
   };
+
+  // const validateForm = () => {
+  //   let errors = {};
+
+  //   // Kiểm tra họ tên
+  //   if (!name) {
+  //     errors.name = "Họ và tên là bắt buộc!";
+  //   }
+
+  //   // Kiểm tra số điện thoại
+  //   if (!phone) {
+  //     errors.phone = "Số điện thoại là bắt buộc!";
+  //   } else if (!/^[0-9]{10}$/.test(phone)) {
+  //     errors.phone = "Số điện thoại không hợp lệ!";
+  //   }
+  //   if (!email) {
+  //     errors.email = "Email là bắt buộc!";
+  //   }
+  //   // else if (!/\S+@\S+\.\S+/.test(email)) {
+  //   //   errors.email = "Email không hợp lệ!";
+  //   // }
+
+  //   // if (!street) {
+  //   //   errors.street = "Địa chỉ cụ thể là bắt buộc!";
+  //   // }
+
+  //   // if (!selectedProvince) {
+  //   //   errors.province = "Tỉnh/Thành phố là bắt buộc!";
+  //   // }
+  //   // if (!selectedDistrict) {
+  //   //   errors.district = "Quận/Huyện là bắt buộc!";
+  //   // }
+  //   // if (!selectedWard) {
+  //   //   errors.ward = "Phường/Xã là bắt buộc!";
+  //   // }
+
+  //   return errors;
+  // };
 
   return (
     <div className="max-w-screen-xl flex mx-auto gap-5">
@@ -389,7 +402,7 @@ const CheckoutPage = () => {
         </h1>
         <button
           className="px-4 py-2 w-full bg-black text-white rounded-2xl text-2xl font-bold mt-5"
-          onClick={handleOrder}
+          onClick={handlePayment}
         >
           Đặt hàng
         </button>
