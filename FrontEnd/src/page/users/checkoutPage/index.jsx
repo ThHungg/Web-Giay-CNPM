@@ -103,7 +103,7 @@ const CheckoutPage = () => {
       try {
         const data = await paymentService.createVNPayPayment(totalAmount);
         console.log("data", data);
-        window.location.href = data.paymentUrl;
+        // window.location.href = data.paymentUrl;
       } catch (e) {}
     }
   };

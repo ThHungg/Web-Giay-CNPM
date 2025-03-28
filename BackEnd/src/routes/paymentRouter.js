@@ -3,7 +3,7 @@ const router = express.Router();
 const dotenv = require('dotenv');
 const qs = require('qs');
 const crypto = require('crypto');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 function sortObject(obj) {
     let sorted = {};
@@ -19,7 +19,7 @@ router.get("/api/vnpay/create_payment", (req, res) => {
 
     const tmnCode = "4ZVUWL9J";
     const secretKey = "AVZ4GCMJ2X999T0HO5FJB0LO97PYL6WN";
-    const returnUrl = `${process.env.BASE_URL || 'http://localhost:3000'}/payment-result`;
+    const returnUrl = `${process.env.BASE_URL}/payment-result`;
     const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
     let ipAddr = req.ip;
@@ -29,7 +29,9 @@ router.get("/api/vnpay/create_payment", (req, res) => {
     let orderInfo = "Thanh_toan_don_hang";
     let locale = req.query.language || "vn";
     let currCode = "VND";
-    let exprireDate = moment().add(15, 'minutes').format("YYYYMMDDHHmmss");
+    // let exprireDate = moment().add(15, 'minutes').format("YYYYMMDDHHmmss");
+    let exprireDate = moment().tz('Asia/Singapore').add(15, 'minutes').format("YYYYMMDDHHmmss");
+    console.log("exprireDate", exprireDate)
 
     let vnp_Params = {
         vnp_Version: "2.1.0",
@@ -67,10 +69,10 @@ router.get("/api/vnpay/create_payment", (req, res) => {
 
 router.get("/api/vnpay/payment-result", (req, res) => {
     const query = req.query;
-    const secretKey = "AVZ4GCMJ2X999T0HO5FJB0LO97PYL6WN"; 
-    const vnp_SecureHash = query.vnp_SecureHash; 
+    const secretKey = "AVZ4GCMJ2X999T0HO5FJB0LO97PYL6WN";
+    const vnp_SecureHash = query.vnp_SecureHash;
 
-    delete query.vnp_SecureHash; 
+    delete query.vnp_SecureHash;
 
     const signData = qs.stringify(query);
 
