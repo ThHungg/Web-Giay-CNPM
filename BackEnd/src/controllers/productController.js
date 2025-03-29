@@ -161,6 +161,29 @@ const restoreProduct = async (req, res) => {
     }
 };
 
+const updateMultipleSold = async (req, res) => {
+    try {
+        const products = req.body; // Nhận danh sách sản phẩm cần cập nhật
+
+        if (!Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({
+                status: "ERR",
+                message: "Dữ liệu không hợp lệ, cần truyền danh sách sản phẩm"
+            });
+        }
+
+        const response = await productService.updateMultipleSold(products);
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            status: "ERR",
+            message: "Lỗi hệ thống, vui lòng thử lại sau!"
+        });
+    }
+};
+
+
 
 
 module.exports = {
@@ -171,6 +194,7 @@ module.exports = {
     getAllProduct,
     softDeleteProduct,
     restoreProduct,
-    getActiveProduct
+    getActiveProduct,
+    updateMultipleSold
 
 };

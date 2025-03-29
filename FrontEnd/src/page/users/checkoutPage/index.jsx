@@ -37,73 +37,78 @@ const CheckoutPage = () => {
   console.log(totalAmount);
   console.log("Payment", selectedPaymentMethod);
 
-  // const handleOrder = async () => {
-  //   if (
-  //     !userId ||
-  //     !cartData ||
-  //     !selectedPaymentMethod ||
-  //     !name ||
-  //     !phone ||
-  //     !email
-  //   ) {
-  //     toast.error("Vui lòng nhập đầy đủ thông tin.");
-  //     return;
-  //   }
-  //   const orderData = {
-  //     userId: userId,
-  //     items: cartData.cart.data.products.map((item) => ({
-  //       productId: item.productId._id,
-  //       quantity: item.quantity,
-  //       price: item.price,
-  //       size: item.size,
-  //     })),
-  //     shippingAddress: {
-  //       street: street,
-  //       province: selectedProvince,
-  //       district: selectedDistrict,
-  //       ward: selectedWard,
-  //     },
-  //     paymentMethod: selectedPaymentMethod,
-  //     note: note,
-  //     total: totalAmount,
-  //     customerInfo: {
-  //       nameReceiver: name,
-  //       phoneReceiver: phone,
-  //       emailReceiver: email,
-  //     },
-  //   };
-
-  //   if (orderData.items.length === 0) {
-  //     toast.error("Giỏ hàng của bạn đang trống.");
-  //     return;
-  //   }
-
-  //   const createOrder = await orderService.createOrder(
-  //     orderData.userId,
-  //     orderData.items,
-  //     orderData.shippingAddress,
-  //     orderData.paymentMethod,
-  //     orderData.note,
-  //     orderData.total,
-  //     orderData.customerInfo
-  //   );
-
-  //   if (createOrder && createOrder.success) {
-  //     toast.success("Đặt hàng thành công");
-  //     await cartService.clearCart(orderData.userId);
-  //   } else {
-  //     toast.error("Đặt hàng thất bại");
-  //   }
-  //   refetch();
-  // };
-
   const handlePayment = async () => {
     // totalAmount
     if (selectedPaymentMethod && selectedPaymentMethod === "Banking") {
+      // if (
+      //   !userId ||
+      //   !cartData ||
+      //   !selectedPaymentMethod ||
+      //   !name ||
+      //   !phone ||
+      //   !email
+      // ) {
+      //   toast.error("Vui lòng nhập đầy đủ thông tin.");
+      //   return;
+      // }
+      const orderData = {
+        userId: userId,
+        items: cartData.cart.data.products.map((item) => ({
+          productId: item.productId._id,
+          quantity: item.quantity,
+          price: item.price,
+          size: item.size,
+        })),
+        shippingAddress: {
+          street: street,
+          province: selectedProvince,
+          district: selectedDistrict,
+          ward: selectedWard,
+        },
+        paymentMethod: selectedPaymentMethod,
+        note: note,
+        total: totalAmount,
+        customerInfo: {
+          nameReceiver: name,
+          phoneReceiver: phone,
+          emailReceiver: email,
+        },
+      };
+
+      // if (orderData.items.length === 0) {
+      //   toast.error("Giỏ hàng của bạn đang trống.");
+      //   return;
+      // }
+
+      const createOrder = await orderService.createOrder(
+        orderData.userId,
+        orderData.items,
+        orderData.shippingAddress,
+        orderData.paymentMethod,
+        orderData.note,
+        orderData.total,
+        orderData.customerInfo
+      );
+      console.log("createOrder", createOrder);
+      const orderId = createOrder.order._id;
+  
+      const productIds = createOrder.order.items.map(item => item.productId);
+      console.log(productIds);
+      
+      // if (createOrder && createOrder.success) {
+      //   toast.success("Đặt hàng thành công");
+      //   await cartService.clearCart(orderData.userId);
+      // } else {
+      //   toast.error("Đặt hàng thất bại");
+      // }
+      // refetch();
       try {
-        const data = await paymentService.createVNPayPayment(totalAmount);
+        const data = await paymentService.createVNPayPayment(
+          orderId,
+          totalAmount
+        );
         console.log("data", data);
-        // window.location.href = data.paymentUrl;
+        window.location.href = data.paymentUrl;
       } catch (e) {}
     }
   };

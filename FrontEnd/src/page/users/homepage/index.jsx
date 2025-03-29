@@ -87,27 +87,19 @@ const HomePage = () => {
       {/* Categories New */}
       <div className="max-w-screen-xl mx-auto mt-5">
         <h1 className="text-4xl text-center font-bold my-10">Sản phẩm mới</h1>
-        <Carousel responsive={responsive}>
-          {/* {sliderItems.map((item, key) => (
-            <div className="bg-white max-h-[380px] mx-2 rounded-xl pt-1">
-              <div
-                className="h-[270px] m-2 bg-white rounded-xl"
-                style={{
-                  backgroundImage: `url(${item.bgImg})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-                key={key}
-              ></div>
-              <p className="text-center mt-2 text-lg font-semibold pb-2 pt-2">
-                {item.name}
-              </p>
-            </div>
-          ))} */}
+        <Carousel
+          responsive={responsive}
+          infinite={true}
+          autoPlay={true}
+          autoPlaySpeed={3000}
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
           {products.map((product) => (
-            <Link to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}>
+            <Link
+              key={product._id}
+              to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}
+            >
               <ProductCard
-                key={product.id}
                 name={product.name}
                 img={product.image}
                 price={product.price}

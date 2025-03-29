@@ -18,15 +18,11 @@ const createOrder = (userId, items) => {
     });
 };
 
-const getAllOrders = (limit = 10, page = 0, sort, filter) => {
+const getAllOrders = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const orders = await Order.find(filter)
-                .sort(sort)
-                .limit(limit)
-                .skip(limit * page)
-                .populate('userId', 'name')
-                .populate('items.productId', 'name price');
+            const orders = await Order.find()
+                .select('_id')
 
             resolve({
                 status: "Ok",
@@ -101,7 +97,7 @@ const updateOrder = (orderId, data) => {
 const getDetailOrder = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const orders = await Order.findById(id).populate('items.productId', 'name price image')
+            const orders = await Order.findById(id)
             resolve({
                 status: "OK",
                 message: "Lấy danh sách đơn hàng thành công",

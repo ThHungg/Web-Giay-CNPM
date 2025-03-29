@@ -11,6 +11,7 @@ router.get('/get-all', productController.getAllProduct)
 router.delete('/softDelete/:id', productController.softDeleteProduct)
 router.get('/getActive', productController.getActiveProduct)
 router.patch('/restore/:id', productController.restoreProduct)
+router.put('/sell-multiple', productController.updateMultipleSold)
 // router.delete('/soft-delete/:id', productController.softDeleteProduct)
 // router.patch('/restore/:id', productController.restoreProduct)
 

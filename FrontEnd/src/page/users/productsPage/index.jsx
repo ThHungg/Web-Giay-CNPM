@@ -24,7 +24,7 @@ const Products = () => {
   const itemsPerPage = 12;
 
   const handlePriceFilter = (range) => {
-    setPriceRange((prev) => (prev === range ? "" : range)); 
+    setPriceRange((prev) => (prev === range ? "" : range));
     setCurrentPage(1);
   };
 
@@ -77,7 +77,7 @@ const Products = () => {
           <div className="">
             <h1 className="text-2xl font-bold">Thương hiệu:</h1>
             <select
-              className="border w-full p-2 rounded-lg"
+              className="border w-full p-2 rounded-lg mt-3"
               name="brand"
               onClick={(e) => handleBrandClick(e.target.value)}
             >
@@ -95,7 +95,7 @@ const Products = () => {
               ))}
             </select>
           </div>
-          <div className="">
+          <div className="mt-5">
             <h className="text-2xl font-bold">Mức giá:</h>
             <div className="flex gap-4 mt-2 flex-col">
               <label className="flex items-center gap-2">
@@ -176,8 +176,8 @@ const Products = () => {
           <div className="grid grid-cols-3">
             {currentProducts.map((product) => {
               return (
-                <div className="">
-                  <Link to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}>
+                <Link to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}>
+                  <div className="transition-transform transform hover:scale-105 duration-300">
                     <ProductCard
                       key={product.id}
                       name={product.name}
@@ -186,8 +186,8 @@ const Products = () => {
                       oldprice={product.oldPrice}
                       discount={product.discount}
                     />
-                  </Link>
-                </div>
+                  </div>
+                </Link>
               );
             })}
           </div>

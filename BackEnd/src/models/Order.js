@@ -15,7 +15,7 @@ const orderSchema = new mongoose.Schema(
         total: { type: Number, required: true },
         status: {
             type: String,
-            enum: ["Chờ xác nhận", "Đã xác nhận", "Đang giao", "Đã giao", "Đã hủy"],
+            enum: ["Chờ xác nhận", "Đã xác nhận", "Thanh toán thành công", "Đang giao", "Đã giao", "Đã hủy"],
             default: "Chờ xác nhận"
         },
         shippingAddress: {

@@ -194,6 +194,49 @@ const restoreProduct = (id) => {
     })
 }
 
+const updateMultipleSold = (products) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let updatedProducts = await Promise.all(
+                products.map(async (item) => {
+                    const { productId, size, quantity } = item;
+
+                    const product = await Product.findById(productId);
+                    if (!product) {
+                        return resolve({ status: "ERR", message: `Sản phẩm ID ${productId} không xác định` });
+                    }
+
+                    // Tìm size cần cập nhật
+                    const sizeItem = product.sizeStock.find(s => s.size === size);
+                    if (!sizeItem) {
+                        return resolve({ status: "ERR", message: `Size ${size} không tồn tại trong sản phẩm ID ${productId}` });
+                    }
+
+                    // Kiểm tra tồn kho trước khi bán
+                    if (sizeItem.stock < quantity) {
+                        return resolve({ status: "ERR", message: `Không đủ hàng trong kho cho sản phẩm ID ${productId}, size ${size}` });
+                    }
+
+                    // Cập nhật số lượng đã bán và tồn kho
+                    sizeItem.sold = (sizeItem.sold || 0) + quantity;
+                    sizeItem.stock -= quantity;
+
+                    // Tính lại tổng số lượng đã bán
+                    product.totalSold = product.sizeStock.reduce((acc, s) => acc + (s.sold || 0), 0);
+
+                    await product.save();
+                    return product;
+                })
+            );
+
+            resolve({ status: "OK", message: "Cập nhật số lượng bán thành công", data: updatedProducts });
+        } catch (error) {
+            reject({ status: "ERR", message: error.message });
+        }
+    });
+};
+
+
 module.exports = {
     createProduct,
     updateProduct,
@@ -202,5 +245,6 @@ module.exports = {
     getAllProduct,
     softDeleteProduct,
     restoreProduct,
-    getActiveProduct
+    getActiveProduct,
+    updateMultipleSold
 };

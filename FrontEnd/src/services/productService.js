@@ -46,3 +46,8 @@ export const getActiveProducts = async () => {
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/product/getActive`)
     return res.data
 }
+
+export const updateMultipleSold = async (products) => {
+    const res = await axios.put(`${process.env.REACT_APP_API_URL}/product/sell-multiple`, products)
+    return res.data
+}

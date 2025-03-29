@@ -39,8 +39,12 @@ const DetailProduct = () => {
   );
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
-      toast("Vui lòng chọn size!");
+    if (!userId) {
+      toast("Vui lòng đăng nhập để mua!");
+    } else {
+      if (!selectedSize) {
+        toast("Vui lòng chọn size!");
+      }
     }
     mutationAddToCart.mutate({
       userId: userId,
@@ -56,7 +60,7 @@ const DetailProduct = () => {
       toast("Thêm vào giỏ hàng thành công:", mutationAddToCart.data);
     }
   }, [mutationAddToCart.isSuccess, mutationAddToCart.isError]);
-
+  const availableSizes = [36, 37, 38, 39, 40, 41, 42];
   // const handleAddToCart = async () => {
   //   if (!selectedSize) {
   //     toast("Vui lòng chọn size");
@@ -181,7 +185,7 @@ const DetailProduct = () => {
           <img
             src={productDetail.image}
             alt=""
-            className="h-2/6 w-full object-contain"
+            className="h-2/6 w-full object-cover"
           />
           <div className="flex justify-center gap-3 mt-2">
             <img
@@ -306,26 +310,37 @@ const DetailProduct = () => {
           </ul>
           {/* Sizemap */}
           <div className="flex gap-2 items-center">
-            {productDetail.sizeStock.map((item, index) => (
-              <div key={index} className="relative inline-block">
-                <button
-                  className={`px-4 py-2 border rounded-lg font-medium transition-all duration-200 ${
-                    selectedSize === item.size
-                      ? "bg-black text-white shadow-md"
-                      : "bg-white hover:bg-gray-100"
-                  } ${item.stock === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
-                  onClick={() => setSelectedSize(item.size)}
-                  disabled={item.stock === 0}
-                >
-                  {item.size}
-                </button>
-                {item.stock > 0 && (
-                  <span className="absolute top-0 right-0 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold shadow-md translate-x-1/2 -translate-y-1/2">
-                    {item.stock}
-                  </span>
-                )}
-              </div>
-            ))}
+            {availableSizes.map((size) => {
+              const item = productDetail.sizeStock.find((s) => s.size === size);
+              const isAvailable = item && item.stock > 0;
+
+              return (
+                <div key={size} className="relative inline-block">
+                  <button
+                    className={`px-4 py-2 border rounded-lg font-medium transition-all duration-200
+                    ${
+                      selectedSize === size
+                        ? "bg-black text-black shadow-md border border-black"
+                        : ""
+                    }
+                    ${
+                      isAvailable
+                        ? "bg-white hover:bg-gray-100"
+                        : "opacity-50 cursor-not-allowed"
+                    }`}
+                    onClick={() => isAvailable && setSelectedSize(size)}
+                    disabled={!isAvailable}
+                  >
+                    {size}
+                  </button>
+                  {isAvailable && (
+                    <span className="absolute top-0 right-0 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold shadow-md translate-x-1/2 -translate-y-1/2">
+                      {item.stock}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
           <div className="my-2 flex justify-center gap-2 flex-col">
             <b className="text-2xl">Số lượng:</b>

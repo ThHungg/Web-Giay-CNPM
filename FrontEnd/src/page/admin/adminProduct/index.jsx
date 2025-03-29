@@ -330,7 +330,7 @@ const AdminProduct = () => {
 
   useEffect(() => {
     const updateItemsPerPage = () => {
-      const itemHeight = 45; // Giả sử mỗi sản phẩm cao 150px
+      const itemHeight = 48; // Giả sử mỗi sản phẩm cao 150px
       const availableHeight = window.innerHeight - 200; // Trừ đi header, footer, padding
       const items = Math.floor(availableHeight / itemHeight); // Tính số sản phẩm tối đa
       setItemsPerPage(items > 0 ? items : 1); // Đảm bảo ít nhất 1 sản phẩm/trang
@@ -808,7 +808,10 @@ const AdminProduct = () => {
           <tbody className="text-center">
             {currentProducts.map((product, index) => (
               <tr key={product.id} onClick={() => setRowSelected(product._id)}>
-                <td className="border p-2">{index + 1}</td>
+                <td className="border p-2">
+                  {" "}
+                  {(currentPage - 1) * itemsPerPage + index + 1}
+                </td>
                 {product.discount > 0 ? (
                   <td className="border p-2">
                     {product.productCode} | {product.name}{" "}

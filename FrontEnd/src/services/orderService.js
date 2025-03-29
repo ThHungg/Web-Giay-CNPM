@@ -54,3 +54,18 @@ export const cancelOrder = async (orderId) => {
     return res.data;
 };
 
+export const updateOrderStatus = async (orderId, status) => {
+    const res = await axios.put(
+        `${process.env.REACT_APP_API_URL}/order/updateStatusOrder/${orderId}`,
+        status
+    );
+    return res.data;
+};
+
+export const getDetailOrder = async (orderId) => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/order/getDetailOrder/${orderId}`,
+        orderId
+    );
+    return res.data;
+};
+

@@ -26,7 +26,8 @@ const ProfilePage = () => {
     }
     if (
       orderToCancel.status === "Đang giao" ||
-      orderToCancel.status === "Đã giao"
+      orderToCancel.status === "Đã giao" ||
+      orderToCancel.status === "Thanh toán thành công"
     ) {
       toast("Không hủy được");
       return;
@@ -215,55 +216,63 @@ const ProfilePage = () => {
 
           {activeTab === "history" && (
             <div>
-              <table className="w-full border-collapse">
-                <thead className="bg-gray-200">
-                  <tr>
-                    <th className="border p-2">STT</th>
-                    <th className="border p-2">Sản phẩm</th>
-                    <th className="border p-2">Ngày đặt</th>
-                    <th className="border p-2">Trạng thái</th>
-                    <th className="border p-2">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orderDetails.map((order, index) => (
-                    <tr key={order._id}>
-                      <td className="border p-2 text-center">{index + 1}</td>
-                      <td className="border p-2 text-center">
-                        <div className="flex gap-3">
-                          <img
-                            src={order.items[0].productId.image}
-                            alt="Product"
-                            className="h-[90px] w-[100px] object-cover"
-                          />
-                          <div>
-                            <h1>{order.items[0].productId.name}</h1>
-                            <h1>
-                              Size: {order.items[0].size} | SL:{" "}
-                              {order.items[0].quantity}
-                            </h1>
-                            <h1>Giá: {formatter(order.items[0].price)}</h1>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="border p-2 text-center">
-                        {new Date(order.createdAt).toLocaleString()}
-                      </td>
-                      <td className="border p-2 text-center">{order.status}</td>
-                      <td className="border p-2 text-center">
-                        {order.status !== "Đã hủy" && (
-                          <button
-                            className="px-4 py-2 text-white bg-red-500 rounded-lg"
-                            onClick={() => handleCancelOrder(order._id)}
-                          >
-                            Hủy đơn
-                          </button>
-                        )}
-                      </td>
+              {orderDetails.length > 0 ? (
+                <table className="w-full border-collapse">
+                  <thead className="bg-gray-200">
+                    <tr>
+                      <th className="border p-2">STT</th>
+                      <th className="border p-2">Sản phẩm</th>
+                      <th className="border p-2">Ngày đặt</th>
+                      <th className="border p-2">Trạng thái</th>
+                      <th className="border p-2">Thao tác</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {orderDetails.map((order, index) => (
+                      <tr key={order._id}>
+                        <td className="border p-2 text-center">{index + 1}</td>
+                        <td className="border p-2 text-center">
+                          <div className="flex gap-3">
+                            <img
+                              src={order.items[0].productId.image}
+                              alt="Product"
+                              className="h-[90px] w-[100px] object-cover"
+                            />
+                            <div>
+                              <h1>{order.items[0].productId.name}</h1>
+                              <h1>
+                                Size: {order.items[0].size} | SL:{" "}
+                                {order.items[0].quantity}
+                              </h1>
+                              <h1>Giá: {formatter(order.items[0].price)}</h1>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="border p-2 text-center">
+                          {new Date(order.createdAt).toLocaleString()}
+                        </td>
+                        <td className="border p-2 text-center">
+                          {order.status}
+                        </td>
+                        <td className="border p-2 text-center">
+                          {order.status !== "Đã hủy" && (
+                            <button
+                              className="px-4 py-2 text-white bg-red-500 rounded-lg"
+                              onClick={() => handleCancelOrder(order._id)}
+                            >
+                              Hủy đơn
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="text-center text-gray-500 mt-4">
+                  Chưa có đơn hàng nào
+                </p>
+              )}
             </div>
           )}
         </div>

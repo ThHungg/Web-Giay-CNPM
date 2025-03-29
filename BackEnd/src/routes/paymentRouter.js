@@ -16,6 +16,7 @@ function sortObject(obj) {
 
 router.get("/api/vnpay/create_payment", (req, res) => {
     const { amount } = req.query;
+    const { orderId } = req.query;
 
     const tmnCode = "4ZVUWL9J";
     const secretKey = "AVZ4GCMJ2X999T0HO5FJB0LO97PYL6WN";
@@ -23,16 +24,14 @@ router.get("/api/vnpay/create_payment", (req, res) => {
     const vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
     let ipAddr = req.ip;
-    let orderId = moment().format("YYYYMMDDHHmmss");
+    // let orderId = moment().format("YYYYMMDDHHmmss");
     let bankCode = req.query.bankCode || "";
     let createDate = moment().format("YYYYMMDDHHmmss");
     let orderInfo = "Thanh_toan_don_hang";
     let locale = req.query.language || "vn";
     let currCode = "VND";
-    // let exprireDate = moment().add(15, 'minutes').format("YYYYMMDDHHmmss");
-    let exprireDate = moment().tz('Asia/Singapore').add(15, 'minutes').format("YYYYMMDDHHmmss");
-    console.log("exprireDate", exprireDate)
-
+    let exprireDate = moment().add(15, 'minutes').format("YYYYMMDDHHmmss");
+    // let exprireDate = moment().tz('Asia/Singapore').add(30, 'minutes').format("YYYYMMDDHHmmss");
     let vnp_Params = {
         vnp_Version: "2.1.0",
         vnp_Command: "pay",

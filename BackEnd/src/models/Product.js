@@ -15,18 +15,12 @@ const productSchema = new mongoose.Schema(
             {
                 size: { type: Number, required: true },
                 stock: { type: Number, required: true, default: 0, min: 0 },
+                sold: { type: Number, required: true, default: 0, min: 0 },
             },
         ],
         totalStock: {type: Number, default: 0,  min:0, required: true},
         status: { type: String, enum: ['Còn hàng', 'Hết hàng'], default: 'Còn hàng' },
-        rating: { type: Number, default: 0, min: 0, max: 5 },
-        reviews: [
-            {
-                user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-                comment: { type: String },
-                rating: { type: Number, min: 1, max: 5 },
-            }
-        ],
+        totalSold: {type: Number, default: 0,  min:0, required: true},
         deletedAt: { type: Date, default: null }
     },
     {
@@ -37,6 +31,16 @@ const productSchema = new mongoose.Schema(
 const Product = mongoose.model('Product', productSchema);
 
 module.exports = Product;
+
+
+// rating: { type: Number, default: 0, min: 0, max: 5 },
+        // reviews: [
+        //     {
+        //         user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        //         comment: { type: String },
+        //         rating: { type: Number, min: 1, max: 5 },
+        //     }
+        // ],
 
 
         // images: [{ type: String }],

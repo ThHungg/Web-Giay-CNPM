@@ -13,7 +13,7 @@ const ProductsCard = ({ img, name, price, discount, oldprice }) => {
         )}
       </div>
 
-      <div className="flex flex-col items-center text-center space-y-2">
+      <div className="flex flex-col items-center text-center">
         {/* <ul className="flex gap-3 text-[29px]">
           <li className="hover:bg-red-100 p-2 rounded-lg cursor-pointer">
             <AiOutlineEye />
@@ -27,7 +27,7 @@ const ProductsCard = ({ img, name, price, discount, oldprice }) => {
           <div className="">
             <h
               to=""
-              className="text-[18px] font-bold hover:text-red-500 transition text-center duration-300"
+              className="text-[16px] font-bold hover:text-red-500 transition text-center duration-300"
             >
               {name}
             </h>

@@ -21,7 +21,7 @@ const AdminUser = () => {
   // const itemsPerPage = 10;
   useEffect(() => {
     const updateItemsPerPage = () => {
-      const itemHeight = 45;
+      const itemHeight = 60;
       const availableHeight = window.innerHeight - 200;
       const items = Math.floor(availableHeight / itemHeight);
       setItemsPerPage(items > 0 ? items : 1);
@@ -371,7 +371,7 @@ const AdminUser = () => {
         <table className="w-full border-collapse">
           <thead className="bg-gray-200">
             <tr>
-              <th className="border p-2">#</th>
+              <th className="border p-2">STT</th>
               <th className="border p-2">Name</th>
               <th className="border p-2">Email</th>
               <th className="border p-2">Phone</th>

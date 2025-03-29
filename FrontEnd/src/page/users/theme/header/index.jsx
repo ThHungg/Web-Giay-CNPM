@@ -94,18 +94,18 @@ const Header = ({ hasAddToBanner = true }) => {
     <>
       <div>
         <div className="bg-white max-w-screen-xl min-h-[100px] mx-auto mt-8 flex justify-between rounded-xl">
-          <div className="max-w-full p-4">
-            <Link to={ROUTERS.USER.HOME}>
+          <Link to={ROUTERS.USER.HOME}>
+            <div className="max-w-full p-4 flex justify-center items-center">
               <img
-                src="/img/Logo.jpg"
+                src="https://static.vecteezy.com/system/resources/previews/021/769/107/non_2x/sneaker-logo-free-vector.jpg"
                 alt="Logo"
                 className="w-full max-w-[80px]"
               />
-              {/* <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 drop-shadow-lg">
+              <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 drop-shadow-lg">
                 SneakerMart
-              </h1> */}
-            </Link>
-          </div>
+              </h1>
+            </div>
+          </Link>
           <div className="flex items-center pr-8">
             <nav className="me-6">
               <ul className="flex space-x-4">
