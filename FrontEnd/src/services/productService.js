@@ -51,3 +51,9 @@ export const updateMultipleSold = async (products) => {
     const res = await axios.put(`${process.env.REACT_APP_API_URL}/product/sell-multiple`, products)
     return res.data
 }
+
+export const updateProductStatus = async (id, status) => {
+    console.log(id, status)
+    const res = await axios.put(`${process.env.REACT_APP_API_URL}/product/updateStatus/${id}`, status);
+    return res.data;
+}

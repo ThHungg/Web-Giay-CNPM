@@ -58,11 +58,6 @@ const CheckPayment = () => {
               size: item.size,
               quantity: item.quantity,
             }));
-
-            console.log(
-              "🚀 Dữ liệu gửi đến updateMultipleSold:",
-              productsToUpdate
-            );
             await productService.updateMultipleSold(productsToUpdate);
           }
 

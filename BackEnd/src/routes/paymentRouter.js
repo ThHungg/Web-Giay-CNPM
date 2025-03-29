@@ -30,8 +30,8 @@ router.get("/api/vnpay/create_payment", (req, res) => {
     let orderInfo = "Thanh_toan_don_hang";
     let locale = req.query.language || "vn";
     let currCode = "VND";
-    // let exprireDate = moment().add(15, 'minutes').format("YYYYMMDDHHmmss");
-    let exprireDate = moment().tz('Asia/Singapore').add(30, 'minutes').format("YYYYMMDDHHmmss");
+    let exprireDate = moment().add(15, 'minutes').format("YYYYMMDDHHmmss");
+    // let exprireDate = moment().tz('Asia/Singapore').add(30, 'minutes').format("YYYYMMDDHHmmss");
     let vnp_Params = {
         vnp_Version: "2.1.0",
         vnp_Command: "pay",

@@ -8,12 +8,12 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!newIssue.trim()) return; // Kiểm tra không nhập trống
+    if (!newIssue.trim()) return; 
 
-    const currentDate = new Date().toLocaleDateString("vi-VN"); // Lấy ngày hiện tại
+    const currentDate = new Date().toLocaleDateString("vi-VN");
 
     setIssues([...issues, { content: newIssue, date: currentDate, status: "Đang xử lý" }]);
-    setNewIssue(""); // Xóa nội dung sau khi gửi
+    setNewIssue("");
   };
 
   return (

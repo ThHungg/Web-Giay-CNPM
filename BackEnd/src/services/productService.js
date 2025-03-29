@@ -69,6 +69,26 @@ const updateProduct = (id, data) => {
     });
 };
 
+const updateProductStatus = (id, status) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const updatedStatus = await Product.findByIdAndUpdate(id, { status }, { new: true })
+            if (!updatedStatus) {
+                resolve({
+                    status: "ERR",
+                    message: "Không tìm thấy sản phẩm"
+                })
+            }
+            resolve({
+                status: "OK",
+                message: "Cập nhật thành công"
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 const deleteProduct = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -220,6 +240,7 @@ const updateMultipleSold = (products) => {
                     // Cập nhật số lượng đã bán và tồn kho
                     sizeItem.sold = (sizeItem.sold || 0) + quantity;
                     sizeItem.stock -= quantity;
+                    product.totalStock = updateTotalStock(product.sizeStock);
 
                     // Tính lại tổng số lượng đã bán
                     product.totalSold = product.sizeStock.reduce((acc, s) => acc + (s.sold || 0), 0);
@@ -246,5 +267,6 @@ module.exports = {
     softDeleteProduct,
     restoreProduct,
     getActiveProduct,
-    updateMultipleSold
+    updateMultipleSold,
+    updateProductStatus
 };

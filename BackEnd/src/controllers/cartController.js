@@ -4,7 +4,6 @@ const cartService = require('../services/cartService')
 const addToCart = async (req, res) => {
     try {
         const { userId, productId, size, quantity, price } = req.body;
-        console.log("Dữ liệu nhận được từ frontend:", req.body);
         if (!userId || !productId || !size) {
             return res.status(400).json({
                 status: "ERR",
@@ -24,7 +23,6 @@ const addToCart = async (req, res) => {
             cart
         })
     } catch (e) {
-        console.log(e)
         return res.status(500).json({
             status: "ERR",
             message: "Lỗi hệ thống vui lòng thử lại sau"
@@ -35,7 +33,6 @@ const addToCart = async (req, res) => {
 const getCart = async (req, res) => {
     try {
         const { userId } = req.params;
-        console.log("User ID:", userId);
 
         if (!userId) {
             return res.status(400).json({
@@ -60,7 +57,6 @@ const getCart = async (req, res) => {
         });
 
     } catch (e) {
-        console.log('Lỗi:', e);
         return res.status(500).json({
             status: "ERR",
             message: "Lỗi hệ thống thử lại sau"

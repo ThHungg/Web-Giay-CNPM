@@ -61,29 +61,6 @@ const DetailProduct = () => {
     }
   }, [mutationAddToCart.isSuccess, mutationAddToCart.isError]);
   const availableSizes = [36, 37, 38, 39, 40, 41, 42];
-  // const handleAddToCart = async () => {
-  //   if (!selectedSize) {
-  //     toast("Vui lòng chọn size");
-  //   }
-
-  //   const cartIem = {
-  //     userId,
-  //     productId: id,
-  //     size: selectedSize,
-  //     quantity,
-  //     price: productDetail.price,
-  //   };
-  //   console.log("CartItem", cartIem);
-  //   console.log("CartItem gửi lên:", JSON.stringify(cartIem, null, 2));
-
-  //   try {
-  //     await cartService.addToCart(cartIem);
-  //     toast("Thêm vào giỏ hàng thành công!");
-  //   } catch (error) {
-  //     console.error("Lỗi thêm vào giỏ hàng:", error);
-  //     toast("Có lỗi xảy ra, vui lòng thử lại.");
-  //   }
-  // };
 
   const [productDetail, setProductDetail] = useState({
     name: "",
@@ -96,19 +73,42 @@ const DetailProduct = () => {
     sizeStock: [],
   });
 
+  const mutation = useMutationHooks(async (data) => {
+    const { id, ...rests } = data;
+    return await productService.updateProductStatus(id, rests);
+  });
   const fetchGetDetailsProduct = async (id) => {
     const res = await productService.getDetailsProduct(id);
     if (res?.data) {
+      let updatedStatus = res.data.totalStock === 0 ? "Hết hàng" : "Còn hàng";
+
+      // Cập nhật productDetail ngay lập tức
       setProductDetail({
-        name: res?.data?.name,
-        price: res?.data?.price,
-        oldPrice: res?.data?.oldPrice,
-        description: res?.data?.description,
-        brand: res?.data?.brand,
-        image: res?.data?.image,
-        discount: res?.data?.discount,
-        sizeStock: res?.data?.sizeStock || [],
+        name: res.data.name,
+        price: res.data.price,
+        oldPrice: res.data.oldPrice,
+        description: res.data.description,
+        brand: res.data.brand,
+        image: res.data.image,
+        discount: res.data.discount,
+        sizeStock: res.data.sizeStock || [],
+        totalStock: res.data.totalStock,
+        status: updatedStatus, // Cập nhật trạng thái ngay lập tức
       });
+
+      // Nếu trạng thái trên server khác với trạng thái mới -> cập nhật
+      if (res.data.status !== updatedStatus) {
+        await mutation.mutateAsync({ id, status: updatedStatus });
+
+        // Gọi lại API để đảm bảo UI luôn hiển thị trạng thái mới nhất
+        const newRes = await productService.getDetailsProduct(id);
+        if (newRes?.data) {
+          setProductDetail((prev) => ({
+            ...prev,
+            status: newRes.data.status,
+          }));
+        }
+      }
     }
   };
 
@@ -117,43 +117,6 @@ const DetailProduct = () => {
       fetchGetDetailsProduct(id);
     }
   }, [id]);
-
-  // const handleBuyNow = async () => {
-  //   if (!selectedSize) {
-  //     toast("Vui lòng chọn size");
-  //     return;
-  //   }
-
-  //   const orderData = {
-  //     userId: userId, // Giữ nguyên userId không lồng thêm object
-  //     items: [
-  //       {
-  //         productId: id,
-  //         size: selectedSize,
-  //         quantity: quantity,
-  //         price:
-  //           productDetail.discount > 0
-  //             ? productDetail.price * (1 - productDetail.discount / 100)
-  //             : productDetail.price,
-  //       },
-  //     ],
-  //   };
-
-  //   try {
-  //     const res = await orderService.createOrder(
-  //       orderData.userId,
-  //       orderData.items
-  //     );
-  //     if (res.success) {
-  //       toast("Đặt hàng thành công!");
-  //     } else {
-  //       toast("Đặt hàng thất bại, vui lòng thử lại!");
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi đặt hàng:", error);
-  //     toast("Lỗi kết nối, vui lòng thử lại!");
-  //   }
-  // };
 
   const [name, setName] = useState("");
   const [rating, setRating] = useState(0);
@@ -302,7 +265,10 @@ const DetailProduct = () => {
           </div>
           <ul>
             <li className="text-xl">
-              <b>Tình trạng: </b> <span>Còn hàng</span>
+              <b>Tình trạng: </b>{" "}
+              <span>
+                {productDetail.status} 
+              </span>
             </li>
             <li className="text-xl">
               <b>Size: </b>

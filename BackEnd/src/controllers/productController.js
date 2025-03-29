@@ -63,6 +63,20 @@ const updateProduct = async (req, res) => {
     }
 }
 
+const updateProductStatus = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const { status } = req.body;
+        const response = await productService.updateProductStatus(productId, status);
+        return res.status(200).json(response)
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({
+            message: "Lỗi hệ thống, vui lòng thử lại sau!"
+        })
+    }
+}
+
 const deleteProduct = async (req, res) => {
     try {
         const productId = req.params.id
@@ -183,9 +197,6 @@ const updateMultipleSold = async (req, res) => {
     }
 };
 
-
-
-
 module.exports = {
     createProduct,
     updateProduct,
@@ -195,6 +206,6 @@ module.exports = {
     softDeleteProduct,
     restoreProduct,
     getActiveProduct,
-    updateMultipleSold
-
+    updateMultipleSold,
+    updateProductStatus
 };
