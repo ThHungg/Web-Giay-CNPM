@@ -191,59 +191,26 @@ const Header = ({ hasAddToBanner = true }) => {
       </div> */}
         {hasAddToBanner && (
           <div className="max-w-screen-xl mx-auto">
-            <Carousel responsive={responsive}>
-              <div className="relative mx-auto w-full max-w-screen-xl py-3 h-[416px] ">
+            <Carousel
+              responsive={responsive}
+              infinite={true}
+              autoPlay={true}
+              autoPlaySpeed={4000}
+              removeArrowOnDeviceType={["tablet", "mobile"]}
+            >
+              <div className="mx-auto w-full max-w-screen-xl py-3 h-[440px]">
                 <img
-                  src="img/banner/Banner.jpg"
-                  alt="Banner"
-                  className="w-full h-full rounded-xl"
+                  src="https://forshoes.vn/wp-content/uploads/2024/11/anh-web-ban-PC.jpg"
+                  alt=""
+                  className="w-full object-cover rounded-lg"
                 />
-                <div className="absolute inset-y-0 w-full flex justify-between items-center px-4">
-                  {/* <i className="fa-solid fa-angle-left text-5xl text-white cursor-pointer"></i>
-          <i className="fa-solid fa-angle-right text-5xl text-white cursor-pointer"></i> */}
-                </div>
-                <div className="absolute top-1/2 left-[120px] transform -translate-y-1/2 flex justify-between items-center">
-                  <img src="img/banner/BannerGiay.svg" alt="" />
-                  <div className="space-y-4 pl-12">
-                    <h1 className="text-4xl font-bold text-white">
-                      Khuyễn Mãi Có Hạn
-                    </h1>
-                    <h2 className="text-2xl text-white">Lên đến 50%</h2>
-                    <p className="text-white">
-                      Nâng tầm phong cách cở bản với một chút quyến rũ
-                    </p>
-                    <button className="bg-red-500 p-3 rounded-xl font-bold text-white">
-                      Mua ngay
-                    </button>
-                  </div>
-                </div>
               </div>
-
-              <div className="relative mx-auto w-full max-w-screen-xl py-3 h-[416px] ">
+              <div className="mx-auto w-full max-w-screen-xl py-3 h-[416px]">
                 <img
-                  src="img/banner/Banner.jpg"
-                  alt="Banner"
-                  className="w-full h-full rounded-xl"
+                  src="https://giaysneakerhcm.com/wp-content/uploads/2021/05/banner-giam-20-sinh-nhat-9-giaysneakerhcm.jpg"
+                  alt=""
+                  className="w-full object-cover rounded-lg"
                 />
-                <div className="absolute inset-y-0 w-full flex justify-between items-center px-4">
-                  {/* <i className="fa-solid fa-angle-left text-5xl text-white cursor-pointer"></i>
-          <i className="fa-solid fa-angle-right text-5xl text-white cursor-pointer"></i> */}
-                </div>
-                <div className="absolute top-1/2 left-[120px] transform -translate-y-1/2 flex justify-between items-center">
-                  <img src="img/banner/BannerGiay.svg" alt="" />
-                  <div className="space-y-4 pl-12">
-                    <h1 className="text-4xl font-bold text-white">
-                      Khuyễn Mãi Có Hạn
-                    </h1>
-                    <h2 className="text-2xl text-white">Lên đến 50%</h2>
-                    <p className="text-white">
-                      Nâng tầm phong cách cở bản với một chút quyến rũ
-                    </p>
-                    <button className="bg-red-500 p-3 rounded-xl font-bold text-white">
-                      Mua ngay
-                    </button>
-                  </div>
-                </div>
               </div>
             </Carousel>
           </div>

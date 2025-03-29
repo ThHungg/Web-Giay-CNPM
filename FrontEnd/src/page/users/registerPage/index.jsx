@@ -94,11 +94,14 @@ const RegisterPage = () => {
     if (isSuccess) {
       toast.success("Thêm thành công");
       mutation.reset();
-      handleNavigateSignIn();
+
+      setTimeout(() => {
+        handleNavigateSignIn();
+      }, 1000);
     } else if (isError) {
       toast.error("Thêm thất bại");
     }
-  });
+  }, [isSuccess, isError]); 
 
   const handleNavigateSignIn = () => {
     navigate("/dang-nhap");

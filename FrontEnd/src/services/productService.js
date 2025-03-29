@@ -57,3 +57,8 @@ export const updateProductStatus = async (id, status) => {
     const res = await axios.put(`${process.env.REACT_APP_API_URL}/product/updateStatus/${id}`, status);
     return res.data;
 }
+
+export const getTopSell = async () => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/product/getTopSell`)
+    return res.data
+}

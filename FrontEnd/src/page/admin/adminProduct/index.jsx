@@ -88,6 +88,18 @@ const AdminProduct = () => {
 
   const onFinish = (e) => {
     e.preventDefault();
+
+    if (!stateProduct.name.trim())
+      return toast.error("Vui lòng nhập tên sản phẩm");
+    if (!stateProduct.brand.trim())
+      return toast.error("Vui lòng chọn thương hiệu");
+    if (!stateProduct.price || stateProduct.price <= 0)
+      return toast.error("Vui lòng nhập giá hợp lệ");
+    if (stateProduct.discount !== "" || stateProduct.discount < 0)
+      return toast.error("Vui lòng nhập giảm giá hợp lệ");
+    if (!stateProduct.description.trim())
+      return toast.error("Vui lòng nhập mô tả sản phẩm");
+
     mutation.mutate(stateProduct);
   };
 
@@ -173,7 +185,7 @@ const AdminProduct = () => {
       setSizeList(sizeList.filter((item) => item.id !== id));
       setSizeStock(sizeStock.filter((_, index) => index !== indexToRemove));
     } else {
-      toast("Bạn phải để lại ít nhất một size");
+      toast.error("Bạn phải để lại ít nhất một size");
     }
   };
 
@@ -249,20 +261,16 @@ const AdminProduct = () => {
     return await productService.updateProduct(id, token, rests);
   });
 
-  const { isSuccess: isSuccessUpdated, isError: isErrorUpdated } =
-    mutationUpdate;
-
   useEffect(() => {
-    if (isSuccessUpdated) {
+    if (mutationUpdate.isSuccess) {
       toast.success("Cập nhật thành công");
       mutationUpdate.reset();
-
       setShowUpdateModal(false);
-    } else if (isErrorUpdated) {
+    } else if (mutationUpdate.isError) {
       toast.error("Thêm thất bại");
       mutationUpdate.reset();
     }
-  }, [isSuccessUpdated, isErrorUpdated]);
+  }, [isSuccess, isError]);
 
   const onUpdateProduct = () => {
     setShowUpdateModal(false);
@@ -274,51 +282,11 @@ const AdminProduct = () => {
   };
 
   useEffect(() => {
-    if (isSuccessUpdated) {
+    if (isSuccess) {
       queryClient.invalidateQueries(["products"]);
       fetchGetDetailsProduct(rowSelected);
     }
-  }, [isSuccessUpdated]);
-
-  // const [sortOrder, setSortOrder] = useState("asc");
-
-  // const sortedProducts = [...(products?.data || [])].sort((a, b) => {
-  //   return sortOrder === "asc"
-  //     ? a.name.localeCompare(b.name)
-  //     : b.name.localeCompare(a.name);
-  // });
-
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [sortField, setSortField] = useState("name");
-  // const [sortOrder, setSortOrder] = useState("asc");
-
-  // // Lọc sản phẩm theo tên hoặc thương hiệu
-  // const filteredProducts = (products?.data || []).filter(
-  //   (product) =>
-  //     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     product.brand.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
-
-  // // Sắp xếp danh sách sản phẩm
-  // const sortedProducts = [...filteredProducts].sort((a, b) => {
-  //   if (sortField === "name") {
-  //     return sortOrder === "asc"
-  //       ? a.name.localeCompare(b.name)
-  //       : b.name.localeCompare(a.name);
-  //   } else if (sortField === "price") {
-  //     return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
-  //   }
-  // });
-
-  // // Xử lý sự kiện sắp xếp
-  // const handleSort = (field) => {
-  //   if (sortField === field) {
-  //     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-  //   } else {
-  //     setSortField(field);
-  //     setSortOrder("asc");
-  //   }
-  // };
+  }, [isSuccess]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBrand, setSelectedBrand] = useState("");
@@ -786,21 +754,10 @@ const AdminProduct = () => {
           <thead className="bg-gray-200">
             <tr>
               <th className="border p-2">STT</th>
-              <th
-                className="border p-2 cursor-pointer"
-                // onClick={() => handleSort("name")}
-              >
-                Tên
-                {/* {sortField === "name" && (sortOrder === "asc" ? "▲" : "▼")} */}
-              </th>
+              <th className="border p-2 cursor-pointer">Tên</th>
               <th className="border p-2">Thương hiệu</th>
-              <th
-                className="border p-2 cursor-pointer"
-                // onClick={() => handleSort("price")}
-              >
-                Giá
-                {/* {sortField === "price" && (sortOrder === "asc" ? "▲" : "▼")} */}
-              </th>
+              <th className="border p-2 cursor-pointer">Giá</th>
+              <th className="border p-2 cursor-pointer">Tồn kho/Đã bán</th>
               <th className="border p-2">Trạng thái</th>
               <th className="border p-2">Action</th>
             </tr>
@@ -812,17 +769,27 @@ const AdminProduct = () => {
                   {" "}
                   {(currentPage - 1) * itemsPerPage + index + 1}
                 </td>
-                {product.discount > 0 ? (
-                  <td className="border p-2">
-                    {product.productCode} | {product.name}{" "}
-                    <span className="text-red-500">- {product.discount}%</span>
-                  </td>
-                ) : (
-                  <td className="border p-2">{product.name}</td>
-                )}
+                <td className="border p-2 text-1xl max-w-xs whitespace-normal break-words">
+                  {product.discount > 0 ? (
+                    <>
+                      {product.name}{" "}
+                      <span className="text-red-500">
+                        - {product.discount}%
+                      </span>
+                    </>
+                  ) : (
+                    product.name
+                  )}
+                </td>
 
                 <td className="border p-2">{product.brand}</td>
                 <td className="border p-2">{formatter(product.price)}</td>
+                <td className="border p-2">
+                  <div className="flex flex-col">
+                    <p className="">Tồn kho: {product.totalStock}</p>
+                    <p>Đã bán: {product.totalSold}</p>
+                  </div>
+                </td>
                 <td className="border p-2">
                   <Switch
                     checked={checkedItems[product._id] ?? !product.deletedAt}

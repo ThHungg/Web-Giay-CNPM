@@ -197,6 +197,20 @@ const updateMultipleSold = async (req, res) => {
     }
 };
 
+const getTopSellingProducts = async (req, res) => {
+    try {
+        const response = await productService.getTopSellingProducts();
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Lỗi hệ thống, vui lòng thử lại sau!",
+        });
+    }
+};
+
+
+
 module.exports = {
     createProduct,
     updateProduct,
@@ -207,5 +221,6 @@ module.exports = {
     restoreProduct,
     getActiveProduct,
     updateMultipleSold,
-    updateProductStatus
+    updateProductStatus,
+    getTopSellingProducts
 };

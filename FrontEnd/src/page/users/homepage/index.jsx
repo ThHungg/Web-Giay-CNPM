@@ -19,8 +19,6 @@ const HomePage = () => {
   const fetchProductAll = async () => {
     const res = await productService.getActiveProducts();
     const products = res.data || [];
-
-    // Lấy 5 sản phẩm đầu tiên (nếu API trả về các sản phẩm đã sắp xếp đúng)
     return products.slice(0, 5);
   };
 
@@ -30,6 +28,19 @@ const HomePage = () => {
     retry: 3,
     retryDelay: 1000,
   });
+
+  const fetchTopSell = async () => {
+    const res = await productService.getTopSell();
+    return res;
+  };
+
+  const { data: topSell } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchTopSell,
+    retry: 3,
+    retryDelay: 1000,
+  });
+  console.log(topSell);
 
   if (!Array.isArray(products)) {
     return <div>Invalid data format</div>;
@@ -125,12 +136,29 @@ const HomePage = () => {
             </div>
           ))}
         </div> */}
-        <Carousel responsive={responsive}>
-          <ProductCard></ProductCard>
-          <ProductCard></ProductCard>
-          <ProductCard></ProductCard>
-          <ProductCard></ProductCard>
-          <ProductCard></ProductCard>
+        <Carousel
+          responsive={responsive}
+          infinite={true}
+          autoPlay={true}
+          autoPlaySpeed={2500}
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
+          {topSell.map((product) => (
+            <Link
+              key={product._id}
+              to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}
+            >
+              <div className="transition-transform transform hover:scale-105 duration-300">
+                <ProductCard
+                  name={product.name}
+                  img={product.image}
+                  price={product.price}
+                  oldprice={product.oldPrice}
+                  discount={product.discount}
+                />
+              </div>
+            </Link>
+          ))}
         </Carousel>
       </div>
 
