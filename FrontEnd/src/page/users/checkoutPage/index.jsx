@@ -40,17 +40,17 @@ const CheckoutPage = () => {
   const handlePayment = async () => {
     // totalAmount
     if (selectedPaymentMethod && selectedPaymentMethod === "Banking") {
-      // if (
-      //   !userId ||
-      //   !cartData ||
-      //   !selectedPaymentMethod ||
-      //   !name ||
-      //   !phone ||
-      //   !email
-      // ) {
-      //   toast.error("Vui lòng nhập đầy đủ thông tin.");
-      //   return;
-      // }
+      if (
+        !userId ||
+        !cartData ||
+        !selectedPaymentMethod ||
+        !name ||
+        !phone ||
+        !email
+      ) {
+        toast.error("Vui lòng nhập đầy đủ thông tin.");
+        return;
+      }
       const orderData = {
         userId: userId,
         items: cartData.cart.data.products.map((item) => ({
@@ -75,10 +75,10 @@ const CheckoutPage = () => {
         },
       };
 
-      // if (orderData.items.length === 0) {
-      //   toast.error("Giỏ hàng của bạn đang trống.");
-      //   return;
-      // }
+      if (orderData.items.length === 0) {
+        toast.error("Giỏ hàng của bạn đang trống.");
+        return;
+      }
 
       const createOrder = await orderService.createOrder(
         orderData.userId,
@@ -91,17 +91,17 @@ const CheckoutPage = () => {
       );
       console.log("createOrder", createOrder);
       const orderId = createOrder.order._id;
-  
-      const productIds = createOrder.order.items.map(item => item.productId);
+
+      const productIds = createOrder.order.items.map((item) => item.productId);
       console.log(productIds);
-      
-      // if (createOrder && createOrder.success) {
-      //   toast.success("Đặt hàng thành công");
-      //   await cartService.clearCart(orderData.userId);
-      // } else {
-      //   toast.error("Đặt hàng thất bại");
-      // }
-      // refetch();
+
+      if (createOrder && createOrder.success) {
+        toast.success("Đặt hàng thành công");
+        await cartService.clearCart(orderData.userId);
+      } else {
+        toast.error("Đặt hàng thất bại");
+      }
+      refetch();
       try {
         const data = await paymentService.createVNPayPayment(
           orderId,
