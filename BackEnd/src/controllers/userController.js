@@ -149,7 +149,7 @@ const refreshToken = async (req, res) => {
     }
 }
 
-const logoutUser = async (req, res) => {
+const   logoutUser = async (req, res) => {
     console.log('Token nhận được:', req.cookies.refresh_token);
     try {
         res.clearCookie('refresh_token', {
