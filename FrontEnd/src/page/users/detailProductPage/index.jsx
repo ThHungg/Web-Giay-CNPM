@@ -170,7 +170,7 @@ const DetailProduct = () => {
               </Tab>
             </TabList>
 
-            <TabPanel>
+            <TabPanel className="">
               <h2 className="text-lg text-gray-700 leading-relaxed whitespace-pre-line">
                 {productDetail.description}
               </h2>

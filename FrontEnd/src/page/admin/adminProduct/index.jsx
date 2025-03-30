@@ -89,16 +89,16 @@ const AdminProduct = () => {
   const onFinish = (e) => {
     e.preventDefault();
 
-    if (!stateProduct.name.trim())
-      return toast.error("Vui lòng nhập tên sản phẩm");
-    if (!stateProduct.brand.trim())
-      return toast.error("Vui lòng chọn thương hiệu");
-    if (!stateProduct.price || stateProduct.price <= 0)
-      return toast.error("Vui lòng nhập giá hợp lệ");
-    if (stateProduct.discount !== "" || stateProduct.discount < 0)
-      return toast.error("Vui lòng nhập giảm giá hợp lệ");
-    if (!stateProduct.description.trim())
-      return toast.error("Vui lòng nhập mô tả sản phẩm");
+    // if (!stateProduct.name.trim())
+    //   return toast.error("Vui lòng nhập tên sản phẩm");
+    // if (!stateProduct.brand.trim())
+    //   return toast.error("Vui lòng chọn thương hiệu");
+    // if (!stateProduct.price || stateProduct.price <= 0)
+    //   return toast.error("Vui lòng nhập giá hợp lệ");
+    // if (stateProduct.discount !== "" || stateProduct.discount < 0)
+    //   return toast.error("Vui lòng nhập giảm giá hợp lệ");
+    // if (!stateProduct.description.trim())
+    //   return toast.error("Vui lòng nhập mô tả sản phẩm");
 
     mutation.mutate(stateProduct);
   };
