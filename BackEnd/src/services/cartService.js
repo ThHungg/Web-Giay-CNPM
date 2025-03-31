@@ -133,8 +133,7 @@ const updateCart = (userId, productId, quantity) => {
                 })
             }
 
-            const productIndex = cart.products.findIndex(p => p.productId.toString() === productId)
-
+            const productIndex = cart.products.findIndex(p => p._id.toString() === productId)
             if (productIndex === -1) {
                 return resolve({
                     status: "ERR",

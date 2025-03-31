@@ -2,6 +2,7 @@ import { memo, useState } from "react";
 import * as userService from "../../../services/userServices";
 import ToastNotification from "../../../component/toastNotification";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -9,8 +10,14 @@ const ForgotPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSendOtp = async () => {
+    if (!email) {
+      toast.error("Vui lòng nhập email");
+      return;
+    }
     const res = await userService.sendOtp(email);
     if (res.status === "OK") {
       setOtpSent(true);
@@ -22,7 +29,36 @@ const ForgotPassword = () => {
   };
 
   const handleResetPassword = async () => {
+    if (!email) {
+      toast.error("Vui lòng nhập mã email");
+      return;
+    }
+    if (!otp) {
+      toast.error("Vui lòng nhập mã OTP");
+      return;
+    }
+    if (!newPassword) {
+      toast.error("Vui lòng nhập mật khẩu mới");
+      return;
+    }
+    if (!confirmPassword) {
+      toast.error("Vui lòng xác nhận mật khẩu mới");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Mật khẩu xác nhận không khớp!");
+      return;
+    }
     const res = await userService.resetPass(email, otp, newPassword);
+
+    if (res.status === "OK") {
+      toast.success("Mật khẩu đã được đặt lại thành công!");
+      setTimeout(() => {
+        navigate("/dang-nhap");
+      }, 1000);
+    } else {
+      toast.error("Lỗi hệ thống vui lòng thử lại sau!");
+    }
     return res;
   };
 

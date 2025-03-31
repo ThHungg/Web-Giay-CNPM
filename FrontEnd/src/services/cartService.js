@@ -25,8 +25,9 @@ export const removeFromCart = async (userId, productId) => {
 
 
 export const updateCart = async (userId, productId, quantity) => {
+    console.log("Data nhan duoc", productId)
     const res = await axios.put(`${process.env.REACT_APP_API_URL}/cart/update`, {
-        userId, productId: productId._id, quantity
+        userId, productId, quantity
     })
     return res.data
 }

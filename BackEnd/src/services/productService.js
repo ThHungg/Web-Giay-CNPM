@@ -260,22 +260,27 @@ const updateMultipleSold = (products) => {
 const getTopSellingProducts = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const topProducts = await Product.find({ deletedAt: null })
-                .sort({ totalSold: -1 }) 
-                .limit(5); 
+            let topProducts = await Product.find({ deletedAt: null })
+                .sort({ totalSold: -1 })
+                .limit(5);
 
-            if (topProducts.length === 0) {
+            if (!topProducts || topProducts.length === 0) {
                 topProducts = await Product.find({ deletedAt: null })
                     .sort({ createdAt: -1 })
                     .limit(5);
             }
+
             resolve({
                 status: "OK",
                 message: "Lấy top sản phẩm bán chạy thành công",
                 data: topProducts,
             });
         } catch (error) {
-            reject(error);
+            reject({
+                status: "ERROR",
+                message: "Lỗi hệ thống, vui lòng thử lại sau",
+                error: error.message,
+            });
         }
     });
 };

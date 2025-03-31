@@ -16,11 +16,9 @@ const AdminProduct = () => {
     return res;
   };
 
-  const { data: products } = useQuery({
+  const { data: products, refetch } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProductAll,
-    retry: 3,
-    retryDelay: 1000,
   });
 
   const queryClient = useQueryClient();
@@ -261,16 +259,22 @@ const AdminProduct = () => {
     return await productService.updateProduct(id, token, rests);
   });
 
+  const {
+    isSuccess: isSuccessUpdate,
+    isError: isErrorUpdate,
+  } = mutationUpdate;
+
   useEffect(() => {
-    if (mutationUpdate.isSuccess) {
+    if (isSuccessUpdate) {
       toast.success("Cập nhật thành công");
       mutationUpdate.reset();
       setShowUpdateModal(false);
-    } else if (mutationUpdate.isError) {
+      refetch();
+    } else if (isErrorUpdate) {
       toast.error("Thêm thất bại");
       mutationUpdate.reset();
     }
-  }, [isSuccess, isError]);
+  }, [isSuccessUpdate, isErrorUpdate]);
 
   const onUpdateProduct = () => {
     setShowUpdateModal(false);

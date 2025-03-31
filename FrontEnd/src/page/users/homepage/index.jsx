@@ -35,7 +35,7 @@ const HomePage = () => {
   };
 
   const { data: topSell } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["topSellingProducts"],
     queryFn: fetchTopSell,
     retry: 3,
     retryDelay: 1000,
@@ -124,18 +124,6 @@ const HomePage = () => {
       {/* Featured Products */}
       <div className="max-w-screen-xl mx-auto mt-5">
         <h1 className="text-4xl text-center font-bold my-10">Sản nổi bật</h1>
-        {/* <div className="grid grid-cols-4">
-          {products.map((item, key) => (
-            <div className="" key={key}>
-              <ProductCard
-                name={item.name}
-                img={item.img}
-                price={item.price}
-                oldprice={item.oldprice}
-              />
-            </div>
-          ))}
-        </div> */}
         <Carousel
           responsive={responsive}
           infinite={true}
@@ -143,7 +131,7 @@ const HomePage = () => {
           autoPlaySpeed={2500}
           removeArrowOnDeviceType={["tablet", "mobile"]}
         >
-          {topSell.map((product) => (
+          {topSell?.data.map((product) => (
             <Link
               key={product._id}
               to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}

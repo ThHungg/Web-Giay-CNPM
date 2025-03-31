@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import formatter from "../../../utils/formatter";
 import Quantity from "../../../component/Quantity/index.jsx";
 import { MdDeleteOutline } from "react-icons/md";
@@ -16,22 +16,28 @@ const ShoppingCartPage = () => {
   const [quantity, setQuantity] = useState({});
   const [isRemoving, setIsRemoving] = useState(null);
 
-  const handleQuantityChange = async (productId, newQuantity) => {
-    setQuantity((prev) => ({
-      ...prev,
-      [productId]: newQuantity,
-    }));
-
-    await cartService.updateCart(userId, productId, newQuantity);
-    await refetch();
-  };
-
   const token = localStorage.getItem("access_token");
   let userId;
   if (token) {
     const decoded = jwtDecode(token);
     userId = decoded.id;
   }
+
+  const { data: cartData, refetch } = useQuery({
+    queryKey: ["cart", userId],
+    queryFn: () => cartService.getCart(userId),
+    enabled: !!userId,
+  });
+
+  const handleQuantityChange = async (productId, newQuantity) => {
+    console.log(productId, newQuantity);
+    setQuantity((prev) => ({
+      ...prev,
+      [productId]: Number(newQuantity) || 1,
+    }));
+    await cartService.updateCart(userId, productId, newQuantity);
+    await refetch();
+  };
 
   const handleRemove = async (productId) => {
     setIsRemoving(productId);
@@ -42,12 +48,6 @@ const ShoppingCartPage = () => {
     }
     setIsRemoving(null);
   };
-
-  const { data: cartData, refetch } = useQuery({
-    queryKey: ["cart", userId],
-    queryFn: () => cartService.getCart(userId),
-    enabled: !!userId,
-  });
 
   const totalAmount = cartData?.cart?.data?.products.reduce(
     (sum, item) => sum + item.price * (quantity[item.id] || item.quantity),
@@ -113,16 +113,16 @@ const ShoppingCartPage = () => {
                     <td className="px-4 py-2 text-center text-xl">
                       <div className="flex justify-center">
                         <Quantity
-                          quantity={quantity[item.productId] || item.quantity}
+                          quantity={quantity[item._id] || item.quantity}
                           setQuantity={(newQty) =>
-                            handleQuantityChange(item.productId, newQty)
+                            handleQuantityChange(item._id, newQty)
                           }
                         />
                       </div>
                     </td>
                     <td className="px-4 py-2 text-center text-xl">
                       {formatter(
-                        item.price * (quantity[item.id] || item.quantity)
+                        item.price * (quantity[item._id] || item.quantity)
                       )}
                     </td>
                     <td className="px-4 py-2 text-center text-2xl font-bold">

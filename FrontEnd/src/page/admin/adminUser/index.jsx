@@ -38,11 +38,9 @@ const AdminUser = () => {
     return res;
   };
 
-  const { data: users } = useQuery({
+  const { data: users, refetch } = useQuery({
     queryKey: ["user"],
     queryFn: getAllUser,
-    retry: 3,
-    retryDelay: 1000,
     enabled: !!user?.access_token,
   });
 
@@ -136,13 +134,14 @@ const AdminUser = () => {
     isSuccess: isSuccessUpdated,
     isError: isErrorUpdated,
   } = mutationUpdate;
-  console.log("dataUpdated", dataUpdated);
 
   useEffect(() => {
     if (isSuccessUpdated) {
       toast.success("Cập nhật thành công");
       mutationUpdate.reset();
       setShowUpdateModel(false);
+      console.log("Refetch function:", refetch);
+      refetch();
     } else if (isErrorUpdated) {
       toast.error("Cập nhật thất bại");
       mutationUpdate.reset();
@@ -183,7 +182,7 @@ const AdminUser = () => {
       if (searchTerm && !user.name.toLowerCase().includes(searchTerm)) {
         return false;
       }
-      return true; 
+      return true;
     }) || [];
 
   const totalPages = filteredUsers.length
@@ -352,7 +351,7 @@ const AdminUser = () => {
             <input
               type="search"
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
-              placeholder="Tìm kiếm sản phẩm"
+              placeholder="Tìm kiếm người dùng"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
             />

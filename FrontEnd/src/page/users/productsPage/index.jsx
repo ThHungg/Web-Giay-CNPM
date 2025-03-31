@@ -73,30 +73,27 @@ const Products = () => {
   return (
     <>
       <div className="max-w-screen-xl mx-auto grid grid-cols-5">
-        <div className="col-span-1">
-          <div className="">
+        <div className="col-span-1 mt-5 bg-white p-4 rounded-lg shadow-md h-[350px] overflow-y-auto sticky top-5 self-start">
+          {/* Bộ lọc theo thương hiệu */}
+          <div className="mb-5">
             <h1 className="text-2xl font-bold">Thương hiệu:</h1>
             <select
               className="border w-full p-2 rounded-lg mt-3"
               name="brand"
-              onClick={(e) => handleBrandClick(e.target.value)}
+              onChange={(e) => handleBrandClick(e.target.value)}
             >
-              <option value="">Thương hiệu</option>
+              <option value="">Chọn thương hiệu</option>
               {brands.map((item, key) => (
                 <option value={item} key={key}>
                   {item}
                 </option>
-                // <div
-                //   className="cursor-pointer bg-white max-w-[180px] m-2 p-1 text-center rounded-xl border-2 hover:font-bold"
-                //   key={key}
-                // >
-                //   {item}
-                // </div>
               ))}
             </select>
           </div>
-          <div className="mt-5">
-            <h className="text-2xl font-bold">Mức giá:</h>
+
+          {/* Bộ lọc theo mức giá */}
+          <div>
+            <h1 className="text-2xl font-bold">Mức giá:</h1>
             <div className="flex gap-4 mt-2 flex-col">
               <label className="flex items-center gap-2">
                 <input
@@ -105,7 +102,7 @@ const Products = () => {
                   value="under1M"
                   className="w-4 h-4"
                   onClick={() => handlePriceFilter("under1M")}
-                  checked={priceRange === "under1M"} // Kiểm tra nếu giá trị đang chọn trùng với giá trị của radio
+                  checked={priceRange === "under1M"}
                 />
                 Dưới 1.000.000 đ
               </label>
@@ -146,30 +143,7 @@ const Products = () => {
                 Trên 3.000.000 đ
               </label>
             </div>
-            {/* <p>Từ: </p>
-            <input
-              type="number"
-              min={0}
-              className="text-center border-2 my-2 "
-            />
-            <p>Đến: </p>
-            <input
-              type="number"
-              min={0}
-              className="text-center border-2 my-2 "
-            /> */}
           </div>
-          {/* <div>
-            <h1 className="text-2xl font-bold">Sắp xếp</h1>
-            {sorts.map((item, key) => (
-              <div
-                className="cursor-pointer bg-white max-w-[180px] m-2 p-1 text-center rounded-xl border-2 hover:font-bold"
-                key={key}
-              >
-                {item}
-              </div>
-            ))}
-          </div> */}
         </div>
 
         <div className="col-span-4">
