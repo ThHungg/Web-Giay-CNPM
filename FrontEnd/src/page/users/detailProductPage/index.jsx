@@ -70,6 +70,7 @@ const DetailProduct = () => {
     description: "",
     brand: "",
     image: "",
+    images: "",
     discount: "",
     sizeStock: [],
   });
@@ -91,6 +92,7 @@ const DetailProduct = () => {
         description: res.data.description,
         brand: res.data.brand,
         image: res.data.image,
+        images: res.data.images,
         discount: res.data.discount,
         sizeStock: res.data.sizeStock || [],
         totalStock: res.data.totalStock,
@@ -112,6 +114,8 @@ const DetailProduct = () => {
       }
     }
   };
+
+  console.log(productDetail)
 
   useEffect(() => {
     if (id) {

@@ -9,6 +9,7 @@ import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import formatter from "../../../utils/formatter";
+import { FaSpinner } from "react-icons/fa";
 
 const AdminProduct = () => {
   const fetchProductAll = async () => {
@@ -26,6 +27,7 @@ const AdminProduct = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [sizeStock, setSizeStock] = useState([{ size: "", stock: "" }]);
   const [sizeList, setSizeList] = useState([{ id: 1 }]);
+  // const [sizeList, setSizeList] = useState([{ id: 1 }]);
   const [form] = Form.useForm();
   const [rowSelected, setRowSelected] = useState("");
   const user = useSelector((state) => state.user);
@@ -39,6 +41,7 @@ const AdminProduct = () => {
     brand: "",
     discount: "",
     image: "",
+    images: [],
     sizeStock: {
       size: "",
       stock: "",
@@ -51,12 +54,13 @@ const AdminProduct = () => {
     description: "",
     brand: "",
     image: "",
+    images: [],
     discount: "",
     sizeStock: [],
   });
 
   const mutation = useMutationHooks(async (data) => {
-    const { name, price, description, brand, image, discount, sizeStock } =
+    const { name, price, description, brand, image, images, discount, sizeStock } =
       data;
     return await productService.createProduct({
       name,
@@ -64,6 +68,7 @@ const AdminProduct = () => {
       description,
       brand,
       image,
+      images,
       discount,
       sizeStock,
     });
@@ -144,6 +149,7 @@ const AdminProduct = () => {
       description: "",
       brand: "",
       image: "",
+      images: "",
       discount: "",
       sizeStock: {
         size: "",
@@ -232,6 +238,7 @@ const AdminProduct = () => {
         description: res?.data?.description,
         brand: res?.data?.brand,
         image: res?.data?.image,
+        // images: res?.da
         discount: res?.data?.discount,
         sizeStock: res?.data?.sizeStock || [],
       });
@@ -340,6 +347,17 @@ const AdminProduct = () => {
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     ) || [];
+
+  const [loading, setLoading] = useState(false);
+
+  const openUpdateModal = () => {
+    setShowUpdateModal(true); // Mở modal trước
+    setLoading(true); // Hiện loading khi modal mở
+    
+    setTimeout(() => {
+      setLoading(false); // Sau 2s, tắt loading
+    }, 500);
+  };
 
   const CreateModal = useMemo(
     () => (
@@ -490,6 +508,17 @@ const AdminProduct = () => {
                         placeholder=""
                       />
                     </div>
+                    <div className="flex flex-col gap-y-2 mt-2">
+                      <p className="text-xl font-bold">Ảnh khác</p>
+                      <input
+                        type="text"
+                        name="images"
+                        className="border w-full p-2 rounded-lg"
+                        value={stateProduct.images}
+                        onChange={handleOnchange}
+                        placeholder=""
+                      />
+                    </div>
                   </div>
                 </div>
               </form>
@@ -521,160 +550,163 @@ const AdminProduct = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-8 flex flex-col gap-4 w-1/2 shadow-lg rounded-xl">
           <h1 className="text-2xl font-bold text-center">Thêm sản phẩm mới</h1>
-          <div className="grid grid-cols-2">
-            <div>
-              <img src={stateProductDetails.image} alt="" className="w-[400px] h-1/2 rounded-lg object-cover" />
-            </div>
-            <form action="" className="space-y-3" form={form} onSubmit={onFinish}>
-              <div className="flex flex-col">
-                <div className="">
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Name</p>
-                    <input
-                      type="text"
-                      name="name"
-                      className="border w-full p-2 rounded-lg"
-                      value={stateProductDetails.name}
-                      onChange={handleOnchangeDetails}
-                      placeholder=""
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Brand</p>
-                    <select
-                      className="border w-full p-2 rounded-lg"
-                      name="brand"
-                      value={stateProductDetails.brand}
-                      onChange={handleOnchangeDetails}
-                    >
-                      <option value="">Chọn thương hiệu</option>
-                      {brands.map((item, key) => (
-                        <option value={item} key={key}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Price</p>
-                    <input
-                      type="text"
-                      name="price"
-                      className="border w-full p-2 rounded-lg"
-                      value={stateProductDetails.price}
-                      onChange={handleOnchangeDetails}
-                      placeholder=""
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Discount</p>
-                    <input
-                      type="text"
-                      name="discount"
-                      value={stateProductDetails.discount}
-                      onChange={handleOnchangeDetails}
-                      className="border w-full p-2 rounded-lg"
-                      placeholder=""
-                    />
-                  </div>
-                </div>
-
-                <div className="">
-                  <div className="flex flex-col gap-1">
-                    <p className="text-xl font-bold">Description</p>
-                    <textarea
-                      rows={2}
-                      name="description"
-                      className="border w-full p-2 rounded-lg"
-                      value={stateProductDetails.description}
-                      onChange={handleOnchangeDetails}
-                    ></textarea>
-                  </div>
-
-                  <div className="flex flex-col gap-y-2 mt-2">
-                    <div className="grid grid-cols-2">
-                      <p className="text-xl font-bold">Size</p>
-                      <div className="flex justify-between">
-                        <p className="text-xl font-bold">Số lượng</p>
-                        <button
-                          className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
-                          onClick={addSizeFieldDetails}
-                        >
-                          +
-                        </button>
-                      </div>
+          {loading ? (<div className="flex justify-center items-center py-10">
+            <FaSpinner className="text-4xl animate-spin text-gray-700" />
+          </div>) : (
+            <div className="grid grid-cols-2">
+              <div>
+                <img src={stateProductDetails.image} alt="" className="w-[400px] h-1/2 rounded-lg object-cover" />
+              </div>
+              <form action="" className="space-y-3" form={form} onSubmit={onFinish}>
+                <div className="flex flex-col">
+                  <div className="">
+                    <div className="flex flex-col gap-1">
+                      <p className="text-xl font-bold">Name</p>
+                      <input
+                        type="text"
+                        name="name"
+                        className="border w-full p-2 rounded-lg"
+                        value={stateProductDetails.name}
+                        onChange={handleOnchangeDetails}
+                        placeholder=""
+                      />
                     </div>
-                    {stateProductDetails.sizeStock.map((item, index) => (
-                      <div key={index} className="grid grid-cols-2 gap-x-6">
-                        <select
-                          name={`size-${index}`}
-                          className="border w-full p-2 rounded-lg"
-                          value={item.size}
-                          onChange={(e) =>
-                            handleSizeStockChangeDetails(
-                              index,
-                              "size",
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option value="">Chọn size</option>
-                          {[36, 37, 38, 39, 40, 41, 42].map((size) => (
-                            <option
-                              key={size}
-                              value={size}
-                              disabled={stateProductDetails.sizeStock
-                                .filter((_, i) => i !== index) // Loại bỏ chính nó ra khỏi kiểm tra
-                                .some((s) => s.size === String(size))}
-                            >
-                              {size}
-                            </option>
-                          ))}
-                        </select>
 
-                        <div className="flex gap-x-2">
-                          <input
-                            type="text"
-                            name={`stock-${index}`}
-                            className="border w-full p-2 rounded-lg"
-                            value={item.stock}
-                            onChange={(e) =>
-                              handleSizeStockChangeDetails(
-                                index,
-                                "stock",
-                                e.target.value
-                              )
-                            }
-                          />
+                    <div className="flex flex-col gap-1">
+                      <p className="text-xl font-bold">Brand</p>
+                      <select
+                        className="border w-full p-2 rounded-lg"
+                        name="brand"
+                        value={stateProductDetails.brand}
+                        onChange={handleOnchangeDetails}
+                      >
+                        <option value="">Chọn thương hiệu</option>
+                        {brands.map((item, key) => (
+                          <option value={item} key={key}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <p className="text-xl font-bold">Price</p>
+                      <input
+                        type="text"
+                        name="price"
+                        className="border w-full p-2 rounded-lg"
+                        value={stateProductDetails.price}
+                        onChange={handleOnchangeDetails}
+                        placeholder=""
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <p className="text-xl font-bold">Discount</p>
+                      <input
+                        type="text"
+                        name="discount"
+                        value={stateProductDetails.discount}
+                        onChange={handleOnchangeDetails}
+                        className="border w-full p-2 rounded-lg"
+                        placeholder=""
+                      />
+                    </div>
+                  </div>
+
+                  <div className="">
+                    <div className="flex flex-col gap-1">
+                      <p className="text-xl font-bold">Description</p>
+                      <textarea
+                        rows={2}
+                        name="description"
+                        className="border w-full p-2 rounded-lg"
+                        value={stateProductDetails.description}
+                        onChange={handleOnchangeDetails}
+                      ></textarea>
+                    </div>
+
+                    <div className="flex flex-col gap-y-2 mt-2">
+                      <div className="grid grid-cols-2">
+                        <p className="text-xl font-bold">Size</p>
+                        <div className="flex justify-between">
+                          <p className="text-xl font-bold">Số lượng</p>
                           <button
                             className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
-                            onClick={(e) => apartSizeFieldDetails(index, e)}
+                            onClick={addSizeFieldDetails}
                           >
-                            -
+                            +
                           </button>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                      {stateProductDetails.sizeStock.map((item, index) => (
+                        <div key={index} className="grid grid-cols-2 gap-x-6">
+                          <select
+                            name={`size-${index}`}
+                            className="border w-full p-2 rounded-lg"
+                            value={item.size}
+                            onChange={(e) =>
+                              handleSizeStockChangeDetails(
+                                index,
+                                "size",
+                                e.target.value
+                              )
+                            }
+                          >
+                            <option value="">Chọn size</option>
+                            {[36, 37, 38, 39, 40, 41, 42].map((size) => (
+                              <option
+                                key={size}
+                                value={size}
+                                disabled={stateProductDetails.sizeStock
+                                  .filter((_, i) => i !== index) // Loại bỏ chính nó ra khỏi kiểm tra
+                                  .some((s) => s.size === String(size))}
+                              >
+                                {size}
+                              </option>
+                            ))}
+                          </select>
 
-                  <div className="flex flex-col gap-y-2 mt-2">
-                    <p className="text-xl font-bold">Ảnh</p>
-                    <input
-                      type="text"
-                      name="image"
-                      className="border w-full p-2 rounded-lg"
-                      value={stateProductDetails.image}
-                      onChange={handleOnchangeDetails}
-                      placeholder=""
-                    />
+                          <div className="flex gap-x-2">
+                            <input
+                              type="text"
+                              name={`stock-${index}`}
+                              className="border w-full p-2 rounded-lg"
+                              value={item.stock}
+                              onChange={(e) =>
+                                handleSizeStockChangeDetails(
+                                  index,
+                                  "stock",
+                                  e.target.value
+                                )
+                              }
+                            />
+                            <button
+                              className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
+                              onClick={(e) => apartSizeFieldDetails(index, e)}
+                            >
+                              -
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col gap-y-2 mt-2">
+                      <p className="text-xl font-bold">Ảnh</p>
+                      <input
+                        type="text"
+                        name="image"
+                        className="border w-full p-2 rounded-lg"
+                        value={stateProductDetails.image}
+                        onChange={handleOnchangeDetails}
+                        placeholder=""
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </form>
-          </div>
+              </form>
+            </div>)}
 
           <div className="flex justify-end gap-2 mt-4">
             <button
@@ -693,7 +725,7 @@ const AdminProduct = () => {
         </div>
       </div>
     ),
-    [stateProductDetails, sizeList]
+    [stateProductDetails, sizeList, loading]
   );
 
   return (
@@ -820,7 +852,7 @@ const AdminProduct = () => {
                       className="cursor-pointer"
                       onClick={() => {
                         handleDetailsProduct();
-                        setShowUpdateModal(true);
+                        openUpdateModal();
                       }}
                     />
                   </div>
