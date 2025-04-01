@@ -24,10 +24,10 @@ const ProductsCard = ({ img, name, price, discount, oldprice }) => {
         </ul> */}
 
         <div className="space-y-1">
-          <div className="">
+          <div className="mx-5">
             <h
               to=""
-              className="text-[16px] font-bold hover:text-red-500 transition text-center duration-300"
+              className="text-[18px] font-bold hover:text-red-500 transition text-center duration-300"
             >
               {name}
             </h>

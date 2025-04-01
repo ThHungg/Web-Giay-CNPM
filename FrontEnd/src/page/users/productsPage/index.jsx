@@ -151,7 +151,7 @@ const Products = () => {
             {currentProducts.map((product) => {
               return (
                 <Link to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}>
-                  <div className="transition-transform transform hover:scale-105 duration-300">
+                  <div className="flex justify-center items-center transition-transform transform hover:scale-105 duration-300">
                     <ProductCard
                       key={product.id}
                       name={product.name}
