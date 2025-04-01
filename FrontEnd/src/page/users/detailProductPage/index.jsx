@@ -120,7 +120,7 @@ const DetailProduct = () => {
   }, [id]);
 
   const handleBuyNow = () => {
-    navigate("/thanh-toan",{
+    navigate("/thanh-toan", {
       state: {
         productId: id,
         product: productDetail,
@@ -152,23 +152,46 @@ const DetailProduct = () => {
       text: "Giao hàng lâu, liên hệ hỗ trợ nhưng phản hồi chậm.",
     },
   ];
+  const [image, setImage] = useState("");
+  const [smallImages, setSmallImages] = useState([]);
+
+  useEffect(() => {
+    if (productDetail?.image) {
+      setImage(productDetail.image);
+      setSmallImages([
+        "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/6ee3bfc0-d21d-4315-a989-4abf91e18ade/JORDAN+TATUM+3+PF.png",
+        "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/9c38c645-4189-4163-a199-e35f77338a6f/JORDAN+ZION+4+PF.png",
+      ]);
+    }
+  }, [productDetail]);
+
+  const handleImageClick = (newImg) => {
+    setSmallImages((prev) => {
+      const updatedImages = prev.filter((img) => img !== newImg);
+      updatedImages.unshift(image); // Đưa ảnh lớn cũ xuống danh sách ảnh nhỏ
+      return updatedImages;
+    });
+    setImage(newImg); // Cập nhật ảnh lớn
+  };
   return (
     <>
       <ToastNotification />
       <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8 h-screen">
         {/* image first*/}
         <div className="col-span-5 mx-auto">
-          <img
-            src={productDetail.image}
-            alt=""
-            className="h-2/6 w-full object-cover"
-          />
+          <img src={image} alt="Large product" className="h-[500px] w-full object-cover" />
+
+          {/* Ảnh nhỏ */}
           <div className="flex justify-center gap-3 mt-2">
-            <img
-              src={productDetail.image}
-              alt=""
-              className="h-[80px] w-[80px] object-contain"
-            />
+            {smallImages.map((img, index) => (
+              <img
+                key={index}
+                src={img}
+                alt={`Small image ${index}`}
+                className="h-[80px] w-[80px] object-contain cursor-pointer"
+                onClick={() => handleImageClick(img)}
+              />
+            ))}
           </div>
           <Tabs>
             <TabList className="flex justify-center">
@@ -280,7 +303,7 @@ const DetailProduct = () => {
             <li className="text-xl">
               <b>Tình trạng: </b>{" "}
               <span>
-                {productDetail.status} 
+                {productDetail.status}
               </span>
             </li>
             <li className="text-xl">
@@ -297,16 +320,14 @@ const DetailProduct = () => {
                 <div key={size} className="relative inline-block">
                   <button
                     className={`px-4 py-2 border rounded-lg font-medium transition-all duration-200
-                    ${
-                      selectedSize === size
+                    ${selectedSize === size
                         ? "bg-black text-black shadow-md border border-black"
                         : ""
-                    }
-                    ${
-                      isAvailable
+                      }
+                    ${isAvailable
                         ? "bg-white hover:bg-gray-100"
                         : "opacity-50 cursor-not-allowed"
-                    }`}
+                      }`}
                     onClick={() => isAvailable && setSelectedSize(size)}
                     disabled={!isAvailable}
                   >
@@ -343,7 +364,7 @@ const DetailProduct = () => {
           </div>
         </div>
       </div>
-      <div>
+      <div className="mt-[100px]">
         <h1 className="text-3xl font-bold mt-5 flex justify-center items-center">Sản phẩm liên quan</h1>
         {/* <Carousel responsive={responsive}>
           </Carousel> */}
