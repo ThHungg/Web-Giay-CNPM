@@ -236,14 +236,14 @@ const AdminUser = () => {
               placeholder="Email"
             />
 
-            <input
+            {/* <input
               type="password"
               className="border w-full p-2 rounded-lg"
               name="password"
               value={stateUser.password}
               onChange={handleOnchange}
               placeholder="Mật khẩu"
-            />
+            /> */}
           </form>
           <div className="flex justify-end gap-2 mt-4">
             <button

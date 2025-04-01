@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import formatter from "../../../utils/formatter.jsx";
 import Quantity from "../../../component/Quantity/index.jsx";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import StarRating from "../../../component/StarRaint/index.jsx";
@@ -16,6 +16,7 @@ const DetailProduct = () => {
   const { id } = useParams();
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("access_token");
   let userId;
@@ -118,6 +119,18 @@ const DetailProduct = () => {
     }
   }, [id]);
 
+  const handleBuyNow = () => {
+    navigate("/thanh-toan",{
+      state: {
+        productId: id,
+        product: productDetail,
+        quantity: quantity,
+        selectedSize: selectedSize,
+      },
+    })
+  };
+  console.log(quantity, selectedSize)
+
   const [name, setName] = useState("");
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
@@ -142,7 +155,7 @@ const DetailProduct = () => {
   return (
     <>
       <ToastNotification />
-      <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8">
+      <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8 h-screen">
         {/* image first*/}
         <div className="col-span-5 mx-auto">
           <img
@@ -171,7 +184,7 @@ const DetailProduct = () => {
             </TabList>
 
             <TabPanel className="">
-              <h2 className="text-lg text-gray-700 leading-relaxed whitespace-pre-line">
+              <h2 className="text-lg text-gray-700 leading-relaxed whitespace-pre-line h-[370px] overflow-auto">
                 {productDetail.description}
               </h2>
             </TabPanel>
@@ -316,7 +329,7 @@ const DetailProduct = () => {
             <button
               type="submit"
               className="w-60 h-14 bg-black text-white mt-2 rounded-md shadow-sm text-xl font-bold"
-              // onClick={handleBuyNow}
+              onClick={handleBuyNow}
             >
               Mua ngay
             </button>
@@ -331,7 +344,7 @@ const DetailProduct = () => {
         </div>
       </div>
       <div>
-        {/* <h1 className="text-3xl font-bold mt-5">Sản phẩm liên quan</h1> */}
+        <h1 className="text-3xl font-bold mt-5 flex justify-center items-center">Sản phẩm liên quan</h1>
         {/* <Carousel responsive={responsive}>
           </Carousel> */}
       </div>

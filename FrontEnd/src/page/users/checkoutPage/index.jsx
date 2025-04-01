@@ -9,6 +9,7 @@ import { jwtDecode } from "jwt-decode";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification/index.js";
+import { useLocation } from "react-router-dom";
 
 const CheckoutPage = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("COD");
@@ -17,6 +18,7 @@ const CheckoutPage = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [size, setSize] = useState("");
+  const location = useLocation();
   const token = localStorage.getItem("access_token");
   let userId;
   if (token) {
@@ -24,25 +26,28 @@ const CheckoutPage = () => {
     userId = decoded.id;
   }
 
+  const { productId , product, quantity, selectedSize } = location.state || {};
+  const isBuyNow = quantity;
+  console.log(productId, product, quantity, selectedSize)
+
   const { data: cartData, refetch } = useQuery({
     queryKey: ["cart", userId],
     queryFn: () => cartService.getCart(userId),
     enabled: !!userId,
   });
 
-  const totalAmount = cartData?.cart?.data?.products?.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  console.log(totalAmount);
-  console.log("Payment", selectedPaymentMethod);
+  // const totalAmount = cartData?.cart?.data?.products?.reduce(
+  //   (sum, item) => sum + item.price * item.quantity,
+  //   0
+  // );
+
+  const totalAmount = isBuyNow ? product.price * quantity
+    : cartData?.cart?.data?.products?.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
   const handlePayment = async () => {
     // totalAmount
     if (selectedPaymentMethod && selectedPaymentMethod === "Banking") {
       if (
-        !userId ||
-        !cartData ||
         !selectedPaymentMethod ||
         !name ||
         !phone ||
@@ -51,34 +56,35 @@ const CheckoutPage = () => {
         toast.error("Vui lòng nhập đầy đủ thông tin.");
         return;
       }
-      const orderData = {
-        userId: userId,
-        items: cartData.cart.data.products.map((item) => ({
+
+      const orderItems = isBuyNow
+        ? [{
+          productId,
+          quantity,
+          price: product.price,
+          size: selectedSize
+        }]
+        : cartData.cart.data.products.map((item) => ({
           productId: item.productId._id,
           quantity: item.quantity,
           price: item.price,
           size: item.size,
-        })),
+        }));
+
+      const orderData = {
+        userId,
+        items: orderItems,
         shippingAddress: {
-          street: street,
+          street,
           province: selectedProvince,
           district: selectedDistrict,
           ward: selectedWard,
         },
         paymentMethod: selectedPaymentMethod,
-        note: note,
+        note,
         total: totalAmount,
-        customerInfo: {
-          nameReceiver: name,
-          phoneReceiver: phone,
-          emailReceiver: email,
-        },
+        customerInfo: { nameReceiver: name, phoneReceiver: phone, emailReceiver: email },
       };
-
-      if (orderData.items.length === 0) {
-        toast.error("Giỏ hàng của bạn đang trống.");
-        return;
-      }
 
       const createOrder = await orderService.createOrder(
         orderData.userId,
@@ -89,7 +95,47 @@ const CheckoutPage = () => {
         orderData.total,
         orderData.customerInfo
       );
-      console.log("createOrder", createOrder);
+
+      // const orderData = {
+      //   userId: userId,
+      //   items: cartData.cart.data.products.map((item) => ({
+      //     productId: item.productId._id,
+      //     quantity: item.quantity,
+      //     price: item.price,
+      //     size: item.size,
+      //   })),
+      //   shippingAddress: {
+      //     street: street,
+      //     province: selectedProvince,
+      //     district: selectedDistrict,
+      //     ward: selectedWard,
+      //   },
+      //   paymentMethod: selectedPaymentMethod,
+      //   note: note,
+      //   total: totalAmount,
+      //   customerInfo: {
+      //     nameReceiver: name,
+      //     phoneReceiver: phone,
+      //     emailReceiver: email,
+      //   },
+      // };
+
+      if (orderData.items.length === 0) {
+        toast.error("Giỏ hàng của bạn đang trống.");
+        return;
+      }
+      console.log("Dữ liệu gửi lên server:", orderData);
+
+      // const createOrder = await orderService.createOrder(
+      //   orderData.userId,
+      //   orderData.items,
+      //   orderData.shippingAddress,
+      //   orderData.paymentMethod,
+      //   orderData.note,
+      //   orderData.total,
+      //   orderData.customerInfo
+      // );
+      // console.log("createOrder", createOrder);
       const orderId = createOrder.order._id;
 
       const productIds = createOrder.order.items.map((item) => item.productId);
@@ -109,7 +155,7 @@ const CheckoutPage = () => {
         );
         console.log("data", data);
         window.location.href = data.paymentUrl;
-      } catch (e) {}
+      } catch (e) { }
     }
   };
 
@@ -139,10 +185,10 @@ const CheckoutPage = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [street, setStreet] = useState("");
-
   const handleStreetChange = (e) => {
     setStreet(e.target.value);
   };
+
 
   useEffect(() => {
     axios
@@ -383,24 +429,44 @@ const CheckoutPage = () => {
       {/* Phần đơn hàng */}
       <div className="w-1/3 bg-white p-4 rounded-xl shadow-lg self-start mt-2">
         <h1 className="text-2xl font-bold">Đơn hàng:</h1>
-        {cartData?.cart?.data?.products?.map((item) => (
+        {isBuyNow ? (
           <div className="flex gap-3">
             <img
-              src={item.productId.image}
+              src={product.image}
               alt=""
               className="h-[60px] w-[80px] object-cover"
             />
             <div>
-              <p className="font-bold">{item.productId.name}</p>
+              <p className="font-bold">{product.name}</p>
               <div className="flex">
-                <p>Size: {item.size}</p>
+                <p>Size: {selectedSize}</p>
                 <p className="mx-2">|</p>
-                <p>SL: {item.quantity}</p>
+                <p>SL: {quantity}</p>
               </div>
-              <p>Giá: {formatter(item.price)}</p>
+              <p>Giá: {formatter(product.price)}</p>
             </div>
           </div>
-        ))}
+        ) : (
+          cartData?.cart?.data?.products?.map((item) => (
+            <div className="flex gap-3" key={item.productId._id}>
+              <img
+                src={item.productId.image}
+                alt=""
+                className="h-[60px] w-[80px] object-cover"
+              />
+              <div>
+                <p className="font-bold">{item.productId.name}</p>
+                <div className="flex">
+                  <p>Size: {item.size}</p>
+                  <p className="mx-2">|</p>
+                  <p>SL: {item.quantity}</p>
+                </div>
+                <p>Giá: {formatter(item.price)}</p>
+              </div>
+            </div>
+          ))
+        )}
+
         <hr />
         <h1 className="text-xl font-bold mt-2">
           Tổng cộng: {formatter(totalAmount)}
