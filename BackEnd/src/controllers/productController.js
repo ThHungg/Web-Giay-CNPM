@@ -202,12 +202,23 @@ const getTopSellingProducts = async (req, res) => {
         const response = await productService.getTopSellingProducts();
         return res.status(200).json(response);
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             message: "Lỗi hệ thống, vui lòng thử lại sau!",
         });
     }
 };
+
+const getRelated = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const response = await productService.getRelated(id);
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(500).json({
+            message: "Lỗi hệ thống, vui lòng thử lại sau!",
+        });
+    }
+}
 
 
 
@@ -222,5 +233,6 @@ module.exports = {
     getActiveProduct,
     updateMultipleSold,
     updateProductStatus,
-    getTopSellingProducts
+    getTopSellingProducts,
+    getRelated
 };

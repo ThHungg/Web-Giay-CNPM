@@ -38,6 +38,7 @@ const createProduct = (newProduct) => {
 const updateProduct = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
+            console.log(data.price);
             const checkProduct = await Product.findById(id);
             if (checkProduct === null) {
                 resolve({
@@ -49,15 +50,16 @@ const updateProduct = (id, data) => {
             if (data.sizeStock) {
                 data.totalStock = updateTotalStock(data.sizeStock);
             }
-            if (data.discount !== undefined && data.price !== undefined) {
-                if (data.price <= 0) {
-                    return reject({ status: 'ERR', message: 'Giá sản phẩm không hợp lệ' });
-                }
-                data.price = Math.round(checkProduct.oldPrice * (1 - data.discount / 100));
+
+            if (data.price !== undefined && data.price <= 0) {
+                return reject({ status: "ERR", message: "Giá sản phẩm không hợp lệ" });
             }
 
-            const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true })
+            data.oldPrice = data.price;
+            data.price = Math.round(data.oldPrice * (1 - data.discount / 100));
 
+            const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true })
+            console.log("Updated Product:", updatedProduct);
             resolve({
                 status: "Ok",
                 message: "Success",
@@ -285,6 +287,38 @@ const getTopSellingProducts = () => {
     });
 };
 
+const getRelated = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const product = await Product.findById(id)
+            console.log(id)
+            console.log(product.brand)
+            if (!product) {
+                resolve({
+                    status: "ERR",
+                    message: "Không tìm thấy sản phẩm"
+                })
+            }
+
+            const relatedProduct = await Product.find({
+                _id: { $ne: id },
+                $or: [
+                    { brand: product.brand }
+                ]
+            }).limit(10);
+
+            console.log("Related products:", relatedProduct);
+
+            resolve({
+                status: "OK",
+                message: "Lấy sản phẩm bán chạy thành công",
+                data: relatedProduct,
+            });
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 
 
 module.exports = {
@@ -298,5 +332,6 @@ module.exports = {
     getActiveProduct,
     updateMultipleSold,
     updateProductStatus,
-    getTopSellingProducts
+    getTopSellingProducts,
+    getRelated
 };

@@ -25,12 +25,12 @@ const ProductsCard = ({ img, name, price, discount, oldprice }) => {
 
         <div className="space-y-1">
           <div className="mx-5">
-            <h
+            <h1
               to=""
               className="text-[18px] font-bold hover:text-red-500 transition text-center duration-300"
             >
               {name}
-            </h>
+            </h1>
           </div>
           <div className="flex justify-center gap-2">
             <h1 className="text-[19px] text-red-500 font-semibold">

@@ -21,6 +21,7 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBrand, setSelectedBrand] = useState("");
   const [priceRange, setPriceRange] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const itemsPerPage = 12;
 
   const handlePriceFilter = (range) => {
@@ -31,6 +32,11 @@ const Products = () => {
   const filterProductsByPrice = (products) => {
     if (priceRange === "under1M") {
       return products.filter((product) => product.price < 1000000);
+    }
+    if (searchTerm) {
+      return products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
     if (priceRange === "1Mto2M") {
       return products.filter(
@@ -73,22 +79,34 @@ const Products = () => {
   return (
     <>
       <div className="max-w-screen-xl mx-auto grid grid-cols-5">
-        <div className="col-span-1 mt-5 bg-white p-4 rounded-lg shadow-md h-[350px] overflow-y-auto sticky top-5 self-start">
+        <div className="col-span-1 mt-5 bg-white p-4 rounded-lg shadow-md h-[450px] sticky top-5 self-start">
           {/* Bộ lọc theo thương hiệu */}
-          <div className="mb-5">
-            <h1 className="text-2xl font-bold">Thương hiệu:</h1>
-            <select
-              className="border w-full p-2 rounded-lg mt-3"
-              name="brand"
-              onChange={(e) => handleBrandClick(e.target.value)}
-            >
-              <option value="">Chọn thương hiệu</option>
-              {brands.map((item, key) => (
-                <option value={item} key={key}>
-                  {item}
-                </option>
-              ))}
-            </select>
+          <div className="mb-5 flex flex-col gap-2">
+            <div>
+              <h1 className="text-2xl font-bold">Tìm kiếm:</h1>
+              <input
+                type="search"
+                className="w-full p-2 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+                placeholder="Tìm kiếm sản phẩm"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+              />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Thương hiệu:</h1>
+              <select
+                className="border w-full p-2 rounded-lg mt-2"
+                name="brand"
+                onChange={(e) => handleBrandClick(e.target.value)}
+              >
+                <option value="">Chọn thương hiệu</option>
+                {brands.map((item, key) => (
+                  <option value={item} key={key}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Bộ lọc theo mức giá */}

@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import formatter from "../../../utils/formatter.jsx";
 import Quantity from "../../../component/Quantity/index.jsx";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import StarRating from "../../../component/StarRaint/index.jsx";
@@ -11,6 +11,10 @@ import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification/index.js";
 import { useMutationHooks } from "../../../hooks/useMutation.js";
+import { useQuery } from "@tanstack/react-query";
+import { ProductCard } from "../../../component/index.jsx";
+import { ROUTERS } from "../../../utils/router.jsx";
+import Carousel from "react-multi-carousel";
 
 const DetailProduct = () => {
   const { id } = useParams();
@@ -83,8 +87,6 @@ const DetailProduct = () => {
     const res = await productService.getDetailsProduct(id);
     if (res?.data) {
       let updatedStatus = res.data.totalStock === 0 ? "Hết hàng" : "Còn hàng";
-
-      // Cập nhật productDetail ngay lập tức
       setProductDetail({
         name: res.data.name,
         price: res.data.price,
@@ -115,8 +117,6 @@ const DetailProduct = () => {
     }
   };
 
-  console.log(productDetail)
-
   useEffect(() => {
     if (id) {
       fetchGetDetailsProduct(id);
@@ -131,9 +131,21 @@ const DetailProduct = () => {
         quantity: quantity,
         selectedSize: selectedSize,
       },
-    })
+    });
   };
-  console.log(quantity, selectedSize)
+
+  const fetchRelatedProduct = async () => {
+    const res = await productService.getRelated(id);
+    const relatedProduct = res.data;
+    return relatedProduct;
+  };
+
+  const { data: relatedProduct } = useQuery({
+    queryKey: ["products"],
+    queryFn: fetchRelatedProduct,
+  });
+
+  console.log("relatedProduct", relatedProduct);
 
   const [name, setName] = useState("");
   const [rating, setRating] = useState(0);
@@ -177,13 +189,41 @@ const DetailProduct = () => {
     });
     setImage(newImg); // Cập nhật ảnh lớn
   };
+
+  const responsive = {
+    superLargeDesktop: {
+      breakpoint: { max: 4000, min: 3000 },
+      items: 5,
+    },
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 4,
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 2,
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1,
+    },
+  };
+
+  if (!Array.isArray(relatedProduct) || relatedProduct.length === 0) {
+    return <div>No related products found.</div>;
+  }
+
   return (
     <>
       <ToastNotification />
       <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8 h-screen">
         {/* image first*/}
         <div className="col-span-5 mx-auto">
-          <img src={image} alt="Large product" className="h-[500px] w-full object-cover" />
+          <img
+            src={image}
+            alt="Large product"
+            className="h-[500px] w-full object-cover"
+          />
 
           {/* Ảnh nhỏ */}
           <div className="flex justify-center gap-3 mt-2">
@@ -305,10 +345,7 @@ const DetailProduct = () => {
           </div>
           <ul>
             <li className="text-xl">
-              <b>Tình trạng: </b>{" "}
-              <span>
-                {productDetail.status}
-              </span>
+              <b>Tình trạng: </b> <span>{productDetail.status}</span>
             </li>
             <li className="text-xl">
               <b>Size: </b>
@@ -324,14 +361,16 @@ const DetailProduct = () => {
                 <div key={size} className="relative inline-block">
                   <button
                     className={`px-4 py-2 border rounded-lg font-medium transition-all duration-200
-                    ${selectedSize === size
+                    ${
+                      selectedSize === size
                         ? "bg-black text-black shadow-md border border-black"
                         : ""
-                      }
-                    ${isAvailable
+                    }
+                    ${
+                      isAvailable
                         ? "bg-white hover:bg-gray-100"
                         : "opacity-50 cursor-not-allowed"
-                      }`}
+                    }`}
                     onClick={() => isAvailable && setSelectedSize(size)}
                     disabled={!isAvailable}
                   >
@@ -368,10 +407,32 @@ const DetailProduct = () => {
           </div>
         </div>
       </div>
-      <div className="mt-[100px]">
-        <h1 className="text-3xl font-bold mt-5 flex justify-center items-center">Sản phẩm liên quan</h1>
-        {/* <Carousel responsive={responsive}>
-          </Carousel> */}
+      <div className="mt-[100px] max-w-screen-xl mx-auto">
+        <h1 className="text-3xl font-bold mt-5 flex justify-center items-center">
+          Sản phẩm liên quan
+        </h1>
+        <Carousel
+          responsive={responsive}
+          infinite={true}
+          autoPlay={true}
+          autoPlaySpeed={3000}
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
+          {relatedProduct.map((product) => (
+            <Link
+              key={product._id}
+              to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}
+            >
+              <ProductCard
+                name={product.name}
+                img={product.image}
+                price={product.price}
+                oldprice={product.oldPrice}
+                discount={product.discount}
+              />
+            </Link>
+          ))}
+        </Carousel>
       </div>
     </>
   );

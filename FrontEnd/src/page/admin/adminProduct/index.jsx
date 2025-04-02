@@ -10,6 +10,7 @@ import { FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import formatter from "../../../utils/formatter";
 import { FaSpinner } from "react-icons/fa";
+import { CiEdit } from "react-icons/ci";
 
 const AdminProduct = () => {
   const fetchProductAll = async () => {
@@ -32,7 +33,7 @@ const AdminProduct = () => {
   const [rowSelected, setRowSelected] = useState("");
   const user = useSelector((state) => state.user);
   const brands = ["Adidas", "Nike", "Vans", "Air Jordan", "MLB", "Converse"];
-  const [checked, setChecked] = useState(products ? !products.deletedAt : true);
+  // const [checked, setChecked] = useState(products ? !products.deletedAt : true);
 
   const [stateProduct, setSateProduct] = useState({
     name: "",
@@ -60,15 +61,23 @@ const AdminProduct = () => {
   });
 
   const mutation = useMutationHooks(async (data) => {
-    const { name, price, description, brand, image, images, discount, sizeStock } =
-      data;
+    const {
+      name,
+      price,
+      description,
+      brand,
+      image,
+      // images,
+      discount,
+      sizeStock,
+    } = data;
     return await productService.createProduct({
       name,
       price,
       description,
       brand,
       image,
-      images,
+      // images,
       discount,
       sizeStock,
     });
@@ -146,6 +155,8 @@ const AdminProduct = () => {
     setSateProduct({
       name: "",
       price: "",
+      oldPrice: "",
+      status: "",
       description: "",
       brand: "",
       image: "",
@@ -235,10 +246,10 @@ const AdminProduct = () => {
       setStateProductDetails({
         name: res?.data?.name,
         price: res?.data?.price,
+        oldPrice: res?.data?.oldPrice,
         description: res?.data?.description,
         brand: res?.data?.brand,
         image: res?.data?.image,
-        // images: res?.da
         discount: res?.data?.discount,
         sizeStock: res?.data?.sizeStock || [],
       });
@@ -266,10 +277,7 @@ const AdminProduct = () => {
     return await productService.updateProduct(id, token, rests);
   });
 
-  const {
-    isSuccess: isSuccessUpdate,
-    isError: isErrorUpdate,
-  } = mutationUpdate;
+  const { isSuccess: isSuccessUpdate, isError: isErrorUpdate } = mutationUpdate;
 
   useEffect(() => {
     if (isSuccessUpdate) {
@@ -302,24 +310,25 @@ const AdminProduct = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedDiscount, setSelectedDiscount] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   // const itemsPerPage = 10;
 
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(9);
 
-  useEffect(() => {
-    const updateItemsPerPage = () => {
-      const itemHeight = 48; // Giả sử mỗi sản phẩm cao 150px
-      const availableHeight = window.innerHeight - 200; // Trừ đi header, footer, padding
-      const items = Math.floor(availableHeight / itemHeight); // Tính số sản phẩm tối đa
-      setItemsPerPage(items > 0 ? items : 1); // Đảm bảo ít nhất 1 sản phẩm/trang
-    };
+  // useEffect(() => {
+  //   const updateItemsPerPage = () => {
+  //     const itemHeight = 48; // Giả sử mỗi sản phẩm cao 150px
+  //     const availableHeight = window.innerHeight - 200; // Trừ đi header, footer, padding
+  //     const items = Math.floor(availableHeight / itemHeight); // Tính số sản phẩm tối đa
+  //     setItemsPerPage(items > 0 ? items : 1); // Đảm bảo ít nhất 1 sản phẩm/trang
+  //   };
 
-    updateItemsPerPage(); // Gọi khi load trang
-    window.addEventListener("resize", updateItemsPerPage); // Cập nhật khi resize
+  //   updateItemsPerPage(); // Gọi khi load trang
+  //   window.addEventListener("resize", updateItemsPerPage); // Cập nhật khi resize
 
-    return () => window.removeEventListener("resize", updateItemsPerPage);
-  }, []);
+  //   return () => window.removeEventListener("resize", updateItemsPerPage);
+  // }, []);
 
   const filteredProducts =
     products?.data?.filter((product) => {
@@ -333,6 +342,12 @@ const AdminProduct = () => {
         return false;
       }
       if (searchTerm && !product.name.toLowerCase().includes(searchTerm)) {
+        return false;
+      }
+      if (selectedStatus === "Đang bán" && product.deletedAt !== null) {
+        return false;
+      }
+      if (selectedStatus === "Ngưng bán" && product.deletedAt === null) {
         return false;
       }
       return true;
@@ -353,7 +368,7 @@ const AdminProduct = () => {
   const openUpdateModal = () => {
     setShowUpdateModal(true); // Mở modal trước
     setLoading(true); // Hiện loading khi modal mở
-    
+
     setTimeout(() => {
       setLoading(false); // Sau 2s, tắt loading
     }, 500);
@@ -364,165 +379,167 @@ const AdminProduct = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-8 flex flex-col gap-4 w-1/2 shadow-lg rounded-xl">
           <h1 className="text-2xl font-bold text-center">Thêm sản phẩm mới</h1>
-          <div className="grid grid-cols-2 gap-2">
-            <div><img src={stateProduct.image} alt="" className="w-[400px] h-1/2 rounded-lg object-cover" /></div>
-            <div>
-              <form action="" className="space-y-3" form={form} onSubmit={onFinish}>
-                <div className="flex flex-col gap-x-6">
-                  <div className="">
-                    <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Name</p>
-                      <input
-                        type="text"
-                        name="name"
-                        className="border w-full p-2 rounded-lg"
-                        value={stateProduct.name}
-                        onChange={handleOnchange}
-                        placeholder=""
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Brand</p>
-                      <select
-                        className="border w-full p-2 rounded-lg"
-                        name="brand"
-                        value={stateProduct.brand}
-                        onChange={handleOnchange}
-                      >
-                        <option value="">Chọn thương hiệu</option>
-                        {brands.map((item, key) => (
-                          <option value={item} key={key}>
-                            {item}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Price</p>
-                      <input
-                        type="text"
-                        name="price"
-                        className="border w-full p-2 rounded-lg"
-                        value={stateProduct.price}
-                        onChange={handleOnchange}
-                        placeholder=""
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Discount</p>
-                      <input
-                        type="text"
-                        name="discount"
-                        value={stateProduct.discount}
-                        onChange={handleOnchange}
-                        className="border w-full p-2 rounded-lg"
-                        placeholder=""
-                      />
-                    </div>
+          <div>
+            <form
+              action=""
+              className="space-y-3"
+              form={form}
+              onSubmit={onFinish}
+            >
+              <div className="grid grid-cols-2 gap-2">
+                <div className="">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xl font-bold">Name</p>
+                    <input
+                      type="text"
+                      name="name"
+                      className="border w-full p-2 rounded-lg"
+                      value={stateProduct.name}
+                      onChange={handleOnchange}
+                      placeholder=""
+                    />
                   </div>
 
-                  <div className="">
-                    <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Description</p>
-                      <textarea
-                        rows={2}
-                        name="description"
-                        className="border w-full p-2 rounded-lg"
-                        value={stateProduct.description}
-                        onChange={handleOnchange}
-                      ></textarea>
-                    </div>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xl font-bold">Brand</p>
+                    <select
+                      className="border w-full p-2 rounded-lg"
+                      name="brand"
+                      value={stateProduct.brand}
+                      onChange={handleOnchange}
+                    >
+                      <option value="">Chọn thương hiệu</option>
+                      {brands.map((item, key) => (
+                        <option value={item} key={key}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                    <div className="flex flex-col gap-y-2 mt-2">
-                      <div className="grid grid-cols-2">
-                        <p className="text-xl font-bold">Size</p>
-                        <div className="flex justify-between">
-                          <p className="text-xl font-bold">Số lượng</p>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xl font-bold">Price</p>
+                    <input
+                      type="text"
+                      name="price"
+                      className="border w-full p-2 rounded-lg"
+                      value={stateProduct.price}
+                      onChange={handleOnchange}
+                      placeholder=""
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xl font-bold">Discount</p>
+                    <input
+                      type="text"
+                      name="discount"
+                      value={stateProduct.discount}
+                      onChange={handleOnchange}
+                      className="border w-full p-2 rounded-lg"
+                      placeholder=""
+                    />
+                  </div>
+                </div>
+
+                <div className="">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-xl font-bold">Description</p>
+                    <textarea
+                      rows={2}
+                      name="description"
+                      className="border w-full p-2 rounded-lg"
+                      value={stateProduct.description}
+                      onChange={handleOnchange}
+                    ></textarea>
+                  </div>
+
+                  <div className="flex flex-col gap-y-2 mt-2">
+                    <div className="grid grid-cols-2">
+                      <p className="text-xl font-bold">Size</p>
+                      <div className="flex justify-between">
+                        <p className="text-xl font-bold">Số lượng</p>
+                        <button
+                          className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
+                          onClick={addSizeField}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    {sizeList.map((item, index) => (
+                      <div key={item.id} className="grid grid-cols-2 gap-x-6">
+                        <select
+                          name="size"
+                          className="border w-full p-2 rounded-lg"
+                          value={sizeStock[index]?.size}
+                          onChange={(e) =>
+                            handleSizeStockChange(index, "size", e.target.value)
+                          }
+                        >
+                          <option value="">Chọn size</option>
+                          {[36, 37, 38, 39, 40, 41, 42].map((size) => (
+                            <option
+                              key={size}
+                              value={size}
+                              disabled={sizeStock.some(
+                                (item) => item.size === String(size)
+                              )}
+                            >
+                              {size}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="flex gap-x-2">
+                          <input
+                            type="text"
+                            name="stock"
+                            className="border w-full p-2 rounded-lg"
+                            value={sizeStock[index]?.stock}
+                            onChange={(e) =>
+                              handleSizeStockChange(
+                                index,
+                                "stock",
+                                e.target.value
+                              )
+                            }
+                          />
                           <button
                             className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
-                            onClick={addSizeField}
+                            onClick={(e) => apartSizeField(item.id, e)}
                           >
-                            +
+                            -
                           </button>
                         </div>
                       </div>
-                      {sizeList.map((item, index) => (
-                        <div key={item.id} className="grid grid-cols-2 gap-x-6">
-                          <select
-                            name="size"
-                            className="border w-full p-2 rounded-lg"
-                            value={sizeStock[index]?.size}
-                            onChange={(e) =>
-                              handleSizeStockChange(index, "size", e.target.value)
-                            }
-                          >
-                            <option value="">Chọn size</option>
-                            {[36, 37, 38, 39, 40, 41, 42].map((size) => (
-                              <option
-                                key={size}
-                                value={size}
-                                disabled={sizeStock.some(
-                                  (item) => item.size === String(size)
-                                )}
-                              >
-                                {size}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="flex gap-x-2">
-                            <input
-                              type="text"
-                              name="stock"
-                              className="border w-full p-2 rounded-lg"
-                              value={sizeStock[index]?.stock}
-                              onChange={(e) =>
-                                handleSizeStockChange(
-                                  index,
-                                  "stock",
-                                  e.target.value
-                                )
-                              }
-                            />
-                            <button
-                              className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
-                              onClick={(e) => apartSizeField(item.id, e)}
-                            >
-                              -
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    ))}
+                  </div>
 
-                    <div className="flex flex-col gap-y-2 mt-2">
-                      <p className="text-xl font-bold">Ảnh</p>
-                      <input
-                        type="text"
-                        name="image"
-                        className="border w-full p-2 rounded-lg"
-                        value={stateProduct.image}
-                        onChange={handleOnchange}
-                        placeholder=""
-                      />
-                    </div>
-                    <div className="flex flex-col gap-y-2 mt-2">
-                      <p className="text-xl font-bold">Ảnh khác</p>
-                      <input
-                        type="text"
-                        name="images"
-                        className="border w-full p-2 rounded-lg"
-                        value={stateProduct.images}
-                        onChange={handleOnchange}
-                        placeholder=""
-                      />
-                    </div>
+                  <div className="flex flex-col gap-y-2 mt-2">
+                    <p className="text-xl font-bold">Ảnh</p>
+                    <input
+                      type="text"
+                      name="image"
+                      className="border w-full p-2 rounded-lg"
+                      value={stateProduct.image}
+                      onChange={handleOnchange}
+                      placeholder=""
+                    />
+                  </div>
+                  <div className="flex flex-col gap-y-2 mt-2">
+                    <p className="text-xl font-bold">Ảnh khác</p>
+                    <input
+                      type="text"
+                      name="images"
+                      className="border w-full p-2 rounded-lg"
+                      value={stateProduct.images}
+                      onChange={handleOnchange}
+                      placeholder=""
+                    />
                   </div>
                 </div>
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
 
           <div className="flex justify-end gap-2 mt-4">
@@ -550,15 +567,19 @@ const AdminProduct = () => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
         <div className="bg-white p-8 flex flex-col gap-4 w-1/2 shadow-lg rounded-xl">
           <h1 className="text-2xl font-bold text-center">Thêm sản phẩm mới</h1>
-          {loading ? (<div className="flex justify-center items-center py-10">
-            <FaSpinner className="text-4xl animate-spin text-gray-700" />
-          </div>) : (
-            <div className="grid grid-cols-2">
-              <div>
-                <img src={stateProductDetails.image} alt="" className="w-[400px] h-1/2 rounded-lg object-cover" />
-              </div>
-              <form action="" className="space-y-3" form={form} onSubmit={onFinish}>
-                <div className="flex flex-col">
+          {loading ? (
+            <div className="flex justify-center items-center py-10">
+              <FaSpinner className="text-4xl animate-spin text-gray-700" />
+            </div>
+          ) : (
+            <div>
+              <form
+                action=""
+                className="space-y-3"
+                form={form}
+                onSubmit={onFinish}
+              >
+                <div className="grid grid-cols-2 gap-2">
                   <div className="">
                     <div className="flex flex-col gap-1">
                       <p className="text-xl font-bold">Name</p>
@@ -706,7 +727,8 @@ const AdminProduct = () => {
                   </div>
                 </div>
               </form>
-            </div>)}
+            </div>
+          )}
 
           <div className="flex justify-end gap-2 mt-4">
             <button
@@ -727,6 +749,8 @@ const AdminProduct = () => {
     ),
     [stateProductDetails, sizeList, loading]
   );
+
+  console.log(currentProducts);
 
   return (
     <>
@@ -766,10 +790,14 @@ const AdminProduct = () => {
           </div>
           {/* status */}
           <div className="w-[200px]">
-            <select className="border w-full p-2 rounded-lg" name="brand">
+            <select
+              className="border w-full p-2 rounded-lg"
+              name="brand"
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            >
               <option value="">Trạng thái</option>
-              <option>Ngưng bán</option>
-              <option>Đang bán</option>
+              <option value="Ngưng bán">Ngưng bán</option>
+              <option value="Đang bán">Đang bán</option>
             </select>
           </div>
         </div>
@@ -795,7 +823,7 @@ const AdminProduct = () => {
         </div>
       </div>
       {/* Lọc tạo tìm  end*/}
-      <div className="bg-white mt-5 mr-2">
+      {/* <div className="bg-white mt-5 mr-2">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200">
             <tr>
@@ -861,6 +889,90 @@ const AdminProduct = () => {
             ))}
           </tbody>
         </table>
+      </div> */}
+      <div className="grid grid-cols-3 gap-3 mt-3">
+        {currentProducts.map((product, index) => (
+          <div
+            key={index}
+            className="bg-white rounded-lg h-[200px] grid grid-cols-5"
+            onClick={() => setRowSelected(product._id)}
+          >
+            <div className="col-span-2 rounded-lg flex justify-center items-center p-2">
+              <img
+                src={product.image}
+                alt=""
+                className="w-full h-[150px] object-cover rounded-lg"
+              />
+            </div>
+
+            <div className="col-span-3 mt-2">
+              <div className="flex flex-col">
+                <p className="font-bold">
+                  {product.name}{" "}
+                  {product.discount > 0 && (
+                    <span className="text-red-500">- {product.discount}%</span>
+                  )}
+                </p>
+                <p className="">
+                  Trạng thái:{" "}
+                  <span
+                    className={
+                      product.status === "Hết hàng"
+                        ? "font-bold text-red-500"
+                        : ""
+                    }
+                  >
+                    {product.status}{" "}
+                  </span>
+                </p>
+                {product.discount > 0 ? (
+                  <>
+                    <div className="flex gap-3">
+                      <p>
+                        Giá:{" "}
+                        <span className="text-red-500">
+                          {formatter(product.price)}
+                        </span>
+                      </p>
+                      <p className="line-through text-gray-500">
+                        {formatter(product.oldPrice)}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <p>
+                    Giá:{" "}
+                    <span className="text-red-500">
+                      {formatter(product.price)}
+                    </span>
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-col">
+                <p className="">Tồn kho: {product.totalStock}</p>
+                <p>Đã bán: {product.totalSold}</p>
+              </div>
+              <div className="flex justify-between">
+                <Switch
+                  checked={checkedItems[product._id] ?? !product.deletedAt}
+                  checkedChildren="Đang bán"
+                  unCheckedChildren="Ngưng bán"
+                  onChange={(checked) =>
+                    handleChangeSoftDelete(checked, product._id)
+                  }
+                />
+                <CiEdit
+                  className="cursor-pointer text-3xl"
+                  onClick={() => {
+                    handleDetailsProduct();
+                    openUpdateModal();
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
       <div className="mt-5 flex justify-end">
         <button

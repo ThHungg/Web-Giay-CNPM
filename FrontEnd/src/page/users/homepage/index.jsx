@@ -40,11 +40,6 @@ const HomePage = () => {
     retry: 3,
     retryDelay: 1000,
   });
-  console.log(topSell);
-
-  if (!Array.isArray(products)) {
-    return <div>Invalid data format</div>;
-  }
 
   const responsive = {
     superLargeDesktop: {
@@ -64,6 +59,14 @@ const HomePage = () => {
       items: 1,
     },
   };
+
+  if (!Array.isArray(products)) {
+    return <div>Invalid data format</div>;
+  }
+
+  if (!Array.isArray(topSell?.data)) {
+    return <div>Invalid data format</div>;
+  }
 
   return (
     <>

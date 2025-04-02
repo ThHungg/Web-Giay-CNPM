@@ -14,6 +14,7 @@ router.patch('/restore/:id', productController.restoreProduct)
 router.put('/sell-multiple', productController.updateMultipleSold)
 router.put('/updateStatus/:id', productController.updateProductStatus)
 router.get('/getTopSell', productController.getTopSellingProducts);
+router.get('/getRelated/:id', productController.getRelated);
 // 
 // router.delete('/soft-delete/:id', productController.softDeleteProduct)
 // router.patch('/restore/:id', productController.restoreProduct)

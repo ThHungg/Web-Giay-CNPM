@@ -17,6 +17,7 @@ export const getDetailsProduct = async (id) => {
 }
 
 export const updateProduct = async (id, access_token, data) => {
+    console.log(data.price)
     const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/product/update/${id}`, data, {
         headers: {
             token: `Bearer ${access_token}`,
@@ -53,12 +54,16 @@ export const updateMultipleSold = async (products) => {
 }
 
 export const updateProductStatus = async (id, status) => {
-    console.log(id, status)
     const res = await axios.put(`${process.env.REACT_APP_API_URL}/product/updateStatus/${id}`, status);
     return res.data;
 }
 
 export const getTopSell = async () => {
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/product/getTopSell`)
+    return res.data
+}
+
+export const getRelated = async (id) => {
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/product/getRelated/${id}`)
     return res.data
 }
