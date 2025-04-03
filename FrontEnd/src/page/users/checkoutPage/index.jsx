@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import formatter from "../../../utils/formatter";
 import { useState, useEffect } from "react";
 import * as cartService from "../../../services/cartService.js";
@@ -18,6 +18,7 @@ const CheckoutPage = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [size, setSize] = useState("");
+  const [showCofirmModal, setShowCofirmModal] = useState(false);
   const location = useLocation();
   const token = localStorage.getItem("access_token");
   let userId;
@@ -26,50 +27,46 @@ const CheckoutPage = () => {
     userId = decoded.id;
   }
 
-  const { productId , product, quantity, selectedSize } = location.state || {};
+  const { productId, product, quantity, selectedSize } = location.state || {};
   const isBuyNow = quantity;
-  console.log(productId, product, quantity, selectedSize)
+  console.log(productId, product, quantity, selectedSize);
+  console.log(isBuyNow);
 
   const { data: cartData, refetch } = useQuery({
     queryKey: ["cart", userId],
     queryFn: () => cartService.getCart(userId),
-    enabled: !!userId,
+    enabled: !!userId && isBuyNow === 0, // Chặn khi isBuyNow là true
   });
 
-  // const totalAmount = cartData?.cart?.data?.products?.reduce(
-  //   (sum, item) => sum + item.price * item.quantity,
-  //   0
-  // );
-
-  const totalAmount = isBuyNow ? product.price * quantity
-    : cartData?.cart?.data?.products?.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const totalAmount = isBuyNow
+    ? product.price * quantity
+    : cartData?.cart?.data?.products?.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
 
   const handlePayment = async () => {
     // totalAmount
+    if (!selectedPaymentMethod || !name || !phone || !email) {
+      toast.error("Vui lòng nhập đầy đủ thông tin.");
+      return;
+    }
     if (selectedPaymentMethod && selectedPaymentMethod === "Banking") {
-      if (
-        !selectedPaymentMethod ||
-        !name ||
-        !phone ||
-        !email
-      ) {
-        toast.error("Vui lòng nhập đầy đủ thông tin.");
-        return;
-      }
-
       const orderItems = isBuyNow
-        ? [{
-          productId,
-          quantity,
-          price: product.price,
-          size: selectedSize
-        }]
+        ? [
+            {
+              productId,
+              quantity,
+              price: product.price,
+              size: selectedSize,
+            },
+          ]
         : cartData.cart.data.products.map((item) => ({
-          productId: item.productId._id,
-          quantity: item.quantity,
-          price: item.price,
-          size: item.size,
-        }));
+            productId: item.productId._id,
+            quantity: item.quantity,
+            price: item.price,
+            size: item.size,
+          }));
 
       const orderData = {
         userId,
@@ -83,7 +80,11 @@ const CheckoutPage = () => {
         paymentMethod: selectedPaymentMethod,
         note,
         total: totalAmount,
-        customerInfo: { nameReceiver: name, phoneReceiver: phone, emailReceiver: email },
+        customerInfo: {
+          nameReceiver: name,
+          phoneReceiver: phone,
+          emailReceiver: email,
+        },
       };
 
       const createOrder = await orderService.createOrder(
@@ -96,46 +97,12 @@ const CheckoutPage = () => {
         orderData.customerInfo
       );
 
-      // const orderData = {
-      //   userId: userId,
-      //   items: cartData.cart.data.products.map((item) => ({
-      //     productId: item.productId._id,
-      //     quantity: item.quantity,
-      //     price: item.price,
-      //     size: item.size,
-      //   })),
-      //   shippingAddress: {
-      //     street: street,
-      //     province: selectedProvince,
-      //     district: selectedDistrict,
-      //     ward: selectedWard,
-      //   },
-      //   paymentMethod: selectedPaymentMethod,
-      //   note: note,
-      //   total: totalAmount,
-      //   customerInfo: {
-      //     nameReceiver: name,
-      //     phoneReceiver: phone,
-      //     emailReceiver: email,
-      //   },
-      // };
-
       if (orderData.items.length === 0) {
         toast.error("Giỏ hàng của bạn đang trống.");
         return;
       }
       console.log("Dữ liệu gửi lên server:", orderData);
 
-      // const createOrder = await orderService.createOrder(
-      //   orderData.userId,
-      //   orderData.items,
-      //   orderData.shippingAddress,
-      //   orderData.paymentMethod,
-      //   orderData.note,
-      //   orderData.total,
-      //   orderData.customerInfo
-      // );
-      // console.log("createOrder", createOrder);
       const orderId = createOrder.order._id;
 
       const productIds = createOrder.order.items.map((item) => item.productId);
@@ -155,7 +122,7 @@ const CheckoutPage = () => {
         );
         console.log("data", data);
         window.location.href = data.paymentUrl;
-      } catch (e) { }
+      } catch (e) {}
     }
   };
 
@@ -188,7 +155,6 @@ const CheckoutPage = () => {
   const handleStreetChange = (e) => {
     setStreet(e.target.value);
   };
-
 
   useEffect(() => {
     axios
@@ -277,6 +243,8 @@ const CheckoutPage = () => {
 
   //   return errors;
   // };
+
+  // Trong phần JSX của component
 
   return (
     <div className="max-w-screen-xl flex mx-auto gap-5">
@@ -473,11 +441,37 @@ const CheckoutPage = () => {
         </h1>
         <button
           className="px-4 py-2 w-full bg-black text-white rounded-2xl text-2xl font-bold mt-5"
-          onClick={handlePayment}
+          // onClick={handlePayment}
+          onClick={() => setShowCofirmModal(true)}
         >
           Đặt hàng
         </button>
       </div>
+      {showCofirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white w-1/4 h-1/5 rounded-lg flex flex-col justify-center items-center">
+            <div>
+              <h1 className="font-bold text-3xl text-center p-2">
+                Xác nhận thanh toán
+              </h1>
+            </div>
+            <div className="flex gap-3 p-3">
+              <button
+                className="px-4 py-2 bg-white border font-bold w-[60px] rounded-lg"
+                onClick={() => setShowCofirmModal(false)} // Hủy modal
+              >
+                Hủy
+              </button>
+              <button
+                className="px-4 py-2 bg-black text-white font-bold w-3/4 rounded-lg"
+                onClick={handlePayment} // Gọi handlePayment khi xác nhận
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <ToastNotification />
     </div>
   );

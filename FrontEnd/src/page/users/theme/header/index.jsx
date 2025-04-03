@@ -30,7 +30,7 @@ const Header = ({ hasAddToBanner = true }) => {
         <p
           className="cursor-pointer hover:text-red-500"
           onClick={() => {
-            navigate("/admin/users");
+            navigate("/admin/products");
           }}
         >
           Admin

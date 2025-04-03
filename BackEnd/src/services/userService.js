@@ -63,12 +63,25 @@ const loginUser = (userLogin) => {
             const access_token = await genneralAccessToken({
                 id: checkUser.id,
                 isAdmin: checkUser.isAdmin,
+                isBoss: checkUser.isBoss,
             })
+
+
 
             const refresh_token = await genneralRefreshToken({
                 id: checkUser.id,
                 isAdmin: checkUser.isAdmin,
+                isBoss: checkUser.isBoss,
             })
+
+            // console.log("Generated refresh token payload:", {
+            //     id: checkUser.id,
+            //     isAdmin: checkUser.isAdmin,
+            //     isBoss: checkUser.isBoss,
+            // });
+            // console.log("Generated refresh token:", refresh_token);
+            // const decoded = jwt.decode(refresh_token);
+            // console.log("Decoded refresh token:", decoded);
 
             resolve({
                 status: "Ok",

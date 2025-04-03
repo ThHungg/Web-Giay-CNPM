@@ -22,7 +22,6 @@ const refreshTokenJwtService = (refreshToken) => {
             // Kiểm tra tính hợp lệ của refreshToken
             jwt.verify(refreshToken, process.env.REFRESH_TOKEN, async (err, user) => {
                 if (err) {
-                    console.log(err)
                     return resolve({
                         status: "err",
                         message: 'The authentication has failed. Invalid refresh token.'
@@ -32,9 +31,9 @@ const refreshTokenJwtService = (refreshToken) => {
                 // Tạo access token mới
                 const access_token = await genneralAccessToken({
                     id: user?.id,
-                    isAdmin: user?.isAdmin
+                    isAdmin: user?.isAdmin,
+                    isBoss: user?.isBoss
                 })
-                console.log('New Access Token:', access_token)
 
                 // Trả về access token mới
                 resolve({
@@ -43,6 +42,8 @@ const refreshTokenJwtService = (refreshToken) => {
                     access_token
                 })
             })
+            console.log("Decoded refresh token:", user);
+
         } catch (e) {
             reject(e);
         }

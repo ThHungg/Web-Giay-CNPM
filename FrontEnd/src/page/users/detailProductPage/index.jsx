@@ -422,6 +422,7 @@ const DetailProduct = () => {
             <Link
               key={product._id}
               to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}
+              onClick={() => window.location.reload()}
             >
               <ProductCard
                 name={product.name}
