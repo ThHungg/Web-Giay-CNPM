@@ -10,6 +10,7 @@ import { MdDiscount } from "react-icons/md";
 import { GoReport } from "react-icons/go";
 import { CiLogout } from "react-icons/ci";
 import { useSelector } from "react-redux";
+import { BiSolidDiscount } from "react-icons/bi";
 import { jwtDecode } from "jwt-decode";
 
 const MasterLayout = ({ children, ...props }) => {
@@ -38,6 +39,11 @@ const MasterLayout = ({ children, ...props }) => {
       path: ROUTERS.ADMIN.ORDER,
     },
     {
+      icon: <BiSolidDiscount />,
+      title: "Voucher",
+      path: ROUTERS.ADMIN.VOUCHER,
+    },
+    {
       icon: <MdDiscount />,
       title: "Voucher",
     },
@@ -45,7 +51,7 @@ const MasterLayout = ({ children, ...props }) => {
       icon: <GoReport />,
       title: "Report",
     },
-  ].filter(Boolean); 
+  ].filter(Boolean);
 
   const location = useLocation();
 

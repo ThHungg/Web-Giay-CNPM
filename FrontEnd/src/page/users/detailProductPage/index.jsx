@@ -7,6 +7,7 @@ import "react-tabs/style/react-tabs.css";
 import StarRating from "../../../component/StarRaint/index.jsx";
 import * as productService from "../../../services/productService";
 import * as cartService from "../../../services/cartService.js";
+import * as reviewService from "../../../services/reviewService.js";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification/index.js";
@@ -15,13 +16,15 @@ import { useQuery } from "@tanstack/react-query";
 import { ProductCard } from "../../../component/index.jsx";
 import { ROUTERS } from "../../../utils/router.jsx";
 import Carousel from "react-multi-carousel";
+import { FaSpinner } from "react-icons/fa";
 
 const DetailProduct = () => {
   const { id } = useParams();
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
-
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
   const token = localStorage.getItem("access_token");
   let userId;
 
@@ -83,6 +86,7 @@ const DetailProduct = () => {
     const { id, ...rests } = data;
     return await productService.updateProductStatus(id, rests);
   });
+
   const fetchGetDetailsProduct = async (id) => {
     const res = await productService.getDetailsProduct(id);
     if (res?.data) {
@@ -145,29 +149,43 @@ const DetailProduct = () => {
     queryFn: fetchRelatedProduct,
   });
 
-  console.log("relatedProduct", relatedProduct);
+  const fetchReviewProduct = async (id) => {
+    const res = await reviewService.getReviewProduct(id);
+    return res.reviews;
+  };
 
-  const [name, setName] = useState("");
-  const [rating, setRating] = useState(0);
-  const [review, setReview] = useState("");
+  const { data: reviewProduct, refetch } = useQuery({
+    queryKey: ["reviewProduct", id],
+    queryFn: () => fetchReviewProduct(id),
+  });
 
-  const reviewer = [
-    {
-      user: "Đặng Thành Hưng",
-      stars: 5,
-      text: "Sản phẩm này đi tốt",
-    },
-    {
-      user: "Đặng Thành Hưng",
-      stars: 3,
-      text: "Sản phẩm chất lượng, đúng như mô tả.",
-    },
-    {
-      user: "Đặng Thành Hưng",
-      stars: 1,
-      text: "Giao hàng lâu, liên hệ hỗ trợ nhưng phản hồi chậm.",
-    },
-  ];
+  const mutationReview = useMutationHooks((data) =>
+    reviewService.addReview(data)
+  );
+
+  const { isSuccess: rvSuccess, isError: rvError } = mutationReview;
+
+  const handleReview = (e) => {
+    e.preventDefault();
+    mutationReview.mutate({
+      userId: userId,
+      productId: id,
+      comment: comment,
+      rating: rating,
+    });
+  };
+
+  useEffect(() => {
+    if (rvSuccess) {
+      toast.success("Đánh giá thành công");
+      mutationReview.reset();
+      refetch();
+    } else if (rvError) {
+      toast.error("Đánh giá thất bại");
+      mutationReview.reset();
+    }
+  }, [rvSuccess, rvError]);
+
   const [image, setImage] = useState("");
   const [smallImages, setSmallImages] = useState([]);
 
@@ -209,16 +227,23 @@ const DetailProduct = () => {
     },
   };
 
+  // if (!Array.isArray(relatedProduct) || relatedProduct.length === 0) {
+  //   return <div>No related products found.</div>;
+  // }
+
   if (!Array.isArray(relatedProduct) || relatedProduct.length === 0) {
-    return <div>No related products found.</div>;
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <FaSpinner className="w-6 h-6 text-gray-500 animate-spin" />
+      </div>
+    );
   }
 
   return (
     <>
-      <ToastNotification />
       <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8 h-screen">
         {/* image first*/}
-        <div className="col-span-5 mx-auto">
+        <div className="col-span-5">
           <img
             src={image}
             alt="Large product"
@@ -251,27 +276,46 @@ const DetailProduct = () => {
             </TabList>
 
             <TabPanel className="">
-              <h2 className="text-lg text-gray-700 leading-relaxed whitespace-pre-line h-[370px] overflow-auto">
+              <h2 className="text-lg text-gray-700 leading-relaxed whitespace-pre-line h-[360px] overflow-auto">
                 {productDetail.description}
               </h2>
             </TabPanel>
             <TabPanel>
               <div className="grid grid-cols-2 gap-5">
                 {/* Danh sách đánh giá */}
-                <div className="space-y-2">
+                <div className="space-y-2 h-[360px] overflow-auto">
                   <h1 className="text-2xl font-bold">Đánh giá</h1>
-                  {reviewer.map((item, index) => (
-                    <div
-                      key={index}
-                      className="bg-white border border-black p-2 rounded-lg"
-                    >
-                      <h1 className="font-bold">{item.user}</h1>
-                      <div className="text-yellow-500 font-bold">
-                        {"★".repeat(item.stars)}
+
+                  {Array.isArray(reviewProduct) && reviewProduct.length > 0 ? (
+                    reviewProduct.map((item) => (
+                      <div
+                        key={item.id} // Dùng id thay vì index nếu có
+                        className="bg-white border border-black p-3 rounded-lg shadow-md mb-4"
+                      >
+                        {/* Tên người dùng */}
+                        <h1 className="font-bold text-lg">
+                          {item.userId?.name || "Người dùng ẩn danh"}{" "}
+                          {/* Kiểm tra tồn tại trước khi truy cập */}
+                        </h1>
+
+                        {/* Xếp hạng sao */}
+                        <div className="text-yellow-500 font-bold">
+                          {"★".repeat(item.rating || 0)}{" "}
+                          {/* Nếu rating bị null/undefined, sẽ là 0 */}
+                        </div>
+
+                        {/* Nội dung đánh giá */}
+                        <p className="text-gray-700">
+                          {item.comment || "Chưa có nội dung đánh giá."}{" "}
+                          {/* Nếu comment không có */}
+                        </p>
                       </div>
-                      <p>{item.text}</p>
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500">
+                      Chưa có đánh giá nào
                     </div>
-                  ))}
+                  )}
                 </div>
 
                 {/* Form nhập đánh giá */}
@@ -280,15 +324,15 @@ const DetailProduct = () => {
                   <div className="mt-2 space-y-2">
                     <textarea
                       placeholder="Nhập đánh giá của bạn"
-                      value={review}
-                      onChange={(e) => setReview(e.target.value)}
                       className="border border-gray-300 p-2 rounded-lg w-full"
                       rows="3"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
                     ></textarea>
                     <StarRating rating={rating} setRating={setRating} />
                     <button
                       className="w-full bg-blue-500 text-white p-2 rounded-lg"
-                      onClick={() => console.log({ name, rating, review })} // Sau này thay bằng API call
+                      onClick={handleReview}
                     >
                       Gửi đánh giá
                     </button>
@@ -435,6 +479,7 @@ const DetailProduct = () => {
           ))}
         </Carousel>
       </div>
+      <ToastNotification />
     </>
   );
 };

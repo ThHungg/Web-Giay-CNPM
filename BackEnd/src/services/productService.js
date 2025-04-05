@@ -38,7 +38,6 @@ const createProduct = (newProduct) => {
 const updateProduct = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log(data.price);
             const checkProduct = await Product.findById(id);
             if (checkProduct === null) {
                 resolve({
@@ -55,11 +54,16 @@ const updateProduct = (id, data) => {
                 return reject({ status: "ERR", message: "Giá sản phẩm không hợp lệ" });
             }
 
+            if (data.totalStock > 0) {
+                data.status = "Còn hàng";
+            } else {
+                data.status = "Hết hàng";
+            }
+
             data.oldPrice = data.price;
             data.price = Math.round(data.oldPrice * (1 - data.discount / 100));
 
             const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true })
-            console.log("Updated Product:", updatedProduct);
             resolve({
                 status: "Ok",
                 message: "Success",
@@ -291,8 +295,6 @@ const getRelated = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const product = await Product.findById(id)
-            console.log(id)
-            console.log(product.brand)
             if (!product) {
                 resolve({
                     status: "ERR",
@@ -306,8 +308,6 @@ const getRelated = (id) => {
                     { brand: product.brand }
                 ]
             }).limit(10);
-
-            console.log("Related products:", relatedProduct);
 
             resolve({
                 status: "OK",

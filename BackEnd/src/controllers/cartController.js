@@ -58,9 +58,6 @@ const getCart = async (req, res) => {
         });
 
     } catch (e) {
-        // Log lỗi chi tiết để tiện chẩn đoán
-        console.error("Lỗi hệ thống khi lấy giỏ hàng:", e);
-
         return res.status(500).json({
             status: "ERR",
             message: "Lỗi hệ thống thử lại sau"

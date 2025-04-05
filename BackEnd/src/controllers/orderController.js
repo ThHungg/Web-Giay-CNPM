@@ -4,7 +4,6 @@ const { generateOrderCode } = require('../utils/generateCode');
 
 const createOrder = async (req, res) => {
     try {
-        console.log("Order Data:", req.body);
         const { userId, items, total, shippingAddress, paymentMethod, note, customerInfo, size } = req.body;
 
         if (!userId || !items || !total || !shippingAddress || !paymentMethod || !customerInfo) {
@@ -26,11 +25,9 @@ const createOrder = async (req, res) => {
 
         await order.save();
         res.status(201).json({ success: "OK", message: "Đặt hàng thành công!", order });
-        console.log("Đặt hàng thành công!")
         // const response = await orderService.createOrder(req.body)
         // return res.status(200).json(response);
     } catch (e) {
-        console.log(e);
         return res.status(404).json({
             message: 'Lỗi hệ thống, vui lòng thử lại sau!'
         });

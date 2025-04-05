@@ -50,7 +50,7 @@ export const updateUser = async (id, access_token, data) => {
         headers: {
             token: `Bearer ${access_token}`,
         }
-    }
+    }   
     );
     return res.data;
 };

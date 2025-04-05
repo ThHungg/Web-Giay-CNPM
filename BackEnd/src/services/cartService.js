@@ -37,7 +37,6 @@ const addToCart = (userId, productId, size, quantity, price) => {
             })
 
         } catch (e) {
-            console.log(e)
             reject(e);
         }
     })
@@ -72,7 +71,6 @@ const getCart = (userId) => {
 //             cart.products = cart.products.filter((p) => !(p.productId.equals(productId) && p.size === size))
 //             await cart.save()
 //         } catch (e) {
-//             console.log(e)
 //             return reject({
 //                 status: "ERR",
 //                 message: "Lỗi hệ thống vui lòng thử lại sau"

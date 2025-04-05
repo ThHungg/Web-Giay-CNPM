@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { FaShippingFast } from "react-icons/fa";
+import { FaShippingFast, FaSpinner } from "react-icons/fa";
 import { MdOutlinePayment, MdSupportAgent } from "react-icons/md";
 import { RiRefund2Line } from "react-icons/ri";
 import Carousel from "react-multi-carousel";
@@ -61,11 +61,20 @@ const HomePage = () => {
   };
 
   if (!Array.isArray(products)) {
-    return <div>Invalid data format</div>;
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <FaSpinner className="w-6 h-6 text-gray-500 animate-spin" />
+      </div>
+    );
   }
 
   if (!Array.isArray(topSell?.data)) {
-    return <div>Invalid data format</div>;
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <FaSpinner
+         className="w-6 h-6 text-gray-500 animate-spin" />
+      </div>
+    );
   }
 
   return (

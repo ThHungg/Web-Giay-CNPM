@@ -18,7 +18,6 @@ const createUser = (newUser) => {
                 });
             }
             const hash = bcrypt.hashSync(password, 10)
-            // console.log('hash', hash)
             const createdUser = await User.create({
                 name,
                 email,
@@ -57,9 +56,6 @@ const loginUser = (userLogin) => {
                     message: "Mật khẩu không đúng",
                 })
             }
-            console.log("comparePassword", comparePassword)
-
-            console.log(comparePassword)
             const access_token = await genneralAccessToken({
                 id: checkUser.id,
                 isAdmin: checkUser.isAdmin,
@@ -74,14 +70,12 @@ const loginUser = (userLogin) => {
                 isBoss: checkUser.isBoss,
             })
 
-            // console.log("Generated refresh token payload:", {
+
             //     id: checkUser.id,
             //     isAdmin: checkUser.isAdmin,
             //     isBoss: checkUser.isBoss,
             // });
-            // console.log("Generated refresh token:", refresh_token);
             // const decoded = jwt.decode(refresh_token);
-            // console.log("Decoded refresh token:", decoded);
 
             resolve({
                 status: "Ok",
@@ -116,7 +110,6 @@ const updateUser = (id, data) => {
                 data: updateUser
             })
         } catch (e) {
-            console.log(e)
             reject(e);
         }
     });
@@ -164,8 +157,6 @@ const getDetailsUser = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await User.findById(id);
-
-            // console.log('CheckUser', checkUser)
             if (user === null) {
                 resolve({
                     status: "Ok",

@@ -24,7 +24,6 @@ const createProduct = async (req, res) => {
 //     try {
 //         const { name, brand, image, images, type, price, oldPrice, discount, description,
 //             sizeStock, stock, totalstock, category, rating, reviews, status } = req.body;
-//         console.log(req.body);
 //         // if (!name || !brand || !image || !type || !price || !description || !sizeStock || !totalstock || !category)
 //         if (!name || !brand || !image  || !price || !description)
 //              {
@@ -53,7 +52,6 @@ const updateProduct = async (req, res) => {
                 message: 'The userId is required'
             })
         }
-        console.log('UserId', productId)
         const response = await productService.updateProduct(productId, data);
         return res.status(200).json(response);
     } catch (e) {
@@ -70,7 +68,6 @@ const updateProductStatus = async (req, res) => {
         const response = await productService.updateProductStatus(productId, status);
         return res.status(200).json(response)
     } catch (e) {
-        console.log(e);
         return res.status(500).json({
             message: "Lỗi hệ thống, vui lòng thử lại sau!"
         })
@@ -86,7 +83,6 @@ const deleteProduct = async (req, res) => {
                 message: 'The productId is required'
             })
         }
-        console.log('productId', productId)
         const response = await productService.deleteProduct(productId);
         return res.status(200).json(response);
     } catch (e) {
@@ -105,11 +101,9 @@ const getDetailProduct = async (req, res) => {
                 message: 'The productId is required'
             })
         }
-        console.log('productId', productId)
         const response = await productService.getDetailProduct(productId);
         return res.status(200).json(response);
     } catch (e) {
-        console.log('E', e)
         return res.status(404).json({
             message: 'Lỗi hệ thống, vui lòng thử lại sau!'
         });
@@ -121,7 +115,6 @@ const getAllProduct = async (req, res) => {
         const response = await productService.getAllProduct();
         return res.status(200).json(response);
     } catch (e) {
-        console.log(e)
         return res.status(404).json({
             message: 'Lỗi hệ thống, vui lòng thử lại sau!'
         });
@@ -150,7 +143,6 @@ const getActiveProduct = async (req, res) => {
         const response = await productService.getActiveProduct();
         return res.status(200).json(response);
     } catch (e) {
-        console.error("Lỗi khi lấy sản phẩm hoạt động:", e);
         return res.status(500).json({
             message: "Lỗi hệ thống, vui lòng thử lại sau!",
         });
@@ -177,7 +169,7 @@ const restoreProduct = async (req, res) => {
 
 const updateMultipleSold = async (req, res) => {
     try {
-        const products = req.body; // Nhận danh sách sản phẩm cần cập nhật
+        const products = req.body;
 
         if (!Array.isArray(products) || products.length === 0) {
             return res.status(400).json({
@@ -189,7 +181,6 @@ const updateMultipleSold = async (req, res) => {
         const response = await productService.updateMultipleSold(products);
         return res.status(200).json(response);
     } catch (error) {
-        console.log(error)
         return res.status(500).json({
             status: "ERR",
             message: "Lỗi hệ thống, vui lòng thử lại sau!"

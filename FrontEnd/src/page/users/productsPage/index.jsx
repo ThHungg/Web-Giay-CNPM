@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router";
 import * as productService from "../../../services/productService";
 import { useQuery } from "@tanstack/react-query";
+import { FaSpinner } from "react-icons/fa";
 const Products = () => {
   const fetchProductAll = async () => {
     const res = await productService.getActiveProducts();
@@ -75,6 +76,14 @@ const Products = () => {
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     ) || [];
+
+  if (Array.isArray(products)) {
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <FaSpinner className="w-6 h-6 text-gray-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -172,6 +181,7 @@ const Products = () => {
                   <div className="flex justify-center items-center transition-transform transform hover:scale-105 duration-300">
                     <ProductCard
                       key={product.id}
+                      totalStock={product.totalStock}
                       name={product.name}
                       img={product.image}
                       price={product.price}

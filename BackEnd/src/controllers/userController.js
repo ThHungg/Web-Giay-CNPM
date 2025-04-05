@@ -2,7 +2,6 @@ const userService = require('../services/userService');
 const JwtService = require('../services/JwtService')
 const createUser = async (req, res) => {
     try {
-        console.log(req.body);
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
         const { name, email, password, phone } = req.body;
         const isCheckEmail = reg.test(email);
@@ -18,7 +17,6 @@ const createUser = async (req, res) => {
                 message: 'Email không hợp lệ!'
             });
         }
-        console.log('isCheckEmail', isCheckEmail);
         const response = await userService.createUser(req.body);
         return res.status(200).json(response);
     } catch (e) {
@@ -30,7 +28,6 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        console.log(req.body);
         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
         const { username, name, email, password, confirmPassword, phone } = req.body;
         const isCheckEmail = reg.test(email);
@@ -48,7 +45,6 @@ const loginUser = async (req, res) => {
         }
         const response = await userService.loginUser(req.body);
         const { refresh_token, ...newResponse } = response
-        // console.log('response', response)
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
             secure: false,
@@ -90,7 +86,6 @@ const deleteUser = async (req, res) => {
                 message: 'The userId is required'
             })
         }
-        console.log('UserId', userId)
         const response = await userService.deleteUser(userId);
         return res.status(200).json(response);
     } catch (e) {
@@ -120,7 +115,6 @@ const getDetailsUser = async (req, res) => {
                 message: 'The userId is required'
             })
         }
-        console.log('UserId', userId)
         const response = await userService.getDetailsUser(userId);
         return res.status(200).json(response);
     } catch (e) {
@@ -131,7 +125,6 @@ const getDetailsUser = async (req, res) => {
 }
 
 const refreshToken = async (req, res) => {
-    console.log('Token nhận được:', req.cookies.refresh_token);
     try {
         const token = req.cookies.refresh_token
         if (!token) {
@@ -150,7 +143,6 @@ const refreshToken = async (req, res) => {
 }
 
 const   logoutUser = async (req, res) => {
-    console.log('Token nhận được:', req.cookies.refresh_token);
     try {
         res.clearCookie('refresh_token', {
             httpOnly: true,
@@ -180,7 +172,6 @@ const   logoutUser = async (req, res) => {
 //         const response = await userService.forgotPassword(email);
 //         return res.status(200).json(response);
 //     } catch (e) {
-//         console.error(e);
 //         return res.status(500).json({
 //             status: "ERR",
 //             message: "Lỗi hệ thống, thử lại sau",

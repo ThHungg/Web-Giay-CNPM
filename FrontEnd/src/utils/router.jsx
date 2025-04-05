@@ -18,5 +18,6 @@ export const ROUTERS = {
     USER: "/admin/users",
     PRODUCT: "/admin/products",
     ORDER: "/admin/orders",
+    VOUCHER: "/admin/vouchers",
   },
 };
