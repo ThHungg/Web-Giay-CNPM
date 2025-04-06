@@ -19,5 +19,6 @@ export const ROUTERS = {
     PRODUCT: "/admin/products",
     ORDER: "/admin/orders",
     VOUCHER: "/admin/vouchers",
+    STATISTICAL: "/admin/statistical",
   },
 };

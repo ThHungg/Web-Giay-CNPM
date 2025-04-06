@@ -16,6 +16,7 @@ const AdminVoucher = () => {
     queryFn: getAllVoucher,
     enabled: !!user?.access_token,
   });
+  console.log(vouchers);
 
   return (
     <>
@@ -55,7 +56,21 @@ const AdminVoucher = () => {
               <th className="border p-2">Actions</th>
             </tr>
           </thead>
-          <tbody className="text-center bg-white"></tbody>
+          <tbody className="text-center bg-white">
+            {vouchers?.map((voucher, index) => (
+              <tr key={voucher._id}>
+                <td className="border p-2">{voucher.code}</td>
+                <td className="border p-2">{voucher.discount}</td>
+                <td className="border p-2">
+                  {new Date(voucher.createdAt).toLocaleDateString()} --{" "}
+                  {new Date(voucher.expiryDate).toLocaleDateString()}
+                </td>
+                <td className="border p-2">{voucher.type}</td>
+                <td className="border p-2">{voucher.minOrder}</td>
+                <td className="border p-2">Thay đổi</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </>

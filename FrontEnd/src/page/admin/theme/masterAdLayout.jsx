@@ -1,7 +1,4 @@
-import { memo } from "react";
-import Header from "./Header";
-import Footer from "./Footer";
-import { ROUTERS } from "../../../utils/router";
+import { memo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import { CiShoppingCart } from "react-icons/ci";
@@ -9,9 +6,11 @@ import { AiOutlineProduct } from "react-icons/ai";
 import { MdDiscount } from "react-icons/md";
 import { GoReport } from "react-icons/go";
 import { CiLogout } from "react-icons/ci";
-import { useSelector } from "react-redux";
 import { BiSolidDiscount } from "react-icons/bi";
+import { IoStatsChart } from "react-icons/io5";
+import { FiMenu, FiX } from "react-icons/fi";
 import { jwtDecode } from "jwt-decode";
+import { ROUTERS } from "../../../utils/router";
 
 const MasterLayout = ({ children, ...props }) => {
   const token = localStorage.getItem("access_token");
@@ -20,9 +19,15 @@ const MasterLayout = ({ children, ...props }) => {
     const decoded = jwtDecode(token);
     isBoss = decoded.isBoss;
   }
-  console.log(isBoss);
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const menuItems = [
+    isBoss && {
+      icon: <IoStatsChart />,
+      title: "Statistical",
+      path: ROUTERS.ADMIN.STATISTICAL,
+    },
     isBoss && {
       icon: <FaRegUser />,
       title: "User",
@@ -54,52 +59,71 @@ const MasterLayout = ({ children, ...props }) => {
   ].filter(Boolean);
 
   const location = useLocation();
-
   const currentPage = menuItems.find((item) => item.path === location.pathname);
   const pageTitle = currentPage ? currentPage.title : "Dashboard";
 
   return (
     <div {...props}>
-      <>
-        <div className="flex min-h-screen bg-gray-100">
-          {/* Sidebar */}
-          <div className="w-1/6 min-h-screen bg-white shadow-lg p-4">
-            <h1 className="text-2xl font-bold text-gray-800">
-              Admin Dashboard
-            </h1>
-            <hr className="border-t border-gray-300 my-4" />
-
-            <ul className="space-y-3">
-              {menuItems.map((item, key) => (
-                <li key={key}>
-                  <Link
-                    to={item.path || "#"}
-                    className={`flex items-center gap-3 p-3 rounded-lg transition ${
-                      location.pathname === item.path
-                        ? "bg-gray-200 font-semibold"
-                        : "hover:bg-gray-100"
-                    }`}
-                  >
-                    <span className="text-xl">{item.icon}</span>
-                    <span>{item.title}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+      <div className="flex min-h-screen bg-gray-100">
+        {/* Sidebar */}
+        <div
+          className={`${
+            isCollapsed ? "w-20" : "w-1/6"
+          } min-h-screen bg-white shadow-lg p-4 transition-all duration-300 fixed top-0 left-0 z-10 flex flex-col`}
+        >
+          <div className="flex items-center justify-between mb-4">
+            {!isCollapsed && (
+              <h1 className="text-2xl font-bold text-gray-800">
+                Admin Dashboard
+              </h1>
+            )}
+            <button
+              className="p-2 text-gray-600 focus:outline-none"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+            >
+              {isCollapsed ? <FiMenu size={24} /> : <FiX size={24} />}
+            </button>
           </div>
 
-          {/* Content */}
-          <div className="flex-1 bg-grey p-6 shadow-inner">
-            <div className="flex justify-between">
-              <h1 className="text-2xl font-bold text-gray-800">{pageTitle}</h1>
-              <Link to={ROUTERS.USER.HOME}>
-                <CiLogout className="text-3xl font-bold" />
-              </Link>
-            </div>
-            {children}
-          </div>
+          {!isCollapsed && <hr className="border-t border-gray-300 my-4" />}
+
+          <ul className="space-y-3 flex-1">
+            {menuItems.map((item, key) => (
+              <li key={key}>
+                <Link
+                  to={item.path || "#"}
+                  className={`flex items-center gap-3 p-3 rounded-lg transition ${
+                    location.pathname === item.path
+                      ? "bg-gray-200 font-semibold"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  {!isCollapsed && <span>{item.title}</span>}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
-      </>
+
+        {/* Content */}
+        <div
+          className="flex-1 bg-grey-500 p-6"
+          style={{
+            marginLeft: isCollapsed ? "80px" : "320px", // Khoảng cách từ content đến sidebar
+            paddingTop: "20px", // Thêm một chút padding để nội dung không bị chạm vào header
+          }}
+        >
+          {/* Thêm margin-left tương ứng với độ rộng của sidebar */}
+          <div className="flex justify-between">
+            <h1 className="text-2xl font-bold text-gray-800">{pageTitle}</h1>
+            <Link to={ROUTERS.USER.HOME}>
+              <CiLogout className="text-3xl font-bold" />
+            </Link>
+          </div>
+          {children}
+        </div>
+      </div>
     </div>
   );
 };

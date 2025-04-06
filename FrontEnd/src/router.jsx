@@ -18,6 +18,7 @@ import AdminOrder from "./page/admin/adminOrder";
 import ForgotPasswordPage from "./page/users/forgotPasswordPage";
 import CheckPayment from "./page/users/checkPaymentPage";
 import AdminVoucher from "./page/admin/adminVoucher";
+import AdminStat from "./page/admin/adminStat";
 
 const renderUserRouter = () => {
   const userRouter = [
@@ -117,6 +118,10 @@ const renderAdminRouter = () => {
     {
       path: ROUTERS.ADMIN.VOUCHER,
       component: <AdminVoucher />,
+    },
+    {
+      path: ROUTERS.ADMIN.STATISTICAL,
+      component: <AdminStat />,
     },
   ];
   return (
