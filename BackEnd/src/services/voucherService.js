@@ -2,7 +2,7 @@ const Voucher = require('../models/Voucher')
 
 const createVoucher = (newVoucher) => {
     return new Promise(async (resolve, reject) => {
-        const { code, discount, startDate, expiryDate, type, brand, minOrder, status, description, totalQuantity, maxDiscount } = newVoucher;
+        const { code, discount, discountType, startDate, expiryDate, type, brand, minOrder, status, description, totalQuantity, maxDiscount } = newVoucher;
         try {
             const checkCode = await Voucher.findOne({ code });
             if (checkCode) {
@@ -12,8 +12,22 @@ const createVoucher = (newVoucher) => {
                 })
             }
 
+            if (type === 'brand' && !brand) {
+                return resolve({
+                    status: "Error",
+                    message: "Thiếu thông tin brand cho loại voucher 'brand'"
+                })
+            }
+
+            if (expiryDate && startDate && new Date(expiryDate) < new Date(startDate)) {
+                return {
+                    status: "Error",
+                    message: "Ngày hết hạn phải sau ngày bắt đầu"
+                };
+            }
+
             const createVoucher = await Voucher.create({
-                code, discount, startDate, expiryDate, type, brand, minOrder, status, description, totalQuantity, maxDiscount
+                code, discount, startDate, expiryDate, type, brand, minOrder, status, description, totalQuantity, maxDiscount, discountType
             })
             if (createVoucher) {
                 resolve({
@@ -31,12 +45,19 @@ const createVoucher = (newVoucher) => {
 const getAllVoucher = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allVoucher = await Voucher.find()
-            resolve({
+            const now = new Date();
+
+            await Voucher.updateMany(
+                { expiryDate: { $lt: now }, status: { $ne: 'exprired' } },
+                { $set: { status: 'expired' } }
+            )
+            const vouchers = await Voucher.find().sort({ createdAt: -1 });
+
+            return resolve({
                 status: "OK",
-                message: "Lấy thành công",
-                data: allVoucher
-            })
+                message: "Lấy danh sách voucher thành công",
+                data: vouchers
+            });
         } catch (e) {
             reject(e)
         }
@@ -46,6 +67,12 @@ const getAllVoucher = () => {
 const getActiveVoucher = () => {
     return new Promise(async (resolve, reject) => {
         try {
+            const now = new Date();
+
+            await Voucher.updateMany(
+                { expiryDate: { $lt: now }, status: { $ne: 'expired' } },
+                { $set: { status: 'expired' } }
+            );
             const activeVoucher = await Voucher.find({ status: "active" });
             resolve({
                 status: "OK",
@@ -58,8 +85,29 @@ const getActiveVoucher = () => {
     })
 }
 
+const updateVoucherStatus = (voucherId, status) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const updatedOrder = await Voucher.findByIdAndUpdate(voucherId, { status }, { new: true })
+            if (!updatedOrder) {
+                resolve({
+                    status: "ERR",
+                    message: "Không tìm thấy voucher"
+                })
+            }
+            resolve({
+                status: "OK",
+                message: "Cập nhật thành công"
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
     createVoucher,
     getAllVoucher,
-    getActiveVoucher
+    getActiveVoucher,
+    updateVoucherStatus
 }

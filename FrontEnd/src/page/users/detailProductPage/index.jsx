@@ -241,7 +241,7 @@ const DetailProduct = () => {
 
   return (
     <>
-      <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8 h-screen">
+      <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8">
         {/* image first*/}
         <div className="col-span-5">
           <img
@@ -451,7 +451,7 @@ const DetailProduct = () => {
           </div>
         </div>
       </div>
-      <div className="mt-[100px] max-w-screen-xl mx-auto">
+      <div className="max-w-screen-xl mx-auto">
         <h1 className="text-3xl font-bold mt-5 flex justify-center items-center">
           Sản phẩm liên quan
         </h1>

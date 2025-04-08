@@ -14,13 +14,19 @@ import { ROUTERS } from "../../../utils/router";
 
 const MasterLayout = ({ children, ...props }) => {
   const token = localStorage.getItem("access_token");
-  let isBoss;
+  let isBoss = false;
+
   if (token) {
-    const decoded = jwtDecode(token);
-    isBoss = decoded.isBoss;
+    try {
+      const decoded = jwtDecode(token);
+      isBoss = decoded?.isBoss;
+    } catch (error) {
+      console.error("Invalid token");
+    }
   }
 
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const location = useLocation();
 
   const menuItems = [
     isBoss && {
@@ -50,7 +56,7 @@ const MasterLayout = ({ children, ...props }) => {
     },
     {
       icon: <MdDiscount />,
-      title: "Voucher",
+      title: "Quản lý Banner",
     },
     {
       icon: <GoReport />,
@@ -58,7 +64,6 @@ const MasterLayout = ({ children, ...props }) => {
     },
   ].filter(Boolean);
 
-  const location = useLocation();
   const currentPage = menuItems.find((item) => item.path === location.pathname);
   const pageTitle = currentPage ? currentPage.title : "Dashboard";
 
@@ -68,9 +73,10 @@ const MasterLayout = ({ children, ...props }) => {
         {/* Sidebar */}
         <div
           className={`${
-            isCollapsed ? "w-20" : "w-1/6"
+            isCollapsed ? "w-20" : "w-80"
           } min-h-screen bg-white shadow-lg p-4 transition-all duration-300 fixed top-0 left-0 z-10 flex flex-col`}
         >
+          {/* Header */}
           <div className="flex items-center justify-between mb-4">
             {!isCollapsed && (
               <h1 className="text-2xl font-bold text-gray-800">
@@ -87,6 +93,7 @@ const MasterLayout = ({ children, ...props }) => {
 
           {!isCollapsed && <hr className="border-t border-gray-300 my-4" />}
 
+          {/* Menu */}
           <ul className="space-y-3 flex-1">
             {menuItems.map((item, key) => (
               <li key={key}>
@@ -108,19 +115,17 @@ const MasterLayout = ({ children, ...props }) => {
 
         {/* Content */}
         <div
-          className="flex-1 bg-grey-500 p-6"
-          style={{
-            marginLeft: isCollapsed ? "80px" : "320px", // Khoảng cách từ content đến sidebar
-            paddingTop: "20px", // Thêm một chút padding để nội dung không bị chạm vào header
-          }}
+          className={`flex-1 p-6 transition-all duration-300 ease-in-out ${
+            isCollapsed ? "ml-20" : "ml-80"
+          }`}
         >
-          {/* Thêm margin-left tương ứng với độ rộng của sidebar */}
-          <div className="flex justify-between">
+          <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-800">{pageTitle}</h1>
             <Link to={ROUTERS.USER.HOME}>
-              <CiLogout className="text-3xl font-bold" />
+              <CiLogout className="text-3xl text-gray-700 hover:text-black transition" />
             </Link>
           </div>
+
           {children}
         </div>
       </div>

@@ -13,3 +13,13 @@ export const getAllVoucher = async (access_token) => {
     })
     return res.data;
 };
+
+export const updateVoucherStatus = async (voucherId, status, access_token) => {
+    const res = await axios.patch(`${process.env.REACT_APP_API_URL}/voucher/updateStatusVoucher/${voucherId}`, {status}, {
+        headers: {
+            token: `Bearer ${access_token}`,
+        }
+    })
+    return res.data;
+};
+

@@ -205,8 +205,8 @@ const AdminUser = () => {
 
   const CreateModal = useMemo(
     () => (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div className="bg-white p-8 flex flex-col gap-4 w-1/2 max-w-xl shadow-lg rounded-xl">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 w-[700px] max-w-3xl rounded-xl shadow-lg">
           <h1 className="text-center text-2xl font-bold">Tạo người dùng mới</h1>
           <form className="flex flex-col gap-2" form={form} onSubmit={onFinish}>
             <input
@@ -267,8 +267,8 @@ const AdminUser = () => {
 
   const UpdateModal = useMemo(
     () => (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-        <div className="bg-white p-8 flex flex-col gap-4 w-1/2 max-w-xl shadow-lg rounded-xl">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 w-[700px] max-w-3xl rounded-xl shadow-lg">
           <h1 className="text-center text-2xl font-bold">
             Tạo thông tin người dùng
           </h1>

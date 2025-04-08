@@ -43,9 +43,24 @@ const getActiveVoucher = async (req, res) => {
     }
 }
 
+const updateVoucherStatus = async (req, res) => {
+    try {
+        console.log(req.body)
+        const { voucherId } = req.params;
+        const { status } = req.body;
+        const response = await voucherSerivce.updateVoucherStatus(voucherId, status);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+};
+
+
 module.exports = {
     createVoucher,
     getAllVoucher,
     getActiveVoucher,
-
+    updateVoucherStatus
 }
