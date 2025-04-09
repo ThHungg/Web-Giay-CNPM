@@ -1,5 +1,7 @@
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
+import { useQuery } from "@tanstack/react-query";
+import * as statService from "../../../services/statService";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -20,51 +22,70 @@ ChartJS.register(
 );
 
 const AdminStat = () => {
-  // Dữ liệu doanh thu cho Tháng 4 và Tháng 8
-  const revenueData = {
-    Banking: [300000, 0, 0, 450000, 0, 0, 0, 500000, 0, 0, 0, 0], // Dữ liệu cho Banking
-    COD: [200000, 0, 0, 350000, 0, 0, 0, 400000, 0, 0, 0, 0], // Dữ liệu cho COD
-  };
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+  const [month, setMonth] = useState(currentMonth);
+  const [year, setYear] = useState(currentYear);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const [revenueData, setRevenueData] = useState({ Banking: [], COD: [] });
+  const {
+    data: stat,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["stat", month, year],
+    queryFn: () => statService.forceUpdateStat(month, year),
+    enabled: !!month && !!year,
+  });
 
-  // Dữ liệu tổng doanh thu (Banking + COD) cho các tháng
+  const statData = stat?.data || {};
+
+  useEffect(() => {
+    const fetchAllStats = async () => {
+      const banking = [];
+      const cod = [];
+
+      for (const month of months) {
+        try {
+          const res = await statService.getStat(month, year);
+          const data = res?.data || {};
+          banking.push(data.revenueByMethod?.Banking || 0);
+          cod.push(data.revenueByMethod?.COD || 0);
+        } catch (error) {
+          banking.push(0);
+          cod.push(0);
+        }
+      }
+      setRevenueData({ Banking: banking, COD: cod });
+    };
+
+    fetchAllStats();
+  }, [year]);
+
   const totalRevenue = revenueData.Banking.map(
-    (banking, index) => banking + revenueData.COD[index]
+    (banking, i) => banking + revenueData.COD[i]
   );
 
-  // Dữ liệu cho Biểu đồ
-  const data = {
-    labels: [
-      "Tháng 1",
-      "Tháng 2",
-      "Tháng 3",
-      "Tháng 4",
-      "Tháng 5",
-      "Tháng 6",
-      "Tháng 7",
-      "Tháng 8",
-      "Tháng 9",
-      "Tháng 10",
-      "Tháng 11",
-      "Tháng 12",
-    ], // Nhãn trục X với tất cả các tháng
+  const chartData = {
+    labels: months.map((m) => `Tháng ${m}`),
     datasets: [
       {
-        label: "Doanh thu từ Banking (VND)",
-        data: revenueData.Banking, // Dữ liệu doanh thu từ Banking
+        label: "Banking",
+        data: revenueData.Banking,
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
       },
       {
-        label: "Doanh thu từ COD (VND)",
-        data: revenueData.COD, // Dữ liệu doanh thu từ COD
+        label: "COD",
+        data: revenueData.COD,
         backgroundColor: "rgba(153, 102, 255, 0.2)",
         borderColor: "rgba(153, 102, 255, 1)",
         borderWidth: 1,
       },
       {
-        label: "Tổng Doanh thu (VND)",
-        data: totalRevenue, // Dữ liệu tổng doanh thu
+        label: "Tổng doanh thu",
+        data: totalRevenue,
         backgroundColor: "rgba(255, 159, 64, 0.2)",
         borderColor: "rgba(255, 159, 64, 1)",
         borderWidth: 1,
@@ -72,61 +93,89 @@ const AdminStat = () => {
     ],
   };
 
-  const options = {
+  const chartOptions = {
     responsive: true,
     plugins: {
       title: {
         display: true,
-        text: "Doanh thu theo phương thức thanh toán (Tháng 1 đến Tháng 12)",
+        text: `Doanh thu theo phương thức thanh toán (Tháng 1 đến Tháng 12 / ${year})`,
       },
     },
   };
 
   return (
     <>
+      <div className="flex gap-5 mt-3">
+        <select
+          className="border px-3 py-2 rounded"
+          value={month}
+          onChange={(e) => setMonth(parseInt(e.target.value))}
+        >
+          {Array.from({ length: 12 }, (_, i) => (
+            <option key={i + 1} value={i + 1}>{`Tháng ${i + 1}`}</option>
+          ))}
+        </select>
+        <select
+          className="border px-3 py-2 rounded"
+          value={year}
+          onChange={(e) => setYear(parseInt(e.target.value))}
+        >
+          {[2023, 2024, 2025].map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Thông tin thống kê */}
       <div className="grid grid-cols-4 mt-3 gap-3">
-        {/* Tổng doanh thu */}
         <div className="bg-white h-[200px] rounded-lg text-center shadow-md flex flex-col justify-center items-center hover:scale-105 hover:shadow-lg transition-all duration-300">
           <h1 className="text-xl font-semibold">Tổng doanh thu</h1>
-          <p className="mt-2 text-4xl font-bold">{`${totalRevenue[3].toLocaleString()} VND`}</p>
+          <p className="mt-2 text-4xl font-bold">
+            {isLoading
+              ? "..."
+              : `${statData.totalRevenue?.toLocaleString()} VND`}
+          </p>
         </div>
 
-        {/* Tổng Đơn hàng */}
         <div className="bg-white h-[200px] rounded-lg text-center shadow-md flex flex-col justify-center items-center hover:scale-105 hover:shadow-lg transition-all duration-300">
           <h1 className="text-xl font-semibold">Tổng Đơn hàng</h1>
-          <p className="mt-2 text-4xl font-bold">100</p>
+          <p className="mt-2 text-4xl font-bold">
+            {isLoading ? "..." : statData.totalOrders || 0}
+          </p>
         </div>
 
-        {/* Đơn hàng đang xử lý */}
         <div className="bg-white h-[200px] rounded-lg text-center shadow-md flex flex-col justify-center items-center hover:scale-105 hover:shadow-lg transition-all duration-300">
-          <h1 className="text-xl font-semibold">Đơn hàng đang xử lý</h1>
-          <p className="mt-2 text-4xl font-bold">25</p>
+          <h1 className="text-xl font-semibold">Đang xử lý</h1>
+          <p className="mt-2 text-4xl font-bold">
+            {isLoading ? "..." : statData.processingOrders || 0}
+          </p>
         </div>
 
-        {/* Đơn hàng thành công và thất bại */}
         <div className="grid grid-rows-2 gap-3">
           <div className="bg-white h-[95px] rounded-lg text-center shadow-md flex flex-col justify-center items-center hover:scale-105 hover:shadow-lg transition-all duration-300">
-            <h1 className="text-xl font-semibold">Đơn hàng thành công</h1>
-            <p className="mt-2 text-4xl font-bold">70</p>
+            <h1 className="text-xl font-semibold">Thành công</h1>
+            <p className="mt-2 text-4xl font-bold">
+              {isLoading ? "..." : statData.successfulOrders || 0}
+            </p>
           </div>
           <div className="bg-white h-[95px] rounded-lg text-center shadow-md flex flex-col justify-center items-center hover:scale-105 hover:shadow-lg transition-all duration-300">
-            <h1 className="text-xl font-semibold">Đơn hàng thất bại</h1>
-            <p className="mt-2 text-4xl font-bold">5</p>
+            <h1 className="text-xl font-semibold">Thất bại</h1>
+            <p className="mt-2 text-4xl font-bold">
+              {isLoading ? "..." : statData.failedOrders || 0}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Biểu đồ cột */}
-      <div className="">
+      <div className="mt-8">
         <h2 className="text-center text-xl font-semibold mb-4">
-          Biểu đồ Cột Doanh Thu (Tháng 1 đến Tháng 12)
+          Biểu đồ Cột Doanh Thu theo phương thức thanh toán từ tháng 1 đến tháng
+          12
         </h2>
-        <Bar data={data} options={options} />
-      </div>
-
-      <div className="">
-        <h1>Top 10 sản phẩm bán chạy nhất</h1>
+        <Bar data={chartData} options={chartOptions} />
       </div>
     </>
   );

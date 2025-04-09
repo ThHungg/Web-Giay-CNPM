@@ -107,7 +107,7 @@ const CheckoutPage = () => {
 
         // Nếu là COD thì redirect về trang cảm ơn hoặc lịch sử đơn hàng
         if (selectedPaymentMethod === "COD") {
-          // window.location.href = ""; 
+          window.location.href = "/";
           return;
         }
 
