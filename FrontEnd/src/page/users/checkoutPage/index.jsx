@@ -20,6 +20,7 @@ const CheckoutPage = () => {
   const [email, setEmail] = useState("");
   const [size, setSize] = useState("");
   const [showCofirmModal, setShowCofirmModal] = useState(false);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
   const location = useLocation();
   const token = localStorage.getItem("access_token");
   let userId;
@@ -35,7 +36,6 @@ const CheckoutPage = () => {
     queryKey: ["voucher"],
     queryFn: () => voucherService.getActiveVoucher(),
   });
-  console.log("voucherData", voucherData);
 
   const { data: cartData, refetch } = useQuery({
     queryKey: ["cart", userId],
@@ -43,55 +43,53 @@ const CheckoutPage = () => {
     enabled: !!userId && isBuyNow === 0, // Chặn khi isBuyNow là true
   });
 
-  const totalAmount = isBuyNow
-    ? product.price * quantity
-    : cartData?.cart?.data?.products?.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      );
-
   const handlePayment = async () => {
-    // totalAmount
     if (!selectedPaymentMethod || !name || !phone || !email) {
       toast.error("Vui lòng nhập đầy đủ thông tin.");
       return;
     }
-    if (selectedPaymentMethod && selectedPaymentMethod === "Banking") {
-      const orderItems = isBuyNow
-        ? [
-            {
-              productId,
-              quantity,
-              price: product.price,
-              size: selectedSize,
-            },
-          ]
-        : cartData.cart.data.products.map((item) => ({
-            productId: item.productId._id,
-            quantity: item.quantity,
-            price: item.price,
-            size: item.size,
-          }));
 
-      const orderData = {
-        userId,
-        items: orderItems,
-        shippingAddress: {
-          street,
-          province: selectedProvince,
-          district: selectedDistrict,
-          ward: selectedWard,
-        },
-        paymentMethod: selectedPaymentMethod,
-        note,
-        total: totalAmount,
-        customerInfo: {
-          nameReceiver: name,
-          phoneReceiver: phone,
-          emailReceiver: email,
-        },
-      };
+    const orderItems = isBuyNow
+      ? [
+          {
+            productId,
+            quantity,
+            price: product.price,
+            size: selectedSize,
+          },
+        ]
+      : cartData.cart.data.products.map((item) => ({
+          productId: item.productId._id,
+          quantity: item.quantity,
+          price: item.price,
+          size: item.size,
+        }));
 
+    const orderData = {
+      userId,
+      items: orderItems,
+      shippingAddress: {
+        street,
+        province: selectedProvince,
+        district: selectedDistrict,
+        ward: selectedWard,
+      },
+      paymentMethod: selectedPaymentMethod,
+      note,
+      total: finalAmount, // Áp dụng giảm giá nếu có
+      customerInfo: {
+        nameReceiver: name,
+        phoneReceiver: phone,
+        emailReceiver: email,
+      },
+    };
+
+    if (orderItems.length === 0) {
+      toast.error("Giỏ hàng của bạn đang trống.");
+      return;
+    }
+
+    try {
       const createOrder = await orderService.createOrder(
         orderData.userId,
         orderData.items,
@@ -102,32 +100,32 @@ const CheckoutPage = () => {
         orderData.customerInfo
       );
 
-      if (orderData.items.length === 0) {
-        toast.error("Giỏ hàng của bạn đang trống.");
-        return;
-      }
-      console.log("Dữ liệu gửi lên server:", orderData);
-
-      const orderId = createOrder.order._id;
-
-      const productIds = createOrder.order.items.map((item) => item.productId);
-      console.log(productIds);
-
       if (createOrder && createOrder.success) {
-        toast.success("Đặt hàng thành công");
+        toast.success("Đặt hàng thành công!");
+
         await cartService.clearCart(orderData.userId);
-      } else {
-        toast.error("Đặt hàng thất bại");
-      }
-      refetch();
-      try {
-        const data = await paymentService.createVNPayPayment(
+
+        // Nếu là COD thì redirect về trang cảm ơn hoặc lịch sử đơn hàng
+        if (selectedPaymentMethod === "COD") {
+          // window.location.href = ""; 
+          return;
+        }
+
+        // Nếu Banking thì xử lý VNPay
+        const orderId = createOrder.order._id;
+        const paymentVNPay = await paymentService.createVNPayPayment(
           orderId,
-          totalAmount
+          finalAmount
         );
-        console.log("data", data);
-        window.location.href = data.paymentUrl;
-      } catch (e) {}
+        window.location.href = paymentVNPay.paymentUrl;
+      } else {
+        toast.error("Đặt hàng thất bại.");
+      }
+
+      refetch();
+    } catch (error) {
+      console.error("Lỗi đặt hàng:", error);
+      toast.error("Có lỗi xảy ra khi đặt hàng.");
     }
   };
 
@@ -140,11 +138,9 @@ const CheckoutPage = () => {
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
   };
-
   const handleNoteChange = (e) => {
     setNote(e.target.value);
   };
-
   const handlePaymentMethodChange = (e) => {
     setSelectedPaymentMethod(e.target.value);
   };
@@ -211,10 +207,94 @@ const CheckoutPage = () => {
     setSelectedWard(selectedWard ? selectedWard.name : "");
   };
 
+  const totalAmount = isBuyNow
+    ? product.price * quantity
+    : cartData?.cart?.data?.products?.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+  const voucher = voucherData?.data;
+  console.log("voucher", voucher);
+
+  const cartItems = cartData?.cart?.data?.products || [];
+  const applyVoucher = (voucher, cartItems, isBuyNow, product, quantity) => {
+    const totalAmount = isBuyNow
+      ? product.price * quantity
+      : cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    if (!voucher)
+      return { discountAmount: 0, finalAmount: totalAmount, isValid: false };
+
+    let applicableItems = [];
+
+    if (isBuyNow) {
+      if (voucher.type === "total_order") {
+        applicableItems = [{ price: product.price, quantity }];
+      } else if (voucher.type === "brand" && product.brand === voucher.brand) {
+        applicableItems = [{ price: product.price, quantity }];
+      } else {
+        toast.error("❌ Voucher không áp dụng cho sản phẩm này");
+        return { discountAmount: 0, finalAmount: totalAmount, isValid: false };
+      }
+    } else {
+      if (voucher.type === "total_order") {
+        applicableItems = cartItems;
+      } else if (voucher.type === "brand") {
+        applicableItems = cartItems.filter(
+          (item) => item.productId.brand === voucher.brand
+        );
+        if (applicableItems.length === 0) {
+          toast.error(
+            "❌ Không có sản phẩm phù hợp với thương hiệu của voucher"
+          );
+          return {
+            discountAmount: 0,
+            finalAmount: totalAmount,
+            isValid: false,
+          };
+        }
+      }
+    }
+
+    const applicableTotal = applicableItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+
+    if (applicableTotal < voucher.minOrder) {
+      toast.error("❌ Đơn hàng chưa đạt giá trị tối thiểu để dùng voucher");
+      return { discountAmount: 0, finalAmount: totalAmount, isValid: false };
+    }
+
+    let discountAmount = 0;
+    if (voucher.discountType === "percent") {
+      discountAmount = (applicableTotal * voucher.discount) / 100;
+      if (voucher.maxDiscount && discountAmount > voucher.maxDiscount) {
+        discountAmount = voucher.maxDiscount;
+      }
+    } else if (voucher.discountType === "fixed") {
+      discountAmount = voucher.discount;
+    }
+
+    return {
+      discountAmount,
+      finalAmount: Math.max(totalAmount - discountAmount, 0),
+      isValid: true,
+    };
+  };
+
+  const { discountAmount, finalAmount, isValid } = applyVoucher(
+    selectedVoucher,
+    cartItems,
+    isBuyNow,
+    product,
+    quantity
+  );
+
   return (
     <div className="max-w-screen-xl flex mx-auto gap-5">
       {/* Phần thông tin đặt hàng */}
-      <div className="w-2/3 h-[700px] mt-5 bg-white p-4 rounded-lg">
+      <div className="w-2/3 h-[700px] mt-5 bg-white p-4 rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold">Thông tin đặt hàng:</h1>
 
         <div className="flex flex-col">
@@ -361,53 +441,83 @@ const CheckoutPage = () => {
       {/* Voucher */}
       {/* Phần đơn hàng */}
       <div className="w-1/3">
-        <div className="bg-white p-4 rounded-xl shadow-lg self-start mt-2">
-          <h1 className="text-2xl font-bold">Đơn hàng:</h1>
+        <div className="bg-white p-5 rounded-xl shadow-lg self-start mt-2 space-y-4">
+          <h1 className="text-2xl font-bold mb-2">Đơn hàng</h1>
+
           {isBuyNow ? (
-            <div className="flex gap-3">
+            <div className="flex gap-3 items-start border-b pb-3">
               <img
                 src={product.image}
                 alt=""
-                className="h-[60px] w-[80px] object-cover"
+                className="h-[60px] w-[80px] object-cover rounded"
               />
-              <div>
-                <p className="font-bold">{product.name}</p>
-                <div className="flex">
+              <div className="flex flex-col text-sm text-black">
+                <p className="font-semibold">{product.name}</p>
+                <div className="flex gap-2 text-gray-600">
                   <p>Size: {selectedSize}</p>
-                  <p className="mx-2">|</p>
+                  <span>|</span>
                   <p>SL: {quantity}</p>
                 </div>
-                <p>Giá: {formatter(product.price)}</p>
+                <p className="mt-1 font-medium">{formatter(product.price)}</p>
               </div>
             </div>
           ) : (
             cartData?.cart?.data?.products?.map((item) => (
-              <div className="flex gap-3" key={item.productId._id}>
+              <div
+                className="flex gap-3 items-start border-b pb-3"
+                key={item.productId._id}
+              >
                 <img
                   src={item.productId.image}
                   alt=""
-                  className="h-[60px] w-[80px] object-cover"
+                  className="h-[60px] w-[80px] object-cover rounded"
                 />
-                <div>
-                  <p className="font-bold">{item.productId.name}</p>
-                  <div className="flex">
+                <div className="flex flex-col text-sm text-black">
+                  <p className="font-semibold">{item.productId.name}</p>
+                  <div className="flex gap-2 text-gray-600">
                     <p>Size: {item.size}</p>
-                    <p className="mx-2">|</p>
+                    <span>|</span>
                     <p>SL: {item.quantity}</p>
                   </div>
-                  <p>Giá: {formatter(item.price)}</p>
+                  <p className="mt-1 font-medium">{formatter(item.price)}</p>
                 </div>
               </div>
             ))
           )}
 
-          <hr />
-          <h1 className="text-xl font-bold mt-2">
-            Tổng cộng: {formatter(totalAmount)}
-          </h1>
+          <div className="pt-2 border-t border-gray-200">
+            {selectedVoucher && isValid && (
+              <div className="flex justify-between items-center font-medium text-black mb-2">
+                <span>
+                  Mã áp dụng: <strong>{selectedVoucher.code}</strong>
+                </span>
+                <span>-{formatter(discountAmount)}</span>
+              </div>
+            )}
+
+            <div className="flex justify-between items-center text-base font-semibold">
+              <span>Tổng cộng:</span>
+              <span
+                className={`text-lg ${
+                  selectedVoucher && isValid
+                    ? "line-through text-gray-400"
+                    : "text-black font-bold"
+                }`}
+              >
+                {formatter(totalAmount)}
+              </span>
+            </div>
+
+            {selectedVoucher && isValid && (
+              <div className="flex justify-between items-center text-lg font-bold text-black mt-1">
+                <span>Thành tiền:</span>
+                <span>{formatter(finalAmount)}</span>
+              </div>
+            )}
+          </div>
+
           <button
-            className="px-4 py-2 w-full bg-black text-white rounded-2xl text-2xl font-bold mt-5"
-            // onClick={handlePayment}
+            className="w-full bg-black hover:bg-gray-800 transition duration-200 text-white text-lg font-bold py-3 rounded-xl mt-4"
             onClick={() => setShowCofirmModal(true)}
           >
             Đặt hàng
@@ -449,7 +559,10 @@ const CheckoutPage = () => {
                     </p>
                   </div>
 
-                  <button className="text-sm px-4 py-1 bg-black text-white rounded-md flex items-center justify-center hover:bg-gray-800 transition duration-200">
+                  <button
+                    onClick={() => setSelectedVoucher(voucher)}
+                    className="text-sm px-4 py-1 bg-black text-white rounded-md hover:bg-gray-800 transition"
+                  >
                     Chọn
                   </button>
                 </div>

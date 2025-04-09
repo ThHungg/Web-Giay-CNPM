@@ -126,6 +126,8 @@ const AdminVoucher = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  console.log(formData);
+
   const CreateModal = useMemo(
     () => (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
