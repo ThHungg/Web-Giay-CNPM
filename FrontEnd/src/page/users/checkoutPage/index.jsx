@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import * as cartService from "../../../services/cartService.js";
 import * as orderService from "../../../services/orderService.js";
 import * as paymentService from "../../../services/paymentService.js";
+import * as voucherService from "../../../services/voucherService.js";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useQuery } from "@tanstack/react-query";
@@ -29,8 +30,12 @@ const CheckoutPage = () => {
 
   const { productId, product, quantity, selectedSize } = location.state || {};
   const isBuyNow = quantity;
-  console.log(productId, product, quantity, selectedSize);
-  console.log(isBuyNow);
+
+  const { data: voucherData } = useQuery({
+    queryKey: ["voucher"],
+    queryFn: () => voucherService.getActiveVoucher(),
+  });
+  console.log("voucherData", voucherData);
 
   const { data: cartData, refetch } = useQuery({
     queryKey: ["cart", userId],
@@ -206,50 +211,10 @@ const CheckoutPage = () => {
     setSelectedWard(selectedWard ? selectedWard.name : "");
   };
 
-  // const validateForm = () => {
-  //   let errors = {};
-
-  //   // Kiểm tra họ tên
-  //   if (!name) {
-  //     errors.name = "Họ và tên là bắt buộc!";
-  //   }
-
-  //   // Kiểm tra số điện thoại
-  //   if (!phone) {
-  //     errors.phone = "Số điện thoại là bắt buộc!";
-  //   } else if (!/^[0-9]{10}$/.test(phone)) {
-  //     errors.phone = "Số điện thoại không hợp lệ!";
-  //   }
-  //   if (!email) {
-  //     errors.email = "Email là bắt buộc!";
-  //   }
-  //   // else if (!/\S+@\S+\.\S+/.test(email)) {
-  //   //   errors.email = "Email không hợp lệ!";
-  //   // }
-
-  //   // if (!street) {
-  //   //   errors.street = "Địa chỉ cụ thể là bắt buộc!";
-  //   // }
-
-  //   // if (!selectedProvince) {
-  //   //   errors.province = "Tỉnh/Thành phố là bắt buộc!";
-  //   // }
-  //   // if (!selectedDistrict) {
-  //   //   errors.district = "Quận/Huyện là bắt buộc!";
-  //   // }
-  //   // if (!selectedWard) {
-  //   //   errors.ward = "Phường/Xã là bắt buộc!";
-  //   // }
-
-  //   return errors;
-  // };
-
-  // Trong phần JSX của component
-
   return (
     <div className="max-w-screen-xl flex mx-auto gap-5">
       {/* Phần thông tin đặt hàng */}
-      <div className="w-2/3 mt-5 bg-white p-4 rounded-lg">
+      <div className="w-2/3 h-[700px] mt-5 bg-white p-4 rounded-lg">
         <h1 className="text-3xl font-bold">Thông tin đặt hàng:</h1>
 
         <div className="flex flex-col">
@@ -393,59 +358,109 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
-
+      {/* Voucher */}
       {/* Phần đơn hàng */}
-      <div className="w-1/3 bg-white p-4 rounded-xl shadow-lg self-start mt-2">
-        <h1 className="text-2xl font-bold">Đơn hàng:</h1>
-        {isBuyNow ? (
-          <div className="flex gap-3">
-            <img
-              src={product.image}
-              alt=""
-              className="h-[60px] w-[80px] object-cover"
-            />
-            <div>
-              <p className="font-bold">{product.name}</p>
-              <div className="flex">
-                <p>Size: {selectedSize}</p>
-                <p className="mx-2">|</p>
-                <p>SL: {quantity}</p>
-              </div>
-              <p>Giá: {formatter(product.price)}</p>
-            </div>
-          </div>
-        ) : (
-          cartData?.cart?.data?.products?.map((item) => (
-            <div className="flex gap-3" key={item.productId._id}>
+      <div className="w-1/3">
+        <div className="bg-white p-4 rounded-xl shadow-lg self-start mt-2">
+          <h1 className="text-2xl font-bold">Đơn hàng:</h1>
+          {isBuyNow ? (
+            <div className="flex gap-3">
               <img
-                src={item.productId.image}
+                src={product.image}
                 alt=""
                 className="h-[60px] w-[80px] object-cover"
               />
               <div>
-                <p className="font-bold">{item.productId.name}</p>
+                <p className="font-bold">{product.name}</p>
                 <div className="flex">
-                  <p>Size: {item.size}</p>
+                  <p>Size: {selectedSize}</p>
                   <p className="mx-2">|</p>
-                  <p>SL: {item.quantity}</p>
+                  <p>SL: {quantity}</p>
                 </div>
-                <p>Giá: {formatter(item.price)}</p>
+                <p>Giá: {formatter(product.price)}</p>
               </div>
             </div>
-          ))
-        )}
+          ) : (
+            cartData?.cart?.data?.products?.map((item) => (
+              <div className="flex gap-3" key={item.productId._id}>
+                <img
+                  src={item.productId.image}
+                  alt=""
+                  className="h-[60px] w-[80px] object-cover"
+                />
+                <div>
+                  <p className="font-bold">{item.productId.name}</p>
+                  <div className="flex">
+                    <p>Size: {item.size}</p>
+                    <p className="mx-2">|</p>
+                    <p>SL: {item.quantity}</p>
+                  </div>
+                  <p>Giá: {formatter(item.price)}</p>
+                </div>
+              </div>
+            ))
+          )}
 
-        <hr />
-        <h1 className="text-xl font-bold mt-2">
-          Tổng cộng: {formatter(totalAmount)}
-        </h1>
-        <button
-          className="px-4 py-2 w-full bg-black text-white rounded-2xl text-2xl font-bold mt-5"
-          // onClick={handlePayment}
-          onClick={() => setShowCofirmModal(true)}
-        >
-          Đặt hàng
-        </button>
+          <hr />
+          <h1 className="text-xl font-bold mt-2">
+            Tổng cộng: {formatter(totalAmount)}
+          </h1>
+          <button
+            className="px-4 py-2 w-full bg-black text-white rounded-2xl text-2xl font-bold mt-5"
+            // onClick={handlePayment}
+            onClick={() => setShowCofirmModal(true)}
+          >
+            Đặt hàng
+          </button>
+        </div>
+        <div className="bg-white p-4 rounded-xl shadow-lg self-start mt-2">
+          <h1 className="text-2xl font-bold">Voucher:</h1>
+          <div className="max-h-[300px] overflow-y-auto pr-1">
+            {voucherData?.data?.length > 0 ? (
+              voucherData.data.map((voucher, index) => (
+                <div className="border border-gray-300 rounded-lg p-3 flex justify-between items-center hover:shadow-md transition duration-200 cursor-pointer mt-2">
+                  <div>
+                    <p className="text-lg font-bold text-gray-600">
+                      {voucher.code}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      {voucher.description}
+                    </p>
+
+                    <p className="text-sm text-gray-600 mt-1">
+                      Đơn tối thiểu:{" "}
+                      <span className="font-medium">
+                        {formatter(voucher.minOrder)}
+                      </span>{" "}
+                      {voucher.maxDiscount > 0 && (
+                        <>
+                          <br />
+                          Giảm tối đa:{" "}
+                          <span className="font-medium">
+                            {formatter(voucher.maxDiscount)}
+                          </span>
+                        </>
+                      )}
+                    </p>
+
+                    <p className="text-xs text-gray-500 mt-2">
+                      HSD:{" "}
+                      {new Date(voucher.expiryDate).toLocaleDateString("vi-VN")}
+                    </p>
+                  </div>
+
+                  <button className="text-sm px-4 py-1 bg-black text-white rounded-md flex items-center justify-center hover:bg-gray-800 transition duration-200">
+                    Chọn
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">
+                Không có voucher khả dụng.
+              </p>
+            )}
+          </div>
+        </div>
       </div>
       {showCofirmModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">

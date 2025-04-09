@@ -6,6 +6,7 @@ import formatter from "../../../utils/formatter";
 import { useMutationHooks } from "../../../hooks/useMutation";
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification";
+import { FaSpinner } from "react-icons/fa";
 
 const AdminVoucher = () => {
   const user = useSelector((state) => state?.user);
@@ -20,6 +21,7 @@ const AdminVoucher = () => {
     startDate: "",
     expiryDate: "",
     minOrder: "",
+    maxDiscount: "",
     totalQuantity: "",
     description: "",
   });
@@ -29,7 +31,12 @@ const AdminVoucher = () => {
     return res.data;
   };
 
-  const { data: vouchers, refetch } = useQuery({
+  const {
+    data: vouchers,
+    refetch,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["voucher"],
     queryFn: getAllVoucher,
     enabled: !!user?.access_token,
@@ -56,14 +63,15 @@ const AdminVoucher = () => {
       brand,
       startDate,
       expiryDate,
+      maxDiscount,
       minOrder,
       totalQuantity,
       description,
     } = data;
 
     if (!code.trim()) return toast.error("Vui lòng nhập mã voucher");
-    if (!discount || isNaN(discount) || discount <= 0 || discount > 100)
-      return toast.error("Giá trị giảm giá không hợp lệ");
+    // if (!discount || isNaN(discount) || discount <= 0 || discount > 100)
+    //   return toast.error("Giá trị giảm giá không hợp lệ");
     if (type === "brand" && !brand)
       return toast.error("Vui lòng chọn thương hiệu");
     if (!startDate) return toast.error("Vui lòng chọn ngày bắt đầu");
@@ -74,6 +82,20 @@ const AdminVoucher = () => {
     if (!totalQuantity || isNaN(totalQuantity) || totalQuantity <= 0)
       return toast.error("Số lượng voucher phải lớn hơn 0");
     toast.success("Tạo voucher thành công");
+    setFormData({
+      code: "",
+      discount: "",
+      discountType: "percent",
+      type: "total_order",
+      brand: "",
+      startDate: "",
+      expiryDate: "",
+      maxDiscount: "",
+      minOrder: "",
+      totalQuantity: "",
+      description: "",
+    });
+
     const res = await voucherService.createVoucher(data);
     refetch();
     setShowCreateModel(false);
@@ -192,26 +214,28 @@ const AdminVoucher = () => {
 
             {/* Cột phải */}
             <div className="flex flex-col gap-3">
-              <div>
-                <label className="text-sm font-medium">Ngày bắt đầu:</label>
-                <input
-                  type="date"
-                  name="startDate"
-                  value={formData.startDate}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
+              <div className="flex gap-3">
+                <div>
+                  <label className="text-sm font-medium">Ngày bắt đầu:</label>
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={formData.startDate}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
 
-              <div>
-                <label className="text-sm font-medium">Ngày hết hạn:</label>
-                <input
-                  type="date"
-                  name="expiryDate"
-                  value={formData.expiryDate}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded"
-                />
+                <div>
+                  <label className="text-sm font-medium">Ngày hết hạn:</label>
+                  <input
+                    type="date"
+                    name="expiryDate"
+                    value={formData.expiryDate}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
               </div>
 
               <div>
@@ -227,6 +251,22 @@ const AdminVoucher = () => {
                   className="w-full p-2 border rounded"
                 />
               </div>
+
+              {formData.discountType === "percent" && (
+                <div>
+                  <label className="text-sm font-medium">
+                    Giá trị giảm tối đa:
+                  </label>
+                  <input
+                    type="number"
+                    name="maxDiscount"
+                    placeholder="Giá trị tối đa"
+                    value={formData.maxDiscount}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="text-sm font-medium">Số lượng:</label>
@@ -275,6 +315,14 @@ const AdminVoucher = () => {
     [formData, handleCancel, onFinish]
   );
 
+  if (!Array.isArray(vouchers)) {
+    return (
+      <div className="flex justify-center items-center mt-10">
+        <FaSpinner className="w-6 h-6 text-gray-500 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex justify-between items-center mt-3">
@@ -317,7 +365,7 @@ const AdminVoucher = () => {
               {/* <th className="border p-2">Thông tin</th> */}
               <th className="border p-2">Ngày bắt đầu / Hết hạn</th>
               <th className="border p-2">Loại</th>
-              <th className="border p-2">Giá trị tối thiểu</th>
+              <th className="border p-2">Min / Max</th>
               <th className="border p-2">Trạng thái</th>
               <th className="border p-2">Hành động</th>
             </tr>
@@ -333,7 +381,7 @@ const AdminVoucher = () => {
                 </td> */}
                 <td className="border p-2">{voucher.description}</td>
                 <td className="border p-2">
-                  {new Date(voucher.startDate).toLocaleDateString()} —{" "}
+                  {new Date(voucher.startDate).toLocaleDateString()} -{" "}
                   {new Date(voucher.expiryDate).toLocaleDateString()}
                 </td>
                 <td className="border p-2">
@@ -343,7 +391,10 @@ const AdminVoucher = () => {
                     : ""}
                 </td>
 
-                <td className="border p-2">{formatter(voucher.minOrder)}</td>
+                <td className="border p-2">
+                  {formatter(voucher.minOrder)} /{" "}
+                  {formatter(voucher.maxDiscount)}
+                </td>
                 <td className="border p-2">
                   <select
                     className="border px-2 py-1 rounded"
