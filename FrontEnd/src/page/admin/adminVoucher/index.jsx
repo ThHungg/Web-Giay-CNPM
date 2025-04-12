@@ -1,5 +1,5 @@
-import { memo, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
+import { memo, useEffect, useMemo, useState } from "react";
+import { connect, useSelector } from "react-redux";
 import * as voucherService from "../../../services/voucherService";
 import { useQuery } from "@tanstack/react-query";
 import formatter from "../../../utils/formatter";
@@ -11,8 +11,23 @@ import { FaSpinner } from "react-icons/fa";
 const AdminVoucher = () => {
   const user = useSelector((state) => state?.user);
   const [showCreateModal, setShowCreateModel] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [rowSelected, setRowSelected] = useState("");
   const brands = ["Adidas", "Nike", "Vans", "Air Jordan", "MLB", "Converse"];
   const [formData, setFormData] = useState({
+    code: "",
+    discount: "",
+    discountType: "percent",
+    type: "total_order",
+    brand: "",
+    startDate: "",
+    expiryDate: "",
+    minOrder: "",
+    maxDiscount: "",
+    totalQuantity: "",
+    description: "",
+  });
+  const [detailVoucher, setDetailVoucher] = useState({
     code: "",
     discount: "",
     discountType: "percent",
@@ -45,7 +60,15 @@ const AdminVoucher = () => {
   const handleUpdateStatus = async (id, newStatus) => {
     const token = user?.access_token;
     const res = await voucherService.updateVoucherStatus(id, newStatus, token);
-    console.log(res);
+
+    const now = new Date();
+    const startDate = new Date(detailVoucher.startDate);
+
+    if (newStatus === "active" && startDate > now) {
+      toast.warning("Chưa tới ngày bắt đầu của voucher.");
+      return;
+    }
+
     if (res?.status === "OK") {
       toast.success(res.message || "Cập nhật trạng thái thành công");
       refetch();
@@ -120,13 +143,77 @@ const AdminVoucher = () => {
 
   const handleCancel = () => {
     setShowCreateModel(false);
+    setShowUpdateModal(false);
   };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  console.log(formData);
+  const formatDate = (isoDate) => {
+    if (!isoDate) return "";
+    const date = new Date(isoDate);
+    return date.toISOString().split("T")[0];
+  };
+
+  const fetchGetDetailVoucher = async (rowSelected) => {
+    const res = await voucherService.getDetailVoucher(rowSelected);
+    if (res?.data) {
+      setDetailVoucher({
+        code: res?.data?.code,
+        discount: res?.data?.discount,
+        discountType: res?.data?.discountType,
+        type: res?.data?.type,
+        brand: res?.data?.brand,
+        startDate: formatDate(res?.data?.startDate),
+        expiryDate: formatDate(res?.data?.expiryDate),
+        minOrder: res?.data?.minOrder,
+        maxDiscount: res?.data?.maxDiscount,
+        totalQuantity: res?.data?.totalQuantity,
+        description: res?.data?.description,
+      });
+    }
+  };
+  useEffect(() => {
+    if (rowSelected) {
+      fetchGetDetailVoucher(rowSelected);
+    }
+  }, [rowSelected]);
+
+  const handleOnchangeDetails = (e) => {
+    setDetailVoucher({
+      ...detailVoucher,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const mutationUpdate = useMutationHooks(async (data) => {
+    const { voucherId, token, ...rests } = data;
+    return await voucherService.updateVoucher(voucherId, token, rests);
+  });
+
+  const { isSuccess: isSuccessUpdate, isError: isErrorUpdate } = mutationUpdate;
+
+  useEffect(() => {
+    if (isSuccessUpdate) {
+      toast.success("Cập nhật thành công");
+      mutationUpdate.reset();
+      setShowUpdateModal(false);
+      refetch();
+    } else if (isErrorUpdate) {
+      toast.error("Cập nhật thất bại");
+      mutationUpdate.reset();
+    }
+  }, [isSuccessUpdate, isErrorUpdate]);
+
+  const onUpdateVoucher = () => {
+    setShowUpdateModal(false);
+    mutationUpdate.mutate({
+      voucherId: rowSelected,
+      token: user?.access_token,
+      ...detailVoucher,
+    });
+  };
 
   const CreateModal = useMemo(
     () => (
@@ -317,6 +404,195 @@ const AdminVoucher = () => {
     [formData, handleCancel, onFinish]
   );
 
+  const UpdateModal = useMemo(
+    () => (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 w-[700px] max-w-3xl rounded-xl shadow-lg">
+          <h1 className="text-xl font-bold text-center mb-4">
+            Cập nhật Voucher
+          </h1>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Cột trái */}
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="text-sm font-medium">Mã voucher:</label>
+                <input
+                  type="text"
+                  name="code"
+                  placeholder="Nhập mã code"
+                  value={detailVoucher.code}
+                  onChange={handleOnchangeDetails}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Giảm giá:</label>
+                <div className="flex gap-2 mt-1">
+                  <input
+                    type="number"
+                    name="discount"
+                    placeholder="Nhập số"
+                    value={detailVoucher.discount}
+                    onChange={handleOnchangeDetails}
+                    className="w-2/3 p-2 border rounded"
+                  />
+                  <select
+                    name="discountType"
+                    value={detailVoucher.discountType}
+                    onChange={handleOnchangeDetails}
+                    className="w-1/3 p-2 border rounded"
+                  >
+                    <option value="percent">%</option>
+                    <option value="fixed">đ</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">Loại áp dụng:</label>
+                <select
+                  name="type"
+                  value={detailVoucher.type}
+                  onChange={handleOnchangeDetails}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="total_order">Toàn bộ đơn hàng</option>
+                  <option value="brand">Theo thương hiệu</option>
+                </select>
+              </div>
+
+              {detailVoucher.type === "brand" && (
+                <div>
+                  <label htmlFor="brand" className="text-sm font-medium">
+                    Tên thương hiệu:
+                  </label>
+                  <select
+                    id="brand"
+                    name="brand"
+                    className="border w-full p-2 rounded-lg mt-1"
+                    value={detailVoucher.brand || ""}
+                    onChange={handleOnchangeDetails}
+                  >
+                    <option value="">Chọn thương hiệu</option>
+                    {brands.length > 0 ? (
+                      brands.map((item, index) => (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>Không có thương hiệu</option>
+                    )}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* Cột phải */}
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-3">
+                <div>
+                  <label className="text-sm font-medium">Ngày bắt đầu:</label>
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={detailVoucher.startDate}
+                    onChange={handleOnchangeDetails}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Ngày hết hạn:</label>
+                  <input
+                    type="date"
+                    name="expiryDate"
+                    value={detailVoucher.expiryDate}
+                    onChange={handleOnchangeDetails}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium">
+                  Giá trị đơn hàng tối thiểu:
+                </label>
+                <input
+                  type="number"
+                  name="minOrder"
+                  placeholder="Giá trị tối thiếu"
+                  value={detailVoucher.minOrder}
+                  onChange={handleOnchangeDetails}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+
+              {detailVoucher.discountType === "percent" && (
+                <div>
+                  <label className="text-sm font-medium">
+                    Giá trị giảm tối đa:
+                  </label>
+                  <input
+                    type="number"
+                    name="maxDiscount"
+                    placeholder="Giá trị tối đa"
+                    value={detailVoucher.maxDiscount}
+                    onChange={handleOnchangeDetails}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="text-sm font-medium">Số lượng:</label>
+                <input
+                  type="number"
+                  name="totalQuantity"
+                  placeholder="Nhập số lượng"
+                  value={detailVoucher.totalQuantity}
+                  onChange={handleOnchangeDetails}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Mô tả */}
+          <div className="mt-4">
+            <label className="text-sm font-medium">Mô tả:</label>
+            <textarea
+              name="description"
+              placeholder="Mô tả ngắn gọn về voucher"
+              value={detailVoucher.description}
+              onChange={handleOnchangeDetails}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          {/* Nút hành động */}
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              className="px-4 py-2 bg-white border font-bold w-1/4 rounded-lg"
+              onClick={handleCancel}
+            >
+              Hủy
+            </button>
+            <button
+              className="px-4 py-2 bg-black text-white font-bold w-1/4 rounded-lg"
+              onClick={onUpdateVoucher}
+            >
+              Tạo
+            </button>
+          </div>
+        </div>
+      </div>
+    ),
+    [detailVoucher, handleCancel, onFinish]
+  );
+
   if (!Array.isArray(vouchers)) {
     return (
       <div className="flex justify-center items-center mt-10">
@@ -374,7 +650,7 @@ const AdminVoucher = () => {
           </thead>
           <tbody className="text-center bg-white">
             {vouchers?.map((voucher) => (
-              <tr key={voucher._id}>
+              <tr key={voucher._id} onClick={() => setRowSelected(voucher._id)}>
                 <td className="border p-2">{voucher.code}</td>
                 {/* <td className="border p-2">
                   {voucher.discountType === "fixed"
@@ -411,7 +687,10 @@ const AdminVoucher = () => {
                   </select>
                 </td>
                 <td className="border p-2">
-                  <button className="px-2 py-1 bg-red-500 text-white rounded">
+                  <button
+                    className="px-2 py-1 bg-red-500 text-white rounded"
+                    onClick={() => setShowUpdateModal(true)}
+                  >
                     Sửa
                   </button>
                 </td>
@@ -421,6 +700,7 @@ const AdminVoucher = () => {
         </table>
       </div>
       {showCreateModal && CreateModal}
+      {showUpdateModal && UpdateModal}
       <ToastNotification />
     </>
   );

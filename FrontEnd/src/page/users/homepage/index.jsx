@@ -9,11 +9,11 @@ import Jordan from "../../../assets/users/img/brands/Jordan.png";
 import Nike from "../../../assets/users/img/brands/Nike.png";
 import Puma from "../../../assets/users/img/brands/Puma.png";
 import "./index.css";
-import { ProductCard } from "../../../component";
 import { useQuery } from "@tanstack/react-query";
 import * as productService from "../../../services/productService";
 import { Link } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router";
+import ProductCardV2 from "../../../component/ProductCardV2";
 
 const HomePage = () => {
   const fetchProductAll = async () => {
@@ -71,8 +71,7 @@ const HomePage = () => {
   if (!Array.isArray(topSell?.data)) {
     return (
       <div className="flex justify-center items-center mt-10">
-        <FaSpinner
-         className="w-6 h-6 text-gray-500 animate-spin" />
+        <FaSpinner className="w-6 h-6 text-gray-500 animate-spin" />
       </div>
     );
   }
@@ -122,7 +121,7 @@ const HomePage = () => {
               key={product._id}
               to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}
             >
-              <ProductCard
+              <ProductCardV2
                 name={product.name}
                 img={product.image}
                 price={product.price}
@@ -149,7 +148,7 @@ const HomePage = () => {
               to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}
             >
               <div className="transition-transform transform hover:scale-105 duration-300">
-                <ProductCard
+                <ProductCardV2
                   name={product.name}
                   img={product.image}
                   price={product.price}

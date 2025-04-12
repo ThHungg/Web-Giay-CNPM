@@ -26,8 +26,19 @@ const createVoucher = (newVoucher) => {
                 };
             }
 
+            const now = new Date();
+            const start = new Date(startDate);
+            const end = new Date(expiryDate);
+            let computedStatus = "inactive";
+
+            if (now >= start && now <= end) {
+                computedStatus = "active";
+            } else if (now > end) {
+                computedStatus = "expired";
+            }
+
             const createVoucher = await Voucher.create({
-                code, discount, startDate, expiryDate, type, brand, minOrder, status, description, totalQuantity, maxDiscount, discountType
+                code, discount, startDate, expiryDate, type, brand, minOrder, status: computedStatus, description, totalQuantity, maxDiscount, discountType
             })
             if (createVoucher) {
                 resolve({
@@ -41,6 +52,73 @@ const createVoucher = (newVoucher) => {
         }
     })
 }
+
+const updateVoucher = (voucherId, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkVoucher = await Voucher.findById(voucherId);
+            if (checkVoucher === null) {
+                resolve({
+                    status: "ERR",
+                    message: 'Voucher không xác định'
+                })
+            }
+            if (
+                data.expiryDate &&
+                data.startDate &&
+                new Date(data.expiryDate) < new Date(data.startDate)
+            ) {
+                return resolve({
+                    status: "ERR",
+                    message: "Ngày hết hạn phải sau ngày bắt đầu",
+                });
+            }
+
+            const now = new Date();
+            const start = data.startDate ? new Date(data.startDate) : new Date(checkVoucher.startDate);
+            const end = data.expiryDate ? new Date(data.expiryDate) : new Date(checkVoucher.expiryDate);
+
+            if (now >= start && now <= end) {
+                data.status = "active";
+            } else if (now > end) {
+                data.status = "expired";
+            } else {
+                data.status = "inactive";
+            }
+
+            const updateVoucher = await Voucher.findByIdAndUpdate(voucherId, data, { new: true })
+            resolve({
+                status: "Ok",
+                message: "Success",
+                data: updateVoucher
+            })
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+const getDetailVoucher = (voucherId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const detailVoucher = await Voucher.findById(voucherId);
+            if (detailVoucher === null) {
+                resolve({
+                    status: "Ok",
+                    message: 'Voucher không xác định'
+                })
+            }
+
+            resolve({
+                status: "Ok",
+                message: "Sucess",
+                data: detailVoucher
+            })
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
 
 const getAllVoucher = () => {
     return new Promise(async (resolve, reject) => {
@@ -109,5 +187,7 @@ module.exports = {
     createVoucher,
     getAllVoucher,
     getActiveVoucher,
-    updateVoucherStatus
+    updateVoucherStatus,
+    updateVoucher,
+    getDetailVoucher
 }

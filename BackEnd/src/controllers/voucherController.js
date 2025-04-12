@@ -20,6 +20,44 @@ const createVoucher = async (req, res) => {
     }
 }
 
+const updateVoucher = async (req, res) => {
+    try {
+        const { voucherId } = req.params;
+        const data = req.body
+        if (!voucherId) {
+            return res.status(200).json({
+                status: "Err",
+                message: 'The voucherId is required'
+            })
+        }
+        const response = await voucherSerivce.updateVoucher(voucherId, data);
+        return res.status(200).json(response);
+    } catch (e) {
+        console.log(e)
+        return res.status(404).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+}
+
+const getDetailVoucher = async (req, res) => {
+    try {
+        const { voucherId } = req.params;
+        if (!voucherId) {
+            return res.status(200).json({
+                status: "Err",
+                message: 'The voucherId is required'
+            })
+        }
+        const response = await voucherSerivce.getDetailVoucher(voucherId);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+}
+
 const getAllVoucher = async (req, res) => {
     try {
         const response = await voucherSerivce.getAllVoucher();
@@ -45,7 +83,6 @@ const getActiveVoucher = async (req, res) => {
 
 const updateVoucherStatus = async (req, res) => {
     try {
-        console.log(req.body)
         const { voucherId } = req.params;
         const { status } = req.body;
         const response = await voucherSerivce.updateVoucherStatus(voucherId, status);
@@ -62,5 +99,7 @@ module.exports = {
     createVoucher,
     getAllVoucher,
     getActiveVoucher,
-    updateVoucherStatus
+    updateVoucherStatus,
+    updateVoucher,
+    getDetailVoucher
 }

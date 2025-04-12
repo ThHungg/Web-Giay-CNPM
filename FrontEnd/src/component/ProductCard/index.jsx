@@ -1,54 +1,63 @@
 import { memo } from "react";
 import formatter from "../../utils/formatter";
 
-const ProductsCard = ({ img, name, price, discount, oldprice, totalStock }) => {
+const ProductsCard = ({
+  img,
+  name,
+  price,
+  discount,
+  oldprice,
+  totalStock,
+  rating,
+}) => {
+  const isSoldOut = totalStock === 0;
+
   return (
-    <div className="m-3 bg-white w-[300px] h-[400px] rounded-xl py-2 space-y-3 shadow-lg">
-      <div className="w-full h-[280px] p-2 overflow-hidden rounded-xl relative">
-        <img src={img} alt={name} className="w-full h-full object-contain" />
-        {totalStock === 0 && (
-          <img
-            src="https://www.freeiconspng.com/uploads/sold-out-png-4.png"
-            alt="Sold Out"
-            className="absolute top-0 left-0 w-full h-full object-contain opacity-75"
-          />
-        )}
-        {discount && (
-          <h1 className="absolute top-2 right-2 bg-red-500 text-white text-[16px] font-bold px-2 py-1 rounded-md">
+    <div className="m-3 bg-white w-[360px] h-[430px] rounded-xl p-3 shadow-lg hover:shadow-xl transition duration-300">
+      {/* Ảnh sản phẩm */}
+      <div className="relative w-full h-[260px] overflow-hidden rounded-lg">
+        <img
+          src={img}
+          alt={name}
+          className={`w-full h-full object-contain transition-opacity duration-300 ${
+            isSoldOut ? "opacity-30" : ""
+          }`}
+        />
+        {/* Tag giảm giá */}
+        {discount > 0 && (
+          <div className="absolute top-2 right-2 bg-red-600 text-white text-sm font-bold px-2 py-1 rounded-md shadow-md">
             -{discount}%
-          </h1>
+          </div>
+        )}
+
+        {/* Tag Sold Out */}
+        {isSoldOut && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
+            <span className="text-white text-2xl font-bold uppercase">
+              Sold Out
+            </span>
+          </div>
         )}
       </div>
+      {/* <div className="text-yellow-500 font-bold">
+        {"★".repeat(rating || 0)}{" "}
+      </div> */}
 
-      <div className="flex flex-col items-center text-center">
-        {/* <ul className="flex gap-3 text-[29px]">
-          <li className="hover:bg-red-100 p-2 rounded-lg cursor-pointer">
-            <AiOutlineEye />
-          </li>
-          <li className="hover:bg-red-100 p-2 rounded-lg cursor-pointer">
-            <AiOutlineShoppingCart />
-          </li>
-        </ul> */}
+      {/* Thông tin sản phẩm */}
+      <div className="mt-4 text-center space-y-2">
+        <h2 className="text-lg font-semibold text-gray-800 hover:text-red-500 transition duration-300">
+          {name}
+        </h2>
 
-        <div className="space-y-1">
-          <div className="mx-5">
-            <h1
-              to=""
-              className="text-[18px] font-bold hover:text-red-500 transition text-center duration-300"
-            >
-              {name}
-            </h1>
-          </div>
-          <div className="flex justify-center gap-2">
-            <h1 className="text-[19px] text-red-500 font-semibold">
-              {formatter(price)}
-            </h1>
-            {discount > 0 && (
-              <h1 className="text-[16px] line-through opacity-50">
-                {formatter(oldprice)}
-              </h1>
-            )}
-          </div>
+        <div className="flex justify-center items-center gap-2">
+          <span className="text-red-600 text-xl font-bold">
+            {formatter(price)}
+          </span>
+          {discount > 0 && (
+            <span className="text-gray-400 line-through text-sm">
+              {formatter(oldprice)}
+            </span>
+          )}
         </div>
       </div>
     </div>

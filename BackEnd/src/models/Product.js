@@ -18,7 +18,7 @@ const productSchema = new mongoose.Schema(
                 sold: { type: Number, required: true, default: 0, min: 0 },
             },
         ],
-        averageRating: { type: Number, default: 0, min: 0, max: 5 },
+        averageRating: { type: Number, default: 5, min: 0, max: 5 },
         reviews: [
             { type: mongoose.Schema.Types.ObjectId, ref: 'Review' }
         ],  

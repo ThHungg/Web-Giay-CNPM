@@ -187,6 +187,7 @@ const Products = () => {
                       price={product.price}
                       oldprice={product.oldPrice}
                       discount={product.discount}
+                      // rating={product.averageRating}
                     />
                   </div>
                 </Link>

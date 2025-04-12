@@ -5,8 +5,10 @@ const { authMiddleware } = require("../middleware/authMiddleware");
 
 
 router.post('/createVoucher', voucherController.createVoucher);
-router.get('/getVoucher', voucherController.getActiveVoucher)
-router.get('/getAllVoucher', authMiddleware, voucherController.getAllVoucher)
+router.put('/updateVoucher/:voucherId', authMiddleware, voucherController.updateVoucher);
+router.get('/detailVoucher/:voucherId', voucherController.getDetailVoucher);
+router.get('/getVoucher', voucherController.getActiveVoucher);
+router.get('/getAllVoucher', authMiddleware, voucherController.getAllVoucher);
 router.patch('/updateStatusVoucher/:voucherId', authMiddleware, voucherController.updateVoucherStatus);
 
 module.exports = router;

@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification/index.js";
 import { useMutationHooks } from "../../../hooks/useMutation.js";
 import { useQuery } from "@tanstack/react-query";
-import { ProductCard } from "../../../component/index.jsx";
+import ProductCardV2 from "../../../component/ProductCardV2";
 import { ROUTERS } from "../../../utils/router.jsx";
 import Carousel from "react-multi-carousel";
 import { FaSpinner } from "react-icons/fa";
@@ -263,98 +263,100 @@ const DetailProduct = () => {
             ))}
           </div>
           <Tabs>
-            <TabList className="flex justify-center">
+            <TabList className="flex justify-center gap-10 border-b pb-2">
               <Tab>
-                <h1 className="text-2xl font-bold">Mô tả sản phẩm</h1>
+                <h1 className="text-2xl font-bold hover:text-red-600 transition-all">
+                  Mô tả sản phẩm
+                </h1>
               </Tab>
               <Tab>
-                <h1 className="text-2xl font-bold">Đánh giá</h1>
+                <h1 className="text-2xl font-bold hover:text-red-600 transition-all">
+                  Đánh giá
+                </h1>
               </Tab>
               <Tab>
-                <h1 className="text-2xl font-bold">Hướng dẫn bảo quản</h1>
+                <h1 className="text-2xl font-bold hover:text-red-600 transition-all">
+                  Hướng dẫn bảo quản
+                </h1>
               </Tab>
             </TabList>
 
-            <TabPanel className="">
-              <h2 className="text-lg text-gray-700 leading-relaxed whitespace-pre-line h-[360px] overflow-auto">
+            {/* Mô tả sản phẩm */}
+            <TabPanel>
+              <h2 className="text-base text-gray-700 leading-relaxed whitespace-pre-line h-[360px] overflow-auto px-3 mt-3">
                 {productDetail.description}
               </h2>
             </TabPanel>
-            <TabPanel>
-              <div className="grid grid-cols-2 gap-5">
-                {/* Danh sách đánh giá */}
-                <div className="space-y-2 h-[360px] overflow-auto">
-                  <h1 className="text-2xl font-bold">Đánh giá</h1>
 
+            {/* Đánh giá */}
+            <TabPanel>
+              <div className="grid grid-cols-2 gap-5 mt-4">
+                {/* Danh sách đánh giá */}
+                <div className="space-y-2 h-[360px] overflow-auto pr-2">
+                  <h1 className="text-xl font-bold">Đánh giá sản phẩm</h1>
                   {Array.isArray(reviewProduct) && reviewProduct.length > 0 ? (
                     reviewProduct.map((item) => (
                       <div
-                        key={item.id} // Dùng id thay vì index nếu có
-                        className="bg-white border border-black p-3 rounded-lg shadow-md mb-4"
+                        key={item._id || item.id}
+                        className="bg-white border border-gray-300 p-3 rounded-lg shadow-sm"
                       >
-                        {/* Tên người dùng */}
                         <h1 className="font-bold text-lg">
-                          {item.userId?.name || "Người dùng ẩn danh"}{" "}
-                          {/* Kiểm tra tồn tại trước khi truy cập */}
+                          {item.userId?.name || "Người dùng ẩn danh"}
                         </h1>
-
-                        {/* Xếp hạng sao */}
-                        <div className="text-yellow-500 font-bold">
-                          {"★".repeat(item.rating || 0)}{" "}
-                          {/* Nếu rating bị null/undefined, sẽ là 0 */}
+                        <div className="text-yellow-500 font-bold text-lg">
+                          {"★".repeat(item.rating || 0)}
                         </div>
-
-                        {/* Nội dung đánh giá */}
-                        <p className="text-gray-700">
-                          {item.comment || "Chưa có nội dung đánh giá."}{" "}
-                          {/* Nếu comment không có */}
+                        <p className="text-gray-700 mt-1">
+                          {item.comment || "Không có nội dung đánh giá."}
                         </p>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center text-gray-500">
+                    <div className="text-center text-gray-500 mt-3">
                       Chưa có đánh giá nào
                     </div>
                   )}
                 </div>
 
-                {/* Form nhập đánh giá */}
-                <div>
-                  <h1 className="text-2xl font-bold">Viết đánh giá của bạn</h1>
-                  <div className="mt-2 space-y-2">
-                    <textarea
-                      placeholder="Nhập đánh giá của bạn"
-                      className="border border-gray-300 p-2 rounded-lg w-full"
-                      rows="3"
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                    ></textarea>
-                    <StarRating rating={rating} setRating={setRating} />
-                    <button
-                      className="w-full bg-blue-500 text-white p-2 rounded-lg"
-                      onClick={handleReview}
-                    >
-                      Gửi đánh giá
-                    </button>
-                  </div>
+                {/* Form đánh giá */}
+                <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-md">
+                  <h1 className="text-xl font-bold mb-3">
+                    Viết đánh giá của bạn
+                  </h1>
+                  <textarea
+                    placeholder="Nhập đánh giá..."
+                    className="w-full border border-gray-300 p-2 rounded-lg mb-3"
+                    rows="3"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                  />
+                  <StarRating rating={rating} setRating={setRating} />
+                  <button
+                    onClick={handleReview}
+                    className="w-full bg-black text-white font-bold p-2 rounded-lg mt-3"
+                  >
+                    Gửi đánh giá
+                  </button>
                 </div>
               </div>
             </TabPanel>
+
+            {/* Hướng dẫn bảo quản */}
             <TabPanel>
-              <ul className="list-disc space-y-2 text-lg text-gray-700 pl-5">
-                <li className="hover:text-black transition-all duration-200">
+              <ul className="list-disc space-y-2 text-lg text-gray-700 pl-6 mt-4 h-[360px] overflow-auto">
+                <li className="hover:text-black transition-all">
                   Vệ sinh bằng khăn mềm
                 </li>
-                <li className="hover:text-black transition-all duration-200">
+                <li className="hover:text-black transition-all">
                   Tránh vật sắc nhọn và nơi có nhiệt độ cao
                 </li>
-                <li className="hover:text-black transition-all duration-200">
+                <li className="hover:text-black transition-all">
                   Tránh tiếp xúc với môi trường xăng dầu, kiềm
                 </li>
-                <li className="hover:text-black transition-all duration-200">
+                <li className="hover:text-black transition-all">
                   Không phơi sản phẩm nơi ánh nắng gắt
                 </li>
-                <li className="hover:text-black transition-all duration-200">
+                <li className="hover:text-black transition-all">
                   Để nơi khô thoáng khi không sử dụng
                 </li>
               </ul>
@@ -466,9 +468,9 @@ const DetailProduct = () => {
             <Link
               key={product._id}
               to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}
-              onClick={() => window.location.reload()}
+              // onClick={() => window.location.reload()}
             >
-              <ProductCard
+              <ProductCardV2
                 name={product.name}
                 img={product.image}
                 price={product.price}

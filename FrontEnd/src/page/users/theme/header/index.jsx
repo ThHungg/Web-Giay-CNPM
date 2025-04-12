@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Popover } from "antd";
 import * as userServices from "../../../../services/userServices";
 import { resetUser } from "../../../../redux/slides/userSlide";
+import logo from "../../../../assets/users/img/brands/logoo.png";
+import { CiLogin } from "react-icons/ci";
 
 const Header = ({ hasAddToBanner = true }) => {
   const user = useSelector((state) => state.user);
@@ -22,21 +24,40 @@ const Header = ({ hasAddToBanner = true }) => {
   };
 
   const content = (
-    <div>
-      <p className="cursor-pointer hover:text-red-500" onClick={hanldeLogout}>
-        Đăng Xuất
+    <div className="flex flex-col gap-2 min-w-[180px] p-2">
+      <p
+        className="cursor-pointer hover:text-red-500 transition-colors"
+        onClick={hanldeLogout}
+      >
+        Đăng xuất
       </p>
+
       {user?.isAdmin && (
         <p
-          className="cursor-pointer hover:text-red-500"
+          className="cursor-pointer hover:text-red-500 transition-colors"
           onClick={() => {
             navigate("/admin/products");
           }}
         >
-          Admin
+          Trang Admin
         </p>
       )}
-      {/* <p className="cursor-pointer hover:text-red-500">Thông tin người dùng</p> */}
+
+      <Link
+        to={ROUTERS.USER.PROFILEPAGE}
+        state={{ activeTab: "edit" }}
+        className="hover:text-red-500 transition-colors"
+      >
+        Thông tin tài khoản
+      </Link>
+
+      <Link
+        to={ROUTERS.USER.PROFILEPAGE}
+        state={{ activeTab: "history" }}
+        className="hover:text-red-500 transition-colors"
+      >
+        Lịch sử đặt hàng
+      </Link>
     </div>
   );
 
@@ -93,17 +114,22 @@ const Header = ({ hasAddToBanner = true }) => {
   return (
     <>
       <div>
-        <div className="bg-white max-w-screen-xl min-h-[100px] mx-auto mt-8 flex justify-between rounded-xl">
+        <div className="bg-white max-w-screen-xl min-h-[100px] mx-auto mt-2 flex justify-between rounded-xl">
           <Link to={ROUTERS.USER.HOME}>
             <div className="max-w-full p-4 flex justify-center items-center">
               <img
-                src="https://static.vecteezy.com/system/resources/previews/021/769/107/non_2x/sneaker-logo-free-vector.jpg"
+                // src="https://static.vecteezy.com/system/resources/previews/021/769/107/non_2x/sneaker-logo-free-vector.jpg"
+                src={logo}
                 alt="Logo"
                 className="w-full max-w-[80px]"
               />
-              <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 drop-shadow-lg">
+              <h1 className="text-5xl font-extrabold italic ml-5 drop-shadow-lg bg-gradient-to-r from-yellow-400 via-black to-gray-600 text-transparent bg-clip-text">
                 SneakerMart
               </h1>
+
+              {/* <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500 ml-5 drop-shadow-lg">
+                SneakerMart
+              </h1> */}
             </div>
           </Link>
           <div className="flex items-center pr-8">
@@ -144,22 +170,19 @@ const Header = ({ hasAddToBanner = true }) => {
                   <FaShoppingCart />
                 </Link>
               </li>
-              <li className="mx-4 text-2xl">
-                <Link to={ROUTERS.USER.PROFILEPAGE}>
-                  <FaUser />
-                </Link>
-              </li>
               {user?.name ? (
                 <>
                   <Popover content={content} trigger="click">
-                    <div>{user.name}</div>
+                    <div>
+                      <FaUser className="text-2xl" />
+                    </div>
                   </Popover>
                 </>
               ) : (
                 <Link to={ROUTERS.USER.LOGINPAGE}>
-                  <li className="mx-4 text-xl cursor-pointer">
+                  <li className="mx-4 text-2xl cursor-pointer">
                     {/* <FaSearch /> */}
-                    Đăng Nhập
+                    <CiLogin />
                   </li>
                 </Link>
               )}
@@ -198,18 +221,18 @@ const Header = ({ hasAddToBanner = true }) => {
               autoPlaySpeed={4000}
               removeArrowOnDeviceType={["tablet", "mobile"]}
             >
-              <div className="mx-auto w-full max-w-screen-xl py-3 h-[440px]">
+              <div className="mx-auto w-full max-w-screen-xl py-3 h-[520px] flex justify-center items-center">
                 <img
-                  src="https://forshoes.vn/wp-content/uploads/2024/11/anh-web-ban-PC.jpg"
+                  src="https://lambanner.com/wp-content/uploads/2022/10/MNT-DESIGN-BANNER-GIAY-11.jpg"
                   alt=""
-                  className="w-full object-cover rounded-lg"
+                  className="max-h-full w-full object-cover rounded-lg"
                 />
               </div>
-              <div className="mx-auto w-full max-w-screen-xl py-3 h-[416px]">
+              <div className="mx-auto w-full max-w-screen-xl py-3 h-[520px] flex justify-center items-center">
                 <img
-                  src="https://giaysneakerhcm.com/wp-content/uploads/2021/05/banner-giam-20-sinh-nhat-9-giaysneakerhcm.jpg"
+                  src="https://thietke6d.com/wp-content/uploads/2021/05/banner-quang-cao-giay-4-768x426.png"
                   alt=""
-                  className="w-full object-cover rounded-lg"
+                  className="max-h-full w-full object-cover rounded-lg"
                 />
               </div>
             </Carousel>

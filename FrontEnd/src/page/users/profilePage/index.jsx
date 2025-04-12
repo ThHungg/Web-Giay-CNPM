@@ -8,6 +8,7 @@ import { updateUser } from "../../../redux/slides/userSlide";
 import ToastNotification from "../../../component/toastNotification";
 import formatter from "../../../utils/formatter";
 import { toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 
 const ProfilePage = () => {
   const user = useSelector((state) => state.user);
@@ -96,13 +97,22 @@ const ProfilePage = () => {
     return res;
   };
 
+  console.log(orderDetails);
+
   useEffect(() => {
     if (userId) {
       fetchGetHistoryOrder(userId);
     }
   }, [userId]);
 
-  console.log(orderDetails);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
+
   if (!Array.isArray(orderDetails)) {
     return <div>Dữ liệu không hợp lệ</div>;
   }
@@ -217,47 +227,76 @@ const ProfilePage = () => {
           {activeTab === "history" && (
             <div>
               {orderDetails.length > 0 ? (
-                <table className="w-full border-collapse">
-                  <thead className="bg-gray-200">
+                <table className="w-full border-collapse mt-4">
+                  <thead className="bg-gray-100 text-gray-700">
                     <tr>
-                      <th className="border p-2">STT</th>
-                      <th className="border p-2">Sản phẩm</th>
-                      <th className="border p-2">Ngày đặt</th>
-                      <th className="border p-2">Trạng thái</th>
-                      <th className="border p-2">Thao tác</th>
+                      <th className="border p-3 text-sm">#</th>
+                      <th className="border p-3 text-sm text-left">Sản phẩm</th>
+                      <th className="border p-3 text-sm">Ngày đặt</th>
+                      <th className="border p-3 text-sm">Trạng thái</th>
+                      <th className="border p-3 text-sm">Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
                     {orderDetails.map((order, index) => (
-                      <tr key={order._id}>
-                        <td className="border p-2 text-center">{index + 1}</td>
-                        <td className="border p-2 text-center">
-                          <div className="flex gap-3">
-                            <img
-                              src={order.items[0].productId.image}
-                              alt="Product"
-                              className="h-[90px] w-[100px] object-cover"
-                            />
-                            <div>
-                              <h1>{order.items[0].productId.name}</h1>
-                              <h1>
-                                Size: {order.items[0].size} | SL:{" "}
-                                {order.items[0].quantity}
-                              </h1>
-                              <h1>Giá: {formatter(order.items[0].price)}</h1>
-                            </div>
-                          </div>
+                      <tr
+                        key={order._id}
+                        className="hover:bg-gray-50 transition-all duration-200"
+                      >
+                        <td className="border p-3 text-center font-medium text-gray-700 align-top">
+                          {index + 1}
                         </td>
-                        <td className="border p-2 text-center">
+
+                        {/* Danh sách sản phẩm */}
+                        <td className="border p-3 align-top">
+                          {order.items.map((item, i) => (
+                            <div
+                              key={i}
+                              className="flex items-start gap-3 mb-4"
+                            >
+                              <img
+                                src={item.productId.image}
+                                alt={item.productId.name}
+                                className="h-[70px] w-[70px] object-cover rounded border"
+                              />
+                              <div className="text-sm space-y-1">
+                                <h1 className="font-semibold text-gray-800">
+                                  {item.productId.name}
+                                </h1>
+                                <p className="text-gray-600">
+                                  Size: {item.size} | SL: {item.quantity}
+                                </p>
+                                <p className="text-red-500 font-medium">
+                                  {formatter(item.price)}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </td>
+
+                        <td className="border p-3 text-center align-top text-sm text-gray-700">
                           {new Date(order.createdAt).toLocaleString()}
                         </td>
-                        <td className="border p-2 text-center">
-                          {order.status}
+
+                        <td className="border p-3 text-center align-top">
+                          <span
+                            className={`text-sm font-semibold px-3 py-1 rounded-full ${
+                              order.status === "Đã hủy"
+                                ? "bg-red-100 text-red-600"
+                                : order.status === "Đã giao" ||
+                                  order.status === "Thanh toán thành công"
+                                ? "bg-green-100 text-green-600"
+                                : "bg-yellow-100 text-yellow-600"
+                            }`}
+                          >
+                            {order.status}
+                          </span>
                         </td>
-                        <td className="border p-2 text-center">
+
+                        <td className="border p-3 text-center align-top">
                           {order.status !== "Đã hủy" && (
                             <button
-                              className="px-4 py-2 text-white bg-red-500 rounded-lg"
+                              className="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition"
                               onClick={() => handleCancelOrder(order._id)}
                             >
                               Hủy đơn
@@ -269,8 +308,8 @@ const ProfilePage = () => {
                   </tbody>
                 </table>
               ) : (
-                <p className="text-center text-gray-500 mt-4">
-                  Chưa có đơn hàng nào
+                <p className="text-center text-gray-500 mt-6 text-lg">
+                  Bạn chưa có đơn hàng nào.
                 </p>
               )}
             </div>

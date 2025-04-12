@@ -93,7 +93,9 @@ const updateMonthlyStat = async (month, year) => {
     const orders = await Order.find({ createdAt: { $gte: start, $lt: end } });
     const users = await User.find({ createdAt: { $gte: start, $lt: end } });
 
-    const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+    const totalRevenue = orders
+        .filter(o => o.status === "Đã giao")
+        .reduce((sum, o) => sum + o.total, 0);
     const totalOrders = orders.length;
     const processingOrders = orders.filter(o => o.status === "Chờ xác nhận").length;
     const successfulOrders = orders.filter(o => o.status === "Đã giao" || o.status === "Thanh toán thành công").length;
@@ -101,8 +103,8 @@ const updateMonthlyStat = async (month, year) => {
     const newUsers = users.length;
 
     const revenueByMethod = {
-        COD: orders.filter(o => o.paymentMethod === "COD").reduce((sum, o) => sum + o.total, 0),
-        Banking: orders.filter(o => o.paymentMethod === "Banking").reduce((sum, o) => sum + o.total, 0),
+        COD: orders.filter(o => o.status === "Đã giao" && o.paymentMethod === "COD").reduce((sum, o) => sum + o.total, 0),
+        Banking: orders.filter(o => o.status === "Đã giao" && o.paymentMethod === "Banking").reduce((sum, o) => sum + o.total, 0),
     };
 
     const productSalesMap = {};
