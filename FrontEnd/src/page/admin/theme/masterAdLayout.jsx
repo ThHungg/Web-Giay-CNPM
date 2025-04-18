@@ -56,7 +56,7 @@ const MasterLayout = ({ children, ...props }) => {
     },
     {
       icon: <MdDiscount />,
-      title: "Quản lý Banner",
+      title: "Quản lý giao diện",
     },
     {
       icon: <GoReport />,

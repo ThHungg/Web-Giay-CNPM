@@ -49,11 +49,19 @@ const DetailProduct = () => {
   const handleAddToCart = () => {
     if (!userId) {
       toast("Vui lòng đăng nhập để mua!");
-    } else {
-      if (!selectedSize) {
-        toast("Vui lòng chọn size!");
-      }
+      return;
     }
+
+    if (!selectedSize) {
+      toast("Vui lòng chọn size!");
+      return;
+    }
+
+    if (quantity <= 0) {
+      toast("Số lượng không hợp lệ!");
+      return;
+    }
+
     mutationAddToCart.mutate({
       userId: userId,
       productId: id,
@@ -68,6 +76,7 @@ const DetailProduct = () => {
       toast("Thêm vào giỏ hàng thành công:", mutationAddToCart.data);
     }
   }, [mutationAddToCart.isSuccess, mutationAddToCart.isError]);
+
   const availableSizes = [36, 37, 38, 39, 40, 41, 42];
 
   const [productDetail, setProductDetail] = useState({
@@ -80,6 +89,8 @@ const DetailProduct = () => {
     images: "",
     discount: "",
     sizeStock: [],
+    totalStock: 0,
+    status: "",
   });
 
   const mutation = useMutationHooks(async (data) => {
@@ -105,11 +116,9 @@ const DetailProduct = () => {
         status: updatedStatus, // Cập nhật trạng thái ngay lập tức
       });
 
-      // Nếu trạng thái trên server khác với trạng thái mới -> cập nhật
       if (res.data.status !== updatedStatus) {
         await mutation.mutateAsync({ id, status: updatedStatus });
 
-        // Gọi lại API để đảm bảo UI luôn hiển thị trạng thái mới nhất
         const newRes = await productService.getDetailsProduct(id);
         if (newRes?.data) {
           setProductDetail((prev) => ({
@@ -140,14 +149,15 @@ const DetailProduct = () => {
 
   const fetchRelatedProduct = async () => {
     const res = await productService.getRelated(id);
-    const relatedProduct = res.data;
-    return relatedProduct;
+    return res.data;
   };
 
   const { data: relatedProduct } = useQuery({
     queryKey: ["products"],
     queryFn: fetchRelatedProduct,
   });
+
+  console.log("relatedProduct", relatedProduct);
 
   const fetchReviewProduct = async (id) => {
     const res = await reviewService.getReviewProduct(id);
@@ -186,25 +196,6 @@ const DetailProduct = () => {
     }
   }, [rvSuccess, rvError]);
 
-  const [image, setImage] = useState("");
-  const [smallImages, setSmallImages] = useState([]);
-
-  useEffect(() => {
-    if (productDetail?.image) {
-      setImage(productDetail.image);
-      setSmallImages(productDetail.images);
-    }
-  }, [productDetail]);
-
-  const handleImageClick = (newImg) => {
-    setSmallImages((prev) => {
-      const updatedImages = prev.filter((img) => img !== newImg); // Loại bỏ ảnh đã chọn
-      updatedImages.unshift(newImg); // Đưa ảnh đã chọn lên đầu mảng
-      return updatedImages;
-    });
-    setImage(newImg); // Cập nhật ảnh lớn
-  };
-
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 3000 },
@@ -225,46 +216,61 @@ const DetailProduct = () => {
   };
 
   // if (!Array.isArray(relatedProduct) || relatedProduct.length === 0) {
-  //   return <div>No related products found.</div>;
+  //   return (
+  //     <div className="flex justify-center items-center mt-10">
+  //       <FaSpinner className="w-6 h-6 text-gray-500 animate-spin" />
+  //     </div>
+  //   );
   // }
 
-  if (!Array.isArray(relatedProduct) || relatedProduct.length === 0) {
-    return (
-      <div className="flex justify-center items-center mt-10">
-        <FaSpinner className="w-6 h-6 text-gray-500 animate-spin" />
-      </div>
-    );
-  }
+  const [image, setImage] = useState("");
+  const [smallImages, setSmallImages] = useState([]);
+  const [imagedefault, setimagedefault] = useState("");
+  const [selectedImage, setSelectedImage] = useState("");
+
+  useEffect(() => {
+    if (productDetail?.image) {
+      setImage(productDetail.image);
+      setimagedefault(productDetail.image);
+      setSmallImages(productDetail.images || []);
+    }
+  }, [productDetail]);
 
   return (
     <>
       <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8">
-        {/* image first*/}
         <div className="col-span-5">
           {image && (
-            <img
-              src={image}
-              alt="Large product"
-              className="h-[500px] w-full object-cover"
-            />
+            <div className="flex justify-center items-center mb-4">
+              <img
+                src={image}
+                alt="Large product"
+                className="h-[500px] w-full object-contain transition-all duration-300 transform hover:scale-105"
+              />
+            </div>
           )}
 
-          {/* Ảnh nhỏ, chỉ hiển thị nếu có */}
+          {/* Hiển thị ảnh nhỏ */}
           {smallImages.length > 0 && (
-            <div className="flex justify-center gap-3 mt-2">
-              {smallImages.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`Small image ${index}`}
-                  className="h-[80px] w-[80px] object-contain cursor-pointer"
-                  onClick={() => handleImageClick(img)}
-                />
+            <div className="flex justify-center gap-3 mt-4 overflow-x-auto py-2">
+              {[imagedefault, ...smallImages].map((img, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={img}
+                    alt={`Small image ${index}`}
+                    className={`h-[80px] w-[80px] object-contain cursor-pointer transition-all transform hover:scale-110 duration-200 ${
+                      img === selectedImage ? "border-2 border-blue-500" : ""
+                    }`}
+                    onClick={() => {
+                      setImage(img);
+                      setSelectedImage(img);
+                    }}
+                  />
+                </div>
               ))}
             </div>
           )}
 
-          {/* Tabs: Mô tả, Đánh giá, Hướng dẫn bảo quản */}
           <Tabs>
             <TabList className="flex justify-center gap-10 border-b pb-2">
               <Tab>
@@ -347,15 +353,23 @@ const DetailProduct = () => {
 
             {/* Hướng dẫn bảo quản */}
             <TabPanel>
-              {productDetail?.maintenance && (
-                <ul className="list-disc space-y-2 text-lg text-gray-700 pl-6 mt-4 h-[360px] overflow-auto">
-                  {productDetail.maintenance.map((instruction, index) => (
-                    <li key={index} className="hover:text-black transition-all">
-                      {instruction}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <ul className="list-disc space-y-2 text-lg text-gray-700 pl-6 mt-4 h-[360px] overflow-auto">
+                <li className="hover:text-black transition-all">
+                  Vệ sinh bằng khăn mềm
+                </li>
+                <li className="hover:text-black transition-all">
+                  Tránh vật sắc nhọn và nơi có nhiệt độ cao
+                </li>
+                <li className="hover:text-black transition-all">
+                  Tránh tiếp xúc với môi trường xăng dầu, kiềm
+                </li>
+                <li className="hover:text-black transition-all">
+                  Không phơi sản phẩm nơi ánh nắng gắt
+                </li>
+                <li className="hover:text-black transition-all">
+                  Để nơi khô thoáng khi không sử dụng
+                </li>
+              </ul>
             </TabPanel>
           </Tabs>
         </div>
@@ -454,30 +468,38 @@ const DetailProduct = () => {
         <h1 className="text-3xl font-bold mt-5 flex justify-center items-center">
           Sản phẩm liên quan
         </h1>
-        <Carousel
-          responsive={responsive}
-          infinite={true}
-          autoPlay={true}
-          autoPlaySpeed={3000}
-          removeArrowOnDeviceType={["tablet", "mobile"]}
-        >
-          {relatedProduct.map((product) => (
-            <Link
-              key={product._id}
-              to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}
-              // onClick={() => window.location.reload()}
-            >
-              <ProductCardV2
-                name={product.name}
-                img={product.image}
-                price={product.price}
-                oldprice={product.oldPrice}
-                discount={product.discount}
-              />
-            </Link>
-          ))}
-        </Carousel>
+
+        {/* Kiểm tra xem có sản phẩm liên quan không */}
+        {Array.isArray(relatedProduct) && relatedProduct.length > 0 ? (
+          <Carousel
+            responsive={responsive}
+            infinite={true}
+            autoPlay={true}
+            autoPlaySpeed={3000}
+            removeArrowOnDeviceType={["tablet", "mobile"]}
+          >
+            {relatedProduct.map((product) => (
+              <Link
+                key={product._id}
+                to={`${ROUTERS.USER.DETAILPRODUCT}/${product._id}`}
+              >
+                <ProductCardV2
+                  name={product.name}
+                  img={product.image}
+                  price={product.price}
+                  oldprice={product.oldPrice}
+                  discount={product.discount}
+                />
+              </Link>
+            ))}
+          </Carousel>
+        ) : (
+          <div className="flex justify-center items-center mt-10">
+            <p className="text-gray-500">Không có sản phẩm liên quan.</p>
+          </div>
+        )}
       </div>
+
       <ToastNotification />
     </>
   );
