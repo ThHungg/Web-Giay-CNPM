@@ -5,8 +5,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification";
 import { Form, Switch } from "antd";
-import { MdDelete } from "react-icons/md";
-import { FaEdit } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import formatter from "../../../utils/formatter";
 import { FaSpinner } from "react-icons/fa";
@@ -67,7 +65,7 @@ const AdminProduct = () => {
       description,
       brand,
       image,
-      // images,
+      images,
       discount,
       sizeStock,
     } = data;
@@ -77,30 +75,39 @@ const AdminProduct = () => {
       description,
       brand,
       image,
-      // images,
+      images,
       discount,
       sizeStock,
     });
   });
 
-  const { isSuccess, isError } = mutation;
+  const { isSuccess, isError, reset } = mutation;
 
-  useEffect(() => {
-    if (isSuccess) {
-      toast.success("Thêm thành công");
-      mutation.reset();
-      fetchProductAll();
-      queryClient.invalidateQueries("products");
-      setShowCreateModal(false);
-    } else if (isError) {
-      toast.error("Thêm thất bại");
-      mutation.reset();
-    }
-  }, [isSuccess, isError]);
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     toast.success("Thêm thành công");
+  //     reset();
+  //     fetchProductAll();
+  //     queryClient.invalidateQueries("products");
+  //     setShowCreateModal(false);
+  //   } else if (isError) {
+  //     toast.error("Thêm thất bại");
+  //     mutation.reset();
+  //   }
+  // }, [isSuccess, isError]);
 
   const onFinish = (e) => {
     e.preventDefault();
-
+    if (mutation.isSuccess) {
+      toast.success("Thêm thành công");
+      reset();
+      fetchProductAll();
+      queryClient.invalidateQueries("products");
+      setShowCreateModal(false);
+    } else if (mutation.isError) {
+      toast.error("Thêm thất bại");
+      mutation.reset();
+    }
     // if (!stateProduct.name.trim())
     //   return toast.error("Vui lòng nhập tên sản phẩm");
     // if (!stateProduct.brand.trim())
@@ -114,19 +121,6 @@ const AdminProduct = () => {
 
     mutation.mutate(stateProduct);
   };
-
-  // const handleChangeSoftDelete = async (checked, id) => {
-  //   if (!id) {
-  //     toast.error("Vui lòng chọn sản phẩm!");
-  //     return;
-  //   }
-
-  //   setChecked(checked);
-  //   await productService.softDelete(id);
-  //   toast.success(
-  //     checked ? "Sản phẩm đã được bán trở lại" : "Sản phẩm đã ngừng bán"
-  //   );
-  // };
 
   const [checkedItems, setCheckedItems] = useState({});
 
@@ -170,8 +164,16 @@ const AdminProduct = () => {
     form.resetFields();
   };
 
-  const handleOnchange = (e) => {
-    setSateProduct({ ...stateProduct, [e.target.name]: e.target.value });
+  const handleOnchange = (e, index) => {
+    const { name, value } = e.target;
+
+    if (name === "images") {
+      const newImages = [...stateProduct.images]; // Sao chép mảng images
+      newImages[index] = value; // Cập nhật giá trị của ảnh tại vị trí tương ứng
+      setSateProduct({ ...stateProduct, images: newImages });
+    } else {
+      setSateProduct({ ...stateProduct, [name]: value });
+    }
   };
 
   const handleSizeStockChange = (index, field, value) => {
@@ -240,8 +242,11 @@ const AdminProduct = () => {
     });
   };
 
-  const fetchGetDetailsProduct = async (rowSelected) => {
-    const res = await productService.getDetailsProduct(rowSelected);
+  const fetchGetDetailsProduct = async (rowSelectedId) => {
+    if (!rowSelectedId) {
+      return;
+    }
+    const res = await productService.getDetailsProduct(rowSelectedId);
     if (res?.data) {
       setStateProductDetails({
         name: res?.data?.name,
@@ -250,21 +255,23 @@ const AdminProduct = () => {
         description: res?.data?.description,
         brand: res?.data?.brand,
         image: res?.data?.image,
+        images: res?.data?.images,
         discount: res?.data?.discount,
         sizeStock: res?.data?.sizeStock || [],
       });
+    } else {
     }
   };
-
-  useEffect(() => {
-    form.setFieldsValue(stateProductDetails);
-  }, [stateProductDetails]);
 
   useEffect(() => {
     if (rowSelected) {
       fetchGetDetailsProduct(rowSelected);
     }
   }, [rowSelected]);
+
+  useEffect(() => {
+    form.setFieldsValue(stateProductDetails);
+  }, [stateProductDetails]);
 
   const handleDetailsProduct = () => {
     if (rowSelected) {
@@ -366,13 +373,75 @@ const AdminProduct = () => {
   const [loading, setLoading] = useState(false);
 
   const openUpdateModal = () => {
-    setShowUpdateModal(true); // Mở modal trước
-    setLoading(true); // Hiện loading khi modal mở
+    setShowUpdateModal(true);
+    setLoading(true);
 
     setTimeout(() => {
-      setLoading(false); // Sau 2s, tắt loading
+      setLoading(false);
     }, 500);
   };
+
+  const addImageField = (e) => {
+    e.preventDefault();
+    setSateProduct((prev) => ({
+      ...prev,
+      images: [...prev.images, ""],
+    }));
+  };
+
+  const apartImageField = (index, e) => {
+    e.preventDefault();
+    if (stateProduct.images.length > 1) {
+      setSateProduct((prev) => ({
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index),
+      }));
+    } else {
+      toast("Bạn phải để lại ít nhất một ảnh");
+    }
+  };
+
+  const handleImageChange = (index, e) => {
+    const newImages = [...stateProduct.images];
+    newImages[index] = e.target.value;
+    setSateProduct((prev) => ({
+      ...prev,
+      images: newImages,
+    }));
+  };
+
+  const addImageFieldDetails = (e) => {
+    // Thêm một ô nhập ảnh mới vào state (mảng images)
+    e.preventDefault();
+    setStateProductDetails((prev) => ({
+      ...prev,
+      images: [...prev.images, ""], // Thêm một chuỗi rỗng cho ô nhập ảnh mới
+    }));
+  };
+
+  const handleImageChangeDetails = (index, e) => {
+    const { value } = e.target;
+    // Cập nhật giá trị của ảnh tại vị trí index trong mảng images
+    const updatedImages = [...stateProductDetails.images];
+    updatedImages[index] = value;
+    setStateProductDetails((prev) => ({
+      ...prev,
+      images: updatedImages,
+    }));
+  };
+
+  const apartImageFieldDetails = (index, e) => {
+    e.preventDefault();
+    const updatedImages = stateProductDetails.images.filter(
+      (_, i) => i !== index
+    );
+    setStateProductDetails((prev) => ({
+      ...prev,
+      images: updatedImages,
+    }));
+  };
+
+  console.log("stateProductDetails", stateProductDetails);
 
   const CreateModal = useMemo(
     () => (
@@ -527,15 +596,38 @@ const AdminProduct = () => {
                     />
                   </div>
                   <div className="flex flex-col gap-y-2 mt-2">
-                    <p className="text-xl font-bold">Ảnh khác</p>
-                    <input
-                      type="text"
-                      name="images"
-                      className="border w-full p-2 rounded-lg"
-                      value={stateProduct.images}
-                      onChange={handleOnchange}
-                      placeholder=""
-                    />
+                    <div className="flex justify-between">
+                      <p className="text-xl font-bold">Ảnh khác</p>
+                      <button
+                        className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
+                        onClick={addImageField}
+                      >
+                        +
+                      </button>
+                    </div>
+                    {Array.isArray(stateProduct.images) &&
+                      stateProduct.images.length > 0 &&
+                      stateProduct.images.map((image, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-3 mb-3"
+                        >
+                          <input
+                            type="text"
+                            name="images"
+                            className="border w-full p-2 rounded-lg"
+                            value={image}
+                            onChange={(e) => handleImageChange(index, e)} // Cập nhật giá trị ảnh
+                            placeholder="Nhập URL ảnh"
+                          />
+                          <button
+                            className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
+                            onClick={(e) => apartImageField(index, e)}
+                          >
+                            -
+                          </button>
+                        </div>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -566,7 +658,7 @@ const AdminProduct = () => {
     () => (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div className="bg-white p-6 w-[700px] max-w-3xl rounded-xl shadow-lg">
-          <h1 className="text-2xl font-bold text-center">Thêm sản phẩm mới</h1>
+          <h1 className="text-2xl font-bold text-center">Cập nhật sản phẩm</h1>
           {loading ? (
             <div className="flex justify-center items-center py-10">
               <FaSpinner className="text-4xl animate-spin text-gray-700" />
@@ -580,21 +672,22 @@ const AdminProduct = () => {
                 onSubmit={onFinish}
               >
                 <div className="grid grid-cols-2 gap-2">
+                  {/* Thông tin sản phẩm */}
                   <div className="">
                     <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Name</p>
+                      <p className="text-xl font-bold">Tên sản phẩm</p>
                       <input
                         type="text"
                         name="name"
                         className="border w-full p-2 rounded-lg"
                         value={stateProductDetails.name}
                         onChange={handleOnchangeDetails}
-                        placeholder=""
+                        placeholder="Nhập tên sản phẩm"
                       />
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Brand</p>
+                      <p className="text-xl font-bold">Thương hiệu</p>
                       <select
                         className="border w-full p-2 rounded-lg"
                         name="brand"
@@ -611,33 +704,33 @@ const AdminProduct = () => {
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Price</p>
+                      <p className="text-xl font-bold">Giá</p>
                       <input
                         type="text"
                         name="price"
                         className="border w-full p-2 rounded-lg"
                         value={stateProductDetails.price}
                         onChange={handleOnchangeDetails}
-                        placeholder=""
+                        placeholder="Nhập giá sản phẩm"
                       />
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Discount</p>
+                      <p className="text-xl font-bold">Giảm giá</p>
                       <input
                         type="text"
                         name="discount"
                         value={stateProductDetails.discount}
                         onChange={handleOnchangeDetails}
                         className="border w-full p-2 rounded-lg"
-                        placeholder=""
+                        placeholder="Nhập giảm giá"
                       />
                     </div>
                   </div>
 
                   <div className="">
                     <div className="flex flex-col gap-1">
-                      <p className="text-xl font-bold">Description</p>
+                      <p className="text-xl font-bold">Mô tả sản phẩm</p>
                       <textarea
                         rows={2}
                         name="description"
@@ -647,6 +740,7 @@ const AdminProduct = () => {
                       ></textarea>
                     </div>
 
+                    {/* Phần Size và Số lượng */}
                     <div className="flex flex-col gap-y-2 mt-2">
                       <div className="grid grid-cols-2">
                         <p className="text-xl font-bold">Size</p>
@@ -713,44 +807,82 @@ const AdminProduct = () => {
                       ))}
                     </div>
 
+                    {/* Phần ảnh */}
                     <div className="flex flex-col gap-y-2 mt-2">
-                      <p className="text-xl font-bold">Ảnh</p>
+                      <p className="text-xl font-bold">Ảnh chính</p>
                       <input
                         type="text"
                         name="image"
                         className="border w-full p-2 rounded-lg"
                         value={stateProductDetails.image}
                         onChange={handleOnchangeDetails}
-                        placeholder=""
+                        placeholder="Nhập URL ảnh chính"
                       />
                     </div>
+
+                    <div className="flex flex-col gap-y-2 mt-2">
+                      <div className="flex justify-between">
+                        <p className="text-xl font-bold">Ảnh khác</p>
+                        <button
+                          className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
+                          onClick={addImageFieldDetails}
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      {/* Render các ảnh khác */}
+                      {Array.isArray(stateProductDetails.images) &&
+                        stateProductDetails.images.length > 0 &&
+                        stateProductDetails.images.map((image, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-3 mb-3"
+                          >
+                            <input
+                              type="text"
+                              name="images"
+                              className="border w-full p-2 rounded-lg"
+                              value={image}
+                              onChange={(e) =>
+                                handleImageChangeDetails(index, e)
+                              } // Cập nhật giá trị ảnh
+                              placeholder="Nhập URL ảnh"
+                            />
+                            <button
+                              className="flex items-center justify-center border w-[40px] h-[40px] text-3xl font-bold"
+                              onClick={(e) => apartImageFieldDetails(index, e)} // Xóa ảnh
+                            >
+                              -
+                            </button>
+                          </div>
+                        ))}
+                    </div>
                   </div>
+                </div>
+
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    className="px-4 py-2 bg-white border font-bold w-1/4 rounded-lg"
+                    onClick={handleCancel}
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-black text-white font-bold w-1/4 rounded-lg"
+                    onClick={onUpdateProduct}
+                  >
+                    Cập nhật
+                  </button>
                 </div>
               </form>
             </div>
           )}
-
-          <div className="flex justify-end gap-2 mt-4">
-            <button
-              className="px-4 py-2 bg-white border font-bold w-1/4 rounded-lg"
-              onClick={handleCancel}
-            >
-              Hủy
-            </button>
-            <button
-              className="px-4 py-2 bg-black text-white font-bold w-1/4 rounded-lg"
-              onClick={onUpdateProduct}
-            >
-              Cập nhật
-            </button>
-          </div>
         </div>
       </div>
     ),
     [stateProductDetails, sizeList, loading]
   );
-
-  console.log(currentProducts);
 
   return (
     <>

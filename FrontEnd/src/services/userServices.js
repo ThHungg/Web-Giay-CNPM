@@ -50,7 +50,14 @@ export const updateUser = async (id, access_token, data) => {
         headers: {
             token: `Bearer ${access_token}`,
         }
-    }   
+    }
+    );
+    return res.data;
+};
+
+export const updateDetailUser = async (id, data) => {
+    const res = await axios.put(
+        `${process.env.REACT_APP_API_URL}/user/update-detail-user/${id}`, data
     );
     return res.data;
 };

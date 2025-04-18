@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const statSchema = new mongoose.Schema(
     {
-        date: { type: Date, required: true }, // có thể là ngày đầu tháng
+        date: { type: Date, required: true },
         totalRevenue: { type: Number, default: 0 },
         totalOrders: { type: Number, default: 0 },
         processingOrders: { type: Number, default: 0 },
@@ -26,3 +26,5 @@ const statSchema = new mongoose.Schema(
 
 const Stat = mongoose.model("Stat", statSchema);
 module.exports = Stat;
+
+

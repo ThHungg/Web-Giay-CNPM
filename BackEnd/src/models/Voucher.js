@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const voucherSchema = new mongoose.Schema(
     {
         code: { type: String, required: true, unique: true, trim: true },
@@ -24,13 +23,13 @@ const voucherSchema = new mongoose.Schema(
         description: { type: String, default: '', trim: true },
         totalQuantity: { type: Number, default: 0, min: 0 },
         usedQuantity: { type: Number, default: 0, min: 0 },
-        // Optional:
-        // usedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     },
     {
         timestamps: true,
     }
 );
-
 const Voucher = mongoose.model('Voucher', voucherSchema);
 module.exports = Voucher;
+
+
+

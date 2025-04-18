@@ -192,17 +192,14 @@ const DetailProduct = () => {
   useEffect(() => {
     if (productDetail?.image) {
       setImage(productDetail.image);
-      setSmallImages([
-        "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/6ee3bfc0-d21d-4315-a989-4abf91e18ade/JORDAN+TATUM+3+PF.png",
-        "https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco,u_126ab356-44d8-4a06-89b4-fcdcc8df0245,c_scale,fl_relative,w_1.0,h_1.0,fl_layer_apply/9c38c645-4189-4163-a199-e35f77338a6f/JORDAN+ZION+4+PF.png",
-      ]);
+      setSmallImages(productDetail.images);
     }
   }, [productDetail]);
 
   const handleImageClick = (newImg) => {
     setSmallImages((prev) => {
-      const updatedImages = prev.filter((img) => img !== newImg);
-      updatedImages.unshift(image); // Đưa ảnh lớn cũ xuống danh sách ảnh nhỏ
+      const updatedImages = prev.filter((img) => img !== newImg); // Loại bỏ ảnh đã chọn
+      updatedImages.unshift(newImg); // Đưa ảnh đã chọn lên đầu mảng
       return updatedImages;
     });
     setImage(newImg); // Cập nhật ảnh lớn
@@ -244,24 +241,30 @@ const DetailProduct = () => {
       <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8">
         {/* image first*/}
         <div className="col-span-5">
-          <img
-            src={image}
-            alt="Large product"
-            className="h-[500px] w-full object-cover"
-          />
+          {image && (
+            <img
+              src={image}
+              alt="Large product"
+              className="h-[500px] w-full object-cover"
+            />
+          )}
 
-          {/* Ảnh nhỏ */}
-          <div className="flex justify-center gap-3 mt-2">
-            {smallImages.map((img, index) => (
-              <img
-                key={index}
-                src={img}
-                alt={`Small image ${index}`}
-                className="h-[80px] w-[80px] object-contain cursor-pointer"
-                onClick={() => handleImageClick(img)}
-              />
-            ))}
-          </div>
+          {/* Ảnh nhỏ, chỉ hiển thị nếu có */}
+          {smallImages.length > 0 && (
+            <div className="flex justify-center gap-3 mt-2">
+              {smallImages.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt={`Small image ${index}`}
+                  className="h-[80px] w-[80px] object-contain cursor-pointer"
+                  onClick={() => handleImageClick(img)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Tabs: Mô tả, Đánh giá, Hướng dẫn bảo quản */}
           <Tabs>
             <TabList className="flex justify-center gap-10 border-b pb-2">
               <Tab>
@@ -281,17 +284,18 @@ const DetailProduct = () => {
               </Tab>
             </TabList>
 
-            {/* Mô tả sản phẩm */}
-            <TabPanel>
-              <h2 className="text-base text-gray-700 leading-relaxed whitespace-pre-line h-[360px] overflow-auto px-3 mt-3">
-                {productDetail.description}
-              </h2>
-            </TabPanel>
+            {/* Mô tả sản phẩm, chỉ hiển thị nếu có mô tả */}
+            {productDetail?.description && (
+              <TabPanel>
+                <h2 className="text-base text-gray-700 leading-relaxed whitespace-pre-line h-[360px] overflow-auto px-3 mt-3">
+                  {productDetail.description}
+                </h2>
+              </TabPanel>
+            )}
 
-            {/* Đánh giá */}
+            {/* Đánh giá, chỉ hiển thị nếu có đánh giá */}
             <TabPanel>
               <div className="grid grid-cols-2 gap-5 mt-4">
-                {/* Danh sách đánh giá */}
                 <div className="space-y-2 h-[360px] overflow-auto pr-2">
                   <h1 className="text-xl font-bold">Đánh giá sản phẩm</h1>
                   {Array.isArray(reviewProduct) && reviewProduct.length > 0 ? (
@@ -343,26 +347,19 @@ const DetailProduct = () => {
 
             {/* Hướng dẫn bảo quản */}
             <TabPanel>
-              <ul className="list-disc space-y-2 text-lg text-gray-700 pl-6 mt-4 h-[360px] overflow-auto">
-                <li className="hover:text-black transition-all">
-                  Vệ sinh bằng khăn mềm
-                </li>
-                <li className="hover:text-black transition-all">
-                  Tránh vật sắc nhọn và nơi có nhiệt độ cao
-                </li>
-                <li className="hover:text-black transition-all">
-                  Tránh tiếp xúc với môi trường xăng dầu, kiềm
-                </li>
-                <li className="hover:text-black transition-all">
-                  Không phơi sản phẩm nơi ánh nắng gắt
-                </li>
-                <li className="hover:text-black transition-all">
-                  Để nơi khô thoáng khi không sử dụng
-                </li>
-              </ul>
+              {productDetail?.maintenance && (
+                <ul className="list-disc space-y-2 text-lg text-gray-700 pl-6 mt-4 h-[360px] overflow-auto">
+                  {productDetail.maintenance.map((instruction, index) => (
+                    <li key={index} className="hover:text-black transition-all">
+                      {instruction}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </TabPanel>
           </Tabs>
         </div>
+
         {/* image end*/}
 
         <div className="col-span-3 ml-3 sticky top-5 self-start">

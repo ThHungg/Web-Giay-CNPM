@@ -115,6 +115,32 @@ const updateUser = (id, data) => {
     });
 };
 
+const updateDetailUser = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkUser = await User.findById(id);
+            if (checkUser === null) {
+                resolve({
+                    status: "Ok",
+                    message: 'Người dùng không xác định'
+                })
+            }
+            if (data.password) {
+                data.password = bcrypt.hashSync(data.password, 10);
+            }
+
+            const updateUser = await User.findByIdAndUpdate(id, data, { new: true })
+            resolve({
+                status: "Ok",
+                message: "Success",
+                data: updateUser
+            })
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
 const deleteUser = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -377,5 +403,6 @@ module.exports = {
     getAllUser,
     getDetailsUser,
     sendOtp,
-    verifyOtpAndResetPassword
+    verifyOtpAndResetPassword,
+    updateDetailUser
 };

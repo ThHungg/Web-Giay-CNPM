@@ -77,6 +77,25 @@ const updateUser = async (req, res) => {
     }
 }
 
+const updateDetailUser = async (req, res) => {
+    try {
+        const userId = req.params.id
+        const data = req.body
+        if (!userId) {
+            return res.status(200).json({
+                status: "Err",
+                message: 'The userId is required'
+            })
+        }
+        const response = await userService.updateDetailUser(userId, data);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: 'Lỗi hệ thống, vui lòng thử lại sau!'
+        });
+    }
+}
+
 const deleteUser = async (req, res) => {
     try {
         const userId = req.params.id
@@ -217,5 +236,6 @@ module.exports = {
     refreshToken,
     logoutUser,
     sendOtp,
-    verifyOtpAndResetPassword
+    verifyOtpAndResetPassword,
+    updateDetailUser
 };

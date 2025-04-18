@@ -4,7 +4,7 @@ const { generateProductCode } = require('../utils/generateCode')
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
-        const { name, brand, image, price, description, sizeStock, discount } = newProduct;
+        const { name, brand, image, price, description, sizeStock, discount, images } = newProduct;
         try {
             const checkProduct = await Product.findOne({ name })
             if (checkProduct) {
@@ -20,7 +20,7 @@ const createProduct = (newProduct) => {
             const productCode = generateProductCode()
 
             const createProduct = await Product.create({
-                name, brand, image, price: finalPrice, oldPrice, description, sizeStock, discount, totalStock, productCode, createdAt: Date.now()
+                name, brand, image, images, price: finalPrice, oldPrice, description, sizeStock, discount, totalStock, productCode, createdAt: Date.now()
             });
             if (createProduct) {
                 resolve({
