@@ -97,7 +97,7 @@ const updateOrder = (orderId, data) => {
 const getDetailOrder = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const orders = await Order.findById(id)
+            const orders = await Order.findById(id).populate('items.productId', 'image name')
             resolve({
                 status: "OK",
                 message: "Lấy danh sách đơn hàng thành công",

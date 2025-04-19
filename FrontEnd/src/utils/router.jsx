@@ -22,5 +22,6 @@ export const ROUTERS = {
     STATISTICAL: "/admin/statistical",
     BANNER: "/admin/banner",
     BRAND: "/admin/brand",
+    CONTACT: "/admin/contact",
   },
 };

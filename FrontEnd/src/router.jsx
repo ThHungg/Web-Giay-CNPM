@@ -21,6 +21,7 @@ import AdminVoucher from "./page/admin/adminVoucher";
 import AdminStat from "./page/admin/adminStat";
 import AdminBrand from "./page/admin/adminBrand";
 import AdminBanner from "./page/admin/adminBanner";
+import AdminContact from "./page/admin/adminContact";
 
 const renderUserRouter = () => {
   const userRouter = [
@@ -132,6 +133,10 @@ const renderAdminRouter = () => {
     {
       path: ROUTERS.ADMIN.BRAND,
       component: <AdminBrand />,
+    },
+    {
+      path: ROUTERS.ADMIN.CONTACT,
+      component: <AdminContact />,
     },
   ];
   return (

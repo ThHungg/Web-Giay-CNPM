@@ -134,7 +134,6 @@ const ProfilePage = () => {
             <p>Email: {user.email}</p>
           </div>
 
-          {/* Tabs Menu */}
           <div className="w-full mt-5">
             <button
               className={`w-full text-left px-4 py-2 rounded-lg ${
@@ -163,7 +162,6 @@ const ProfilePage = () => {
           </div>
         </div>
 
-        {/* Nội dung Tab */}
         <div className="flex-1 p-5 bg-white rounded-lg shadow">
           {activeTab === "edit" && (
             <div className="flex flex-col gap-4">
@@ -247,7 +245,6 @@ const ProfilePage = () => {
                           {index + 1}
                         </td>
 
-                        {/* Danh sách sản phẩm */}
                         <td className="border p-3 align-top">
                           {order.items.map((item, i) => (
                             <div

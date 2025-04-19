@@ -155,8 +155,7 @@ const AdminBrand = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mt-3">
-        <h2 className="text-xl font-bold">Danh sách Thương hiệu</h2>
+      <div className="flex justify-end items-center mt-3">
         <button
           className="px-4 py-2 bg-black text-white rounded-lg"
           onClick={() => setShowCreateModal(true)}

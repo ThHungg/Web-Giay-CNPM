@@ -24,6 +24,7 @@ const MasterLayout = ({ children, ...props }) => {
       console.error("Invalid token");
     }
   }
+
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
@@ -63,18 +64,22 @@ const MasterLayout = ({ children, ...props }) => {
           path: ROUTERS.ADMIN.BANNER,
         },
         {
-          title: "Thương hiệu",
+          title: "Brand",
           path: ROUTERS.ADMIN.BRAND,
         },
       ],
     },
     {
       icon: <GoReport />,
-      title: "Report",
+      title: "Contact",
+      path: ROUTERS.ADMIN.CONTACT,
     },
   ].filter(Boolean);
 
-  const currentPage = menuItems.find((item) => item.path === location.pathname);
+  const currentPage = menuItems
+    .flatMap((item) => (item.subItems ? item.subItems : item))
+    .find((item) => item.path === location.pathname);
+
   const pageTitle = currentPage ? currentPage.title : "Dashboard";
 
   return (

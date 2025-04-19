@@ -232,18 +232,15 @@ const updateMultipleSold = (products) => {
                         return resolve({ status: "ERR", message: `Sản phẩm ID ${productId} không xác định` });
                     }
 
-                    // Tìm size cần cập nhật
                     const sizeItem = product.sizeStock.find(s => s.size === size);
                     if (!sizeItem) {
                         return resolve({ status: "ERR", message: `Size ${size} không tồn tại trong sản phẩm ID ${productId}` });
                     }
 
-                    // Kiểm tra tồn kho trước khi bán
                     if (sizeItem.stock < quantity) {
                         return resolve({ status: "ERR", message: `Không đủ hàng trong kho cho sản phẩm ID ${productId}, size ${size}` });
                     }
 
-                    // Cập nhật số lượng đã bán và tồn kho
                     sizeItem.sold = (sizeItem.sold || 0) + quantity;
                     sizeItem.stock -= quantity;
                     product.totalStock = updateTotalStock(product.sizeStock);

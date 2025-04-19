@@ -14,7 +14,7 @@ const AdminOrder = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [rowSelected, setRowSelected] = useState();
   const [orderDetails, setOrderDetails] = useState();
-  
+
   const mutation = useMutationHooks(async (data) => {
     const { orderId, token, ...rests } = data;
     return await orderServices.updateOrder(orderId, token, rests);
@@ -99,6 +99,8 @@ const AdminOrder = () => {
       setLoadingDetail(true);
     }
   }, [orderDetails]);
+
+  console.log("orderDetails", orderDetails);
 
   const DetailModal = useMemo(
     () => (

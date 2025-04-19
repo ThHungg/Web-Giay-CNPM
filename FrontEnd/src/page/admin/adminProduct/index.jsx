@@ -88,6 +88,18 @@ const AdminProduct = () => {
       toast.success("Thêm thành công");
       reset();
       fetchProductAll();
+      setSateProduct({
+        name: "",
+        price: "",
+        oldPrice: "",
+        status: "",
+        description: "",
+        brand: "",
+        image: "",
+        images: "",
+        discount: "",
+        sizeStock: { size: "", stock: "" },
+      });
       queryClient.invalidateQueries("products");
       setShowCreateModal(false);
     } else if (isError) {
@@ -156,10 +168,7 @@ const AdminProduct = () => {
       image: "",
       images: "",
       discount: "",
-      sizeStock: {
-        size: "",
-        stock: "",
-      },
+      sizeStock: [{ size: "", stock: "" }],
     });
     form.resetFields();
   };
