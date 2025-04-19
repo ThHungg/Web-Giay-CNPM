@@ -1,7 +1,7 @@
 // controllers/bannerController.js
 const brandService = require('../services/brandService');
 
-const createBanner = async (req, res) => {
+const createBrand = async (req, res) => {
     try {
         const result = await brandService.createBrand(req.body);
         res.status(200).json(result);
@@ -10,7 +10,7 @@ const createBanner = async (req, res) => {
     }
 };
 
-const getAllBanners = async (req, res) => {
+const getAllBrand = async (req, res) => {
     try {
         const result = await brandService.getAllBrand();
         res.status(200).json(result);
@@ -19,7 +19,7 @@ const getAllBanners = async (req, res) => {
     }
 };
 
-const getActiveBanners = async (req, res) => {
+const getActiveBrand = async (req, res) => {
     try {
         const result = await brandService.getActiveBrand();
         res.status(200).json(result);
@@ -28,7 +28,7 @@ const getActiveBanners = async (req, res) => {
     }
 };
 
-const updateBannerStatus = async (req, res) => {
+const updateBrandStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
     try {
@@ -39,7 +39,7 @@ const updateBannerStatus = async (req, res) => {
     }
 };
 
-const deleteBanner = async (req, res) => {
+const deleteBrand = async (req, res) => {
     const { id } = req.params;
     try {
         const result = await brandService.deleteBrand(id);
@@ -50,9 +50,9 @@ const deleteBanner = async (req, res) => {
 };
 
 module.exports = {
-    createBanner,
-    getAllBanners,
-    getActiveBanners,
-    updateBannerStatus,
-    deleteBanner
+    createBrand,
+    getAllBrand,
+    getActiveBrand,
+    updateBrandStatus,
+    deleteBrand
 };

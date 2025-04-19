@@ -108,7 +108,7 @@ const deleteBrand = (brandId) => {
 module.exports = {
     createBrand,
     getAllBrand,
-    getActiveBrand,  
-    updateBrandStatus, 
+    getActiveBrand,
+    updateBrandStatus,
     deleteBrand
 };

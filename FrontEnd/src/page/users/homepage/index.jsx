@@ -14,6 +14,7 @@ import * as productService from "../../../services/productService";
 import { Link } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router";
 import ProductCardV2 from "../../../component/ProductCardV2";
+import * as brandService from "../../../services/brandService";
 
 const HomePage = () => {
   const fetchProductAll = async () => {
@@ -21,6 +22,16 @@ const HomePage = () => {
     const products = res.data || [];
     return products.slice(0, 5);
   };
+
+  const { data: brands = [], refetch } = useQuery({
+    queryKey: ["brand"],
+    queryFn: async () => {
+      const res = await brandService.getActiveBrand();
+      return res.data;
+    },
+  });
+
+  console.log("brands", brands);
 
   const { data: products } = useQuery({
     queryKey: ["products"],
@@ -163,29 +174,35 @@ const HomePage = () => {
 
       {/* Brands */}
       <div className="max-w-screen-xl mx-auto mt-5">
-        <div className="text-center text-3xl font-bold">Thương hiệu</div>
-        <div className="flex justify-center">
-          <img
-            src={Adidas}
-            alt=""
-            className="h-[200px] w-[240px] object-contain mx-auto"
-          />
-          <img
-            src={Nike}
-            alt=""
-            className="h-[200px] w-[240px] object-contain mx-auto"
-          />
-          <img
-            src={Jordan}
-            alt=""
-            className="h-[200px] w-[240px] object-contain mx-auto"
-          />
-          <img
-            src={Puma}
-            alt=""
-            className="h-[200px] w-[240px] object-contain mx-auto"
-          />
-        </div>
+        <div className="text-center text-3xl font-bold mb-4">Thương hiệu</div>
+        {/* {brands.map((brand, index) => (
+            <div className="flex justify-center">
+              <img
+                key={index}
+                src={brand.image}
+                alt={`brand-${index}`}
+                className="h-[200px] w-[240px] object-contain mx-auto"
+              />
+            </div>
+          ))} */}
+
+        <Carousel
+          responsive={responsive}
+          infinite={true}
+          autoPlay={true}
+          autoPlaySpeed={2500}
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
+          {brands.map((brand, index) => (
+            <div key={index} className="flex justify-center">
+              <img
+                src={brand.image}
+                alt={`brand-${index}`}
+                className="h-[200px] w-[240px] object-contain mx-auto"
+              />
+            </div>
+          ))}
+        </Carousel>
       </div>
     </>
   );
