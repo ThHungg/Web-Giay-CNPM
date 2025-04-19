@@ -49,7 +49,6 @@ const CheckPayment = () => {
         const { data } = await paymentService.getVNPayPaymentResult(
           Object.fromEntries(searchParams.entries())
         );
-        // Kiểm tra mã phản hồi và thiết lập status phù hợp
         if (data.vnp_ResponseCode == "00") {
           const orderRes = await fetchGetHistoryOrder(orderId);
           if (orderRes?.data?.items?.length) {

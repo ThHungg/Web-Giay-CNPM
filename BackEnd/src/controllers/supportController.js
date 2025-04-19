@@ -1,5 +1,6 @@
 // controllers/supportController.js
 const supportService = require('../services/supportService');
+const Support = require('../models/Support');
 
 // Tạo yêu cầu hỗ trợ
 const createSupportRequest = async (req, res) => {
@@ -126,10 +127,36 @@ const getSupportHistory = async (req, res) => {
     }
 }
 
+const sendResponseEmail = (req, res) => {
+    const { id, responseMessage } = req.body;  // Lấy ID của yêu cầu và phản hồi từ body
+
+    try {
+        // Cập nhật trạng thái yêu cầu hỗ trợ
+        Support.findByIdAndUpdate(id, { status: 'Resolved', responseMessage }, { new: true })
+            .then(async (updatedRequest) => {
+                if (!updatedRequest) {
+                    return res.status(404).json({ status: 'ERR', message: 'Không tìm thấy yêu cầu hỗ trợ với ID: ' + id });
+                }
+
+                // Gửi email cho khách hàng với phản hồi
+                await supportService.sendResponseEmail(updatedRequest.email, responseMessage);
+
+                res.status(200).json({ status: 'OK', message: 'Phản hồi đã được gửi thành công.' });
+            })
+            .catch((error) => {
+                res.status(500).json({ status: 'ERR', message: 'Đã xảy ra lỗi khi cập nhật yêu cầu: ' + error.message });
+            });
+    } catch (error) {
+        res.status(500).json({ status: 'ERR', message: 'Đã xảy ra lỗi khi gửi phản hồi: ' + error.message });
+    }
+};
+
+
 module.exports = {
     createSupportRequest,
     getAllSupportRequests,
     updateRequestStatus,
     deleteSupportRequest,
-    getSupportHistory
+    getSupportHistory,
+    sendResponseEmail
 };

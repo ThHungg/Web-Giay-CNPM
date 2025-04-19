@@ -2,7 +2,6 @@ import axios from "axios"
 import { axiosJWT } from "./userServices";
 
 export const createSupport = async (data) => {
-    console.log("data", data)
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/support/createSupport`, data)
     return res.data;
 }
@@ -24,6 +23,14 @@ export const updateRequestSupport = async (id, status) => {
 
 export const deleteSupport = async (id) => {
     const res = await axios.delete(`${process.env.REACT_APP_API_URL}/support/deleteSupport/${id}`)
+    return res.data;
+};
+
+export const sendResponseEmail = async (id, responseMessage) => {
+    const res = await axios.post(`${process.env.REACT_APP_API_URL}/support/sendResponse`, {
+        id,
+        responseMessage
+    });
     return res.data;
 };
 

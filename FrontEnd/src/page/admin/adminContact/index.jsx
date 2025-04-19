@@ -1,5 +1,5 @@
-import { memo, useState, useEffect } from "react";
-import * as supportService from "../../../services/supportService";
+import { memo, useState, useEffect, useMemo } from "react";
+import * as supportService from "../../../services/supportService"; // Import supportService
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification";
 
@@ -8,6 +8,9 @@ const AdminContact = () => {
   const [loading, setLoading] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [responseMessage, setResponseMessage] = useState("");
+  const [selectedRequestId, setSelectedRequestId] = useState("");
+  const [showModal, setShowModal] = useState(false); // Điều khiển việc hiển thị modal
 
   const fetchSupportRequests = async () => {
     setLoading(true);
@@ -53,9 +56,71 @@ const AdminContact = () => {
     }
   };
 
+  const handleSendResponse = async () => {
+    if (!responseMessage.trim()) {
+      toast.error("Vui lòng nhập phản hồi.");
+      return;
+    }
+
+    try {
+      const response = await supportService.sendResponseEmail(
+        selectedRequestId,
+        responseMessage
+      );
+      if (response.status === "OK") {
+        toast.success("Phản hồi đã được gửi thành công.");
+        setResponseMessage("");
+        setShowModal(false); // Đóng modal sau khi gửi phản hồi
+        fetchSupportRequests();
+      } else {
+        toast.error("Lỗi khi gửi phản hồi.");
+      }
+    } catch (error) {
+      toast.error("Đã có lỗi xảy ra khi gửi phản hồi.");
+    }
+  };
+
   useEffect(() => {
     fetchSupportRequests();
   }, []);
+
+  const CreateModal = useMemo(
+    () => (
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ${
+          !showModal && "hidden"
+        }`}
+      >
+        <div className="bg-white p-6 rounded-lg w-[400px]">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            Phản hồi yêu cầu
+          </h2>
+          <textarea
+            className="p-3 border shadow-sm border-gray-300 rounded-lg w-full"
+            placeholder="Nhập phản hồi"
+            value={responseMessage}
+            onChange={(e) => setResponseMessage(e.target.value)}
+            rows="4"
+          />
+          <div className="mt-4 flex justify-end gap-3">
+            <button
+              onClick={() => setShowModal(false)}
+              className="px-4 py-2 bg-gray-300 text-white rounded-lg"
+            >
+              Đóng
+            </button>
+            <button
+              onClick={handleSendResponse}
+              className="px-4 py-2 bg-black text-white rounded-lg"
+            >
+              Gửi phản hồi
+            </button>
+          </div>
+        </div>
+      </div>
+    ),
+    [responseMessage, showModal, selectedRequestId] // Chỉ tái tạo modal khi có thay đổi
+  );
 
   return (
     <>
@@ -86,7 +151,6 @@ const AdminContact = () => {
           </div>
         </div>
       </div>
-
       <div className="bg-white mt-5 mr-2">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200">
@@ -122,19 +186,42 @@ const AdminContact = () => {
                     </select>
                   </td>
                   <td className="border p-2">
-                    <button
-                      className="px-2 py-1 bg-red-500 text-white rounded"
-                      onClick={() => handleDeleteSupport(request._id)}
-                    >
-                      Xóa
-                    </button>
+                    <div className="flex justify-center items-center gap-3">
+                      {/* Phản hồi button */}
+                      {request.status !== "Resolved" ? (
+                        <button
+                          className="px-3 py-1 bg-red-500 text-white rounded transition"
+                          onClick={() => {
+                            setSelectedRequestId(request._id);
+                            setShowModal(true);
+                          }}
+                        >
+                          Phản hồi
+                        </button>
+                      ) : (
+                        <button
+                          className="px-3 py-1 bg-gray-500 text-white rounded transition cursor-not-allowed"
+                          disabled
+                        >
+                          Đã giải quyết
+                        </button>
+                      )}
+
+                      {/* Xóa button */}
+                      <button
+                        className="px-3 py-1 bg-black text-white rounded transition"
+                        onClick={() => handleDeleteSupport(request._id)}
+                      >
+                        Xóa
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td
-                  colSpan="7"
+                  colSpan="8"
                   className="border p-2 text-center text-gray-500"
                 >
                   Không có yêu cầu hỗ trợ nào.
@@ -144,6 +231,7 @@ const AdminContact = () => {
           </tbody>
         </table>
       </div>
+      {CreateModal}
       <ToastNotification />
     </>
   );

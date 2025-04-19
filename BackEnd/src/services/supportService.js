@@ -1,5 +1,6 @@
 // services/supportService.js
 const Support = require('../models/Support');
+const nodemailer = require("nodemailer");
 
 // Tạo yêu cầu hỗ trợ
 const createSupportRequest = (supportData) => {
@@ -109,24 +110,6 @@ const deleteSupportRequest = (requestId) => {
     });
 };
 
-
-// const getSupportHistory = (id) => {
-//     return new Promise(async (resolve, reject) => {
-//         try {
-//             const supports = await Support.find({ id }).exec();
-
-//             if (!supports || supports.length === 0) {
-//                 reject(new Error("Không tìm thấy lịch sử hỗ trợ."));
-//                 return;
-//             }
-
-//             resolve(supports);
-//         } catch (error) {
-//             reject(new Error("Lỗi khi lấy lịch sử hỗ trợ: " + error.message));
-//         }
-//     });
-// };
-
 const getSupportHistory = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -146,11 +129,38 @@ const getSupportHistory = (userId) => {
     })
 }
 
+const sendResponseEmail = (userEmail, responseMessage) => {
+    return new Promise(async (resolve, reject) => {
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: userEmail,
+            subject: "Phản hồi từ đội ngũ hỗ trợ",
+            text: `Chúng tôi đã nhận được yêu cầu của bạn và sau đây là phản hồi của chúng tôi:\n\n${responseMessage}`,
+        };
+
+        try {
+            await transporter.sendMail(mailOptions);
+            resolve({ status: 'OK', message: 'Email phản hồi đã được gửi thành công' });
+        } catch (error) {
+            reject({ status: 'ERR', message: 'Lỗi khi gửi email: ' + error.message });
+        }
+    });
+};
+
 
 module.exports = {
     createSupportRequest,
     getAllSupportRequests,
     updateRequestStatus,
     deleteSupportRequest,
-    getSupportHistory
+    getSupportHistory,
+    sendResponseEmail
 };

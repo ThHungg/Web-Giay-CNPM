@@ -7,5 +7,6 @@ router.get('/getSupport', supportController.getAllSupportRequests);
 router.patch('/updateRequestSupport/:id', supportController.updateRequestStatus);
 router.delete('/deleteSupport/:requestId', supportController.deleteSupportRequest);
 router.get("/historySupport/:userId", supportController.getSupportHistory);
+router.post('/sendResponse', supportController.sendResponseEmail);
 
 module.exports = router;
