@@ -7,9 +7,11 @@ import "react-multi-carousel/lib/styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import { Popover } from "antd";
 import * as userServices from "../../../../services/userServices";
+import * as bannerServices from "../../../../services/bannerService";
 import { resetUser } from "../../../../redux/slides/userSlide";
 import logo from "../../../../assets/users/img/brands/logoo.png";
 import { CiLogin } from "react-icons/ci";
+import { useQuery } from "@tanstack/react-query";
 
 const Header = ({ hasAddToBanner = true }) => {
   const user = useSelector((state) => state.user);
@@ -110,6 +112,19 @@ const Header = ({ hasAddToBanner = true }) => {
     //   path: ROUTERS.USER.VOUCHER,
     // },
   ];
+
+  const {
+    data: banners = [],
+    refetch,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["banner"],
+    queryFn: async () => {
+      const res = await bannerServices.getActiveBanner();
+      return res.data;
+    },
+  });
 
   return (
     <>
@@ -212,29 +227,27 @@ const Header = ({ hasAddToBanner = true }) => {
           </form>
         </div>
       </div> */}
-        {hasAddToBanner && (
-          <div className="max-w-screen-xl mx-auto">
+        {hasAddToBanner && banners.length > 0 && (
+          <div className="max-w-screen-xl mx-auto px-2 mt-5">
             <Carousel
               responsive={responsive}
-              infinite={true}
-              autoPlay={true}
+              infinite
+              autoPlay
               autoPlaySpeed={4000}
               removeArrowOnDeviceType={["tablet", "mobile"]}
             >
-              <div className="mx-auto w-full max-w-screen-xl py-3 h-[520px] flex justify-center items-center">
-                <img
-                  src="https://lambanner.com/wp-content/uploads/2022/10/MNT-DESIGN-BANNER-GIAY-11.jpg"
-                  alt=""
-                  className="max-h-full w-full object-cover rounded-lg"
-                />
-              </div>
-              <div className="mx-auto w-full max-w-screen-xl py-3 h-[520px] flex justify-center items-center">
-                <img
-                  src="https://thietke6d.com/wp-content/uploads/2021/05/banner-quang-cao-giay-4-768x426.png"
-                  alt=""
-                  className="max-h-full w-full object-cover rounded-lg"
-                />
-              </div>
+              {banners.map((banner, index) => (
+                <div
+                  key={index}
+                  className="w-full h-[520px] flex justify-center items-center overflow-hidden rounded-lg"
+                >
+                  <img
+                    src={banner.image}
+                    alt={`banner-${index}`}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </div>
+              ))}
             </Carousel>
           </div>
         )}

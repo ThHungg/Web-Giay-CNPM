@@ -245,7 +245,7 @@ const DetailProduct = () => {
               <img
                 src={image}
                 alt="Large product"
-                className="h-[500px] w-full object-contain transition-all duration-300 transform hover:scale-105"
+                className="h-[500px] w-full object-cover transition-all duration-300 transform hover:scale-105"
               />
             </div>
           )}
@@ -258,8 +258,8 @@ const DetailProduct = () => {
                   <img
                     src={img}
                     alt={`Small image ${index}`}
-                    className={`h-[80px] w-[80px] object-contain cursor-pointer transition-all transform hover:scale-110 duration-200 ${
-                      img === selectedImage ? "border-2 border-blue-500" : ""
+                    className={`h-[80px] w-[80px] object-cover cursor-pointer transition-all transform hover:scale-110 duration-200 ${
+                      img === selectedImage ? "border-2 border-black-200" : ""
                     }`}
                     onClick={() => {
                       setImage(img);

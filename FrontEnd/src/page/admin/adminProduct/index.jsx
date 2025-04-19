@@ -83,18 +83,18 @@ const AdminProduct = () => {
 
   const { isSuccess, isError, reset } = mutation;
 
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     toast.success("Thêm thành công");
-  //     reset();
-  //     fetchProductAll();
-  //     queryClient.invalidateQueries("products");
-  //     setShowCreateModal(false);
-  //   } else if (isError) {
-  //     toast.error("Thêm thất bại");
-  //     mutation.reset();
-  //   }
-  // }, [isSuccess, isError]);
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Thêm thành công");
+      reset();
+      fetchProductAll();
+      queryClient.invalidateQueries("products");
+      setShowCreateModal(false);
+    } else if (isError) {
+      toast.error("Thêm thất bại");
+      mutation.reset();
+    }
+  }, [isSuccess, isError]);
 
   const onFinish = (e) => {
     e.preventDefault();

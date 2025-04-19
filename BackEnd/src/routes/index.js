@@ -7,6 +7,7 @@ const reviewRouter = require('./reviewRouter')
 const voucherRouter = require('./voucherRouter')
 const statRouter = require('./statRouter')
 const bannerRouter = require('./bannerRouter')
+const brandRouter = require('./brandRouter')
 const routes = (app) => {
     app.use('/api/user', userRouter)
     app.use('/api/product', productRouter)
@@ -17,6 +18,7 @@ const routes = (app) => {
     app.use('/api/voucher', voucherRouter)
     app.use('/api/stat', statRouter)
     app.use('/api/banner', bannerRouter)
+    app.use('/api/brand', brandRouter)
 }
 
 module.exports = routes;

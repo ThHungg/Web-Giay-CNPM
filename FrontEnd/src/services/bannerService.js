@@ -6,22 +6,23 @@ export const createBanner = async (data) => {
     return res.data;
 }
 
-export const getAllBanner = async (access_token) => {
+export const getAllBanner = async () => {
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/banner/getAllBanner`)
     return res.data;
 };
 
-export const updateStatusBanner = async (id, status, access_token) => {
-    const res = await axios.patch(`${process.env.REACT_APP_API_URL}/banner/updateStatusBanner/${id}`, { status }, {
-        headers: {
-            token: `Bearer ${access_token}`,
-        }
-    })
+export const updateStatusBanner = async (id, status) => {
+    const res = await axios.patch(`${process.env.REACT_APP_API_URL}/banner/updateStatusBanner/${id}`, { status })
     return res.data;
 };
 
 export const getActiveBanner = async () => {
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/banner/getActiveBanner`)
+    return res.data;
+};
+
+export const deleteBanner = async (id) => {
+    const res = await axios.delete(`${process.env.REACT_APP_API_URL}/banner/delete/${id}`)
     return res.data;
 };
 

@@ -24,7 +24,7 @@ const MasterLayout = ({ children, ...props }) => {
       console.error("Invalid token");
     }
   }
-
+  const [openSubmenu, setOpenSubmenu] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 
@@ -55,8 +55,18 @@ const MasterLayout = ({ children, ...props }) => {
       path: ROUTERS.ADMIN.VOUCHER,
     },
     {
-      icon: <MdDiscount />,
       title: "Quản lý giao diện",
+      icon: <MdDiscount />,
+      subItems: [
+        {
+          title: "Banner",
+          path: ROUTERS.ADMIN.BANNER,
+        },
+        {
+          title: "Thương hiệu",
+          path: ROUTERS.ADMIN.BRAND,
+        },
+      ],
     },
     {
       icon: <GoReport />,
@@ -97,17 +107,58 @@ const MasterLayout = ({ children, ...props }) => {
           <ul className="space-y-3 flex-1">
             {menuItems.map((item, key) => (
               <li key={key}>
-                <Link
-                  to={item.path || "#"}
-                  className={`flex items-center gap-3 p-3 rounded-lg transition ${
-                    location.pathname === item.path
-                      ? "bg-gray-200 font-semibold"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  {!isCollapsed && <span>{item.title}</span>}
-                </Link>
+                {item.subItems ? (
+                  <div>
+                    <button
+                      onClick={() =>
+                        setOpenSubmenu(openSubmenu === key ? null : key)
+                      }
+                      className={`flex items-center w-full gap-3 p-3 rounded-lg transition ${
+                        openSubmenu === key
+                          ? "bg-gray-200 font-semibold"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      <span className="text-xl">{item.icon}</span>
+                      {!isCollapsed && (
+                        <>
+                          <span className="flex-1 text-left">{item.title}</span>
+                          <span>{openSubmenu === key ? "▲" : "▼"}</span>
+                        </>
+                      )}
+                    </button>
+
+                    {!isCollapsed && openSubmenu === key && (
+                      <div className="pl-10 mt-1 space-y-1">
+                        {item.subItems.map((subItem, subKey) => (
+                          <Link
+                            key={subKey}
+                            to={subItem.path}
+                            className={`block p-2 rounded-md text-sm transition ${
+                              location.pathname === subItem.path
+                                ? "bg-gray-200 font-semibold"
+                                : "hover:bg-gray-100"
+                            }`}
+                          >
+                            {subItem.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    to={item.path || "#"}
+                    className={`flex items-center gap-3 p-3 rounded-lg transition ${
+                      location.pathname === item.path
+                        ? "bg-gray-200 font-semibold"
+                        : "hover:bg-gray-100"
+                    }`}
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    {!isCollapsed && <span>{item.title}</span>}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

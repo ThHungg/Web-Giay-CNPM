@@ -264,7 +264,7 @@ const AdminOrder = () => {
                   className="text-center"
                   onClick={() => setRowSelected(order._id)}
                 >
-                  <td className="border p-2">{index + 1}</td>
+                  <td className="border p-2">{order.orderCode}</td>
                   <td className="border p-2">
                     {order.customerInfo.nameReceiver}
                   </td>
