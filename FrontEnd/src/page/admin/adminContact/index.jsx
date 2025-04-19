@@ -4,19 +4,20 @@ import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification";
 
 const AdminContact = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [responseMessage, setResponseMessage] = useState("");
-  const [selectedRequestId, setSelectedRequestId] = useState("");
+  const [requests, setRequests] = useState([]); // Danh sách yêu cầu hỗ trợ
+  const [loading, setLoading] = useState(false); // Trạng thái loading
+  const [selectedStatus, setSelectedStatus] = useState(""); // Trạng thái lọc
+  const [searchTerm, setSearchTerm] = useState(""); // Tìm kiếm theo tên
+  const [responseMessage, setResponseMessage] = useState(""); // Phản hồi
+  const [selectedRequestId, setSelectedRequestId] = useState(""); // ID yêu cầu được chọn
   const [showModal, setShowModal] = useState(false); // Điều khiển việc hiển thị modal
 
+  // Hàm lấy tất cả yêu cầu hỗ trợ
   const fetchSupportRequests = async () => {
     setLoading(true);
     try {
       const response = await supportService.getAllSupport();
-      setRequests(response.data || []);
+      setRequests(response.data || []); // Cập nhật danh sách yêu cầu hỗ trợ
     } catch (error) {
       toast.error("Lỗi khi tải dữ liệu yêu cầu hỗ trợ.");
     } finally {
@@ -24,6 +25,7 @@ const AdminContact = () => {
     }
   };
 
+  // Lọc yêu cầu theo trạng thái và tìm kiếm
   const filteredRequests = requests
     .filter((request) =>
       request.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -32,6 +34,7 @@ const AdminContact = () => {
       selectedStatus ? request.status === selectedStatus : true
     );
 
+  // Cập nhật trạng thái yêu cầu
   const handleStatusChange = async (id, newStatus) => {
     try {
       const response = await supportService.updateRequestSupport(id, newStatus);
@@ -44,6 +47,7 @@ const AdminContact = () => {
     }
   };
 
+  // Xóa yêu cầu hỗ trợ
   const handleDeleteSupport = async (id) => {
     try {
       const response = await supportService.deleteSupport(id);
@@ -56,6 +60,7 @@ const AdminContact = () => {
     }
   };
 
+  // Gửi phản hồi
   const handleSendResponse = async () => {
     if (!responseMessage.trim()) {
       toast.error("Vui lòng nhập phản hồi.");
@@ -81,9 +86,10 @@ const AdminContact = () => {
   };
 
   useEffect(() => {
-    fetchSupportRequests();
+    fetchSupportRequests(); // Lấy yêu cầu hỗ trợ khi component mount
   }, []);
 
+  // Modal nhập phản hồi
   const CreateModal = useMemo(
     () => (
       <div
@@ -119,7 +125,7 @@ const AdminContact = () => {
         </div>
       </div>
     ),
-    [responseMessage, showModal, selectedRequestId] // Chỉ tái tạo modal khi có thay đổi
+    [responseMessage, showModal, selectedRequestId]
   );
 
   return (
@@ -151,6 +157,7 @@ const AdminContact = () => {
           </div>
         </div>
       </div>
+
       <div className="bg-white mt-5 mr-2">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200">
@@ -161,7 +168,7 @@ const AdminContact = () => {
               <th className="border p-2">Số điện thoại</th>
               <th className="border p-2">Nội dung</th>
               <th className="border p-2">Trạng thái</th>
-              <th className="border p-2">Hành động</th>
+              <th className="border p-2">Phản hồi</th>
             </tr>
           </thead>
           <tbody className="text-center bg-white">
@@ -187,7 +194,6 @@ const AdminContact = () => {
                   </td>
                   <td className="border p-2">
                     <div className="flex justify-center items-center gap-3">
-                      {/* Phản hồi button */}
                       {request.status !== "Resolved" ? (
                         <button
                           className="px-3 py-1 bg-red-500 text-white rounded transition"
@@ -207,7 +213,6 @@ const AdminContact = () => {
                         </button>
                       )}
 
-                      {/* Xóa button */}
                       <button
                         className="px-3 py-1 bg-black text-white rounded transition"
                         onClick={() => handleDeleteSupport(request._id)}

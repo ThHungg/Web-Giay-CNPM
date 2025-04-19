@@ -228,7 +228,7 @@ const ProfilePage = () => {
                 <table className="w-full border-collapse mt-4">
                   <thead className="bg-gray-100 text-gray-700">
                     <tr>
-                      <th className="border p-3 text-sm">#</th>
+                      <th className="border p-3 text-sm">STT</th>
                       <th className="border p-3 text-sm text-left">Sản phẩm</th>
                       <th className="border p-3 text-sm">Ngày đặt</th>
                       <th className="border p-3 text-sm">Trạng thái</th>

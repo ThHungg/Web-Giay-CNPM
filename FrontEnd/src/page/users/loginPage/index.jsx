@@ -113,7 +113,7 @@ const LoginPage = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full p-2 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
           />
           {data?.status === "checkUser" && (
             <span className="text-red-500">{data?.message}</span>
@@ -130,7 +130,7 @@ const LoginPage = () => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full p-2 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
           />
           {data?.status === "ERR" && (
             <span className="text-red-500 text-sm">{data?.message}</span>

@@ -303,7 +303,7 @@ const CheckoutPage = () => {
           </label>
           <input
             type="text"
-            className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:border-black"
             placeholder="Nhập họ và tên"
             onChange={handleNameChange}
           />
@@ -316,7 +316,7 @@ const CheckoutPage = () => {
             </label>
             <input
               type="number"
-              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:border-black"
               placeholder="Nhập số điện thoại"
               onChange={handlePhoneChange}
             />
@@ -327,7 +327,7 @@ const CheckoutPage = () => {
             </label>
             <input
               type="email"
-              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:border-black"
               placeholder="Nhập email"
               onChange={handleEmailChange}
             />
@@ -340,7 +340,7 @@ const CheckoutPage = () => {
           </label>
           <input
             type="text"
-            className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:border-black"
             placeholder="Nhập địa chỉ"
             onChange={handleStreetChange}
           />
@@ -352,7 +352,7 @@ const CheckoutPage = () => {
               Tỉnh thành: <span className="text-red-500">*</span>
             </label>
             <select
-              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:border-black"
               onChange={handleProvinceChange}
             >
               <option value="">Chọn tỉnh thành</option>
@@ -368,7 +368,7 @@ const CheckoutPage = () => {
               Quận/Huyện: <span className="text-red-500">*</span>
             </label>
             <select
-              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:border-black"
               onChange={handleDistrictChange}
               disabled={!selectedProvince}
             >
@@ -385,7 +385,7 @@ const CheckoutPage = () => {
               Phường/Xã: <span className="text-red-500">*</span>
             </label>
             <select
-              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="pl-2 py-1 border shadow border-gray-300 rounded-lg focus:border-black"
               onChange={handleWardChange}
               disabled={!selectedDistrict}
             >
@@ -402,10 +402,10 @@ const CheckoutPage = () => {
         <div className="flex flex-col mt-3">
           <label className="text-xl m-1">Ghi chú:</label>
           <textarea
-            value={note} // Đặt giá trị của textarea là state note
-            onChange={handleNoteChange} // Lắng nghe sự thay đổi để cập nhật state
+            value={note}
+            onChange={handleNoteChange}
             className="border p-2 mt-2"
-            rows="4" // Đặt số dòng hiển thị
+            rows="4"
             placeholder="Nhập ghi chú của bạn ở đây..."
           />
         </div>
@@ -418,7 +418,7 @@ const CheckoutPage = () => {
                 type="radio"
                 name="payment"
                 value="COD"
-                checked={selectedPaymentMethod === "COD"} // Kiểm tra phương thức đã chọn
+                checked={selectedPaymentMethod === "COD"}
                 onChange={handlePaymentMethodChange}
                 className="w-4 h-4"
               />
@@ -429,7 +429,7 @@ const CheckoutPage = () => {
                 type="radio"
                 name="payment"
                 value="Banking"
-                checked={selectedPaymentMethod === "Banking"} // Kiểm tra phương thức đã chọn
+                checked={selectedPaymentMethod === "Banking"}
                 onChange={handlePaymentMethodChange}
                 className="w-4 h-4"
               />
@@ -438,8 +438,7 @@ const CheckoutPage = () => {
           </div>
         </div>
       </div>
-      {/* Voucher */}
-      {/* Phần đơn hàng */}
+
       <div className="w-1/3">
         <div className="bg-white p-5 rounded-xl shadow-lg self-start mt-2 space-y-4">
           <h1 className="text-2xl font-bold mb-2">Đơn hàng</h1>

@@ -172,20 +172,8 @@ const HomePage = () => {
         </Carousel>
       </div>
 
-      {/* Brands */}
       <div className="max-w-screen-xl mx-auto mt-5">
         <div className="text-center text-3xl font-bold mb-4">Thương hiệu</div>
-        {/* {brands.map((brand, index) => (
-            <div className="flex justify-center">
-              <img
-                key={index}
-                src={brand.image}
-                alt={`brand-${index}`}
-                className="h-[200px] w-[240px] object-contain mx-auto"
-              />
-            </div>
-          ))} */}
-
         <Carousel
           responsive={responsive}
           infinite={true}
@@ -194,13 +182,16 @@ const HomePage = () => {
           removeArrowOnDeviceType={["tablet", "mobile"]}
         >
           {brands.map((brand, index) => (
-            <div key={index} className="flex justify-center">
-              <img
-                src={brand.image}
-                alt={`brand-${index}`}
-                className="h-[200px] w-[240px] object-contain mx-auto"
-              />
-            </div>
+            <Link to={ROUTERS.USER.PRODUCTS}>
+              <div key={index} className="flex justify-center">
+                <img
+                  src={brand.image}
+                  value={brand.brand}
+                  alt={`brand-${index}`}
+                  className="h-[200px] w-[240px] object-contain mx-auto"
+                />
+              </div>
+            </Link>
           ))}
         </Carousel>
       </div>

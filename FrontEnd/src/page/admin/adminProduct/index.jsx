@@ -1,6 +1,7 @@
 import { memo, useState, useMemo, useEffect } from "react";
 import { useMutationHooks } from "../../../hooks/useMutation";
 import * as productService from "../../../services/productService";
+import * as brandService from "../../../services/brandService";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import ToastNotification from "../../../component/toastNotification";
@@ -328,23 +329,8 @@ const AdminProduct = () => {
   const [selectedDiscount, setSelectedDiscount] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  // const itemsPerPage = 10;
 
   const [itemsPerPage, setItemsPerPage] = useState(9);
-
-  // useEffect(() => {
-  //   const updateItemsPerPage = () => {
-  //     const itemHeight = 48; // Giả sử mỗi sản phẩm cao 150px
-  //     const availableHeight = window.innerHeight - 200; // Trừ đi header, footer, padding
-  //     const items = Math.floor(availableHeight / itemHeight); // Tính số sản phẩm tối đa
-  //     setItemsPerPage(items > 0 ? items : 1); // Đảm bảo ít nhất 1 sản phẩm/trang
-  //   };
-
-  //   updateItemsPerPage(); // Gọi khi load trang
-  //   window.addEventListener("resize", updateItemsPerPage); // Cập nhật khi resize
-
-  //   return () => window.removeEventListener("resize", updateItemsPerPage);
-  // }, []);
 
   const filteredProducts =
     products?.data?.filter((product) => {
@@ -420,17 +406,15 @@ const AdminProduct = () => {
   };
 
   const addImageFieldDetails = (e) => {
-    // Thêm một ô nhập ảnh mới vào state (mảng images)
     e.preventDefault();
     setStateProductDetails((prev) => ({
       ...prev,
-      images: [...prev.images, ""], // Thêm một chuỗi rỗng cho ô nhập ảnh mới
+      images: [...prev.images, ""],
     }));
   };
 
   const handleImageChangeDetails = (index, e) => {
     const { value } = e.target;
-    // Cập nhật giá trị của ảnh tại vị trí index trong mảng images
     const updatedImages = [...stateProductDetails.images];
     updatedImages[index] = value;
     setStateProductDetails((prev) => ({
@@ -450,7 +434,14 @@ const AdminProduct = () => {
     }));
   };
 
-  console.log("stateProductDetails", stateProductDetails);
+  const { data: brandss = [] } = useQuery({
+    queryKey: ["brand"],
+    queryFn: async () => {
+      const res = await brandService.getAllBrand();
+      return res.data;
+    },
+  });
+
 
   const CreateModal = useMemo(
     () => (
@@ -487,9 +478,9 @@ const AdminProduct = () => {
                       onChange={handleOnchange}
                     >
                       <option value="">Chọn thương hiệu</option>
-                      {brands.map((item, key) => (
-                        <option value={item} key={key}>
-                          {item}
+                      {brandss.map((item, key) => (
+                        <option value={item.brand} key={key}>
+                          {item.brand}
                         </option>
                       ))}
                     </select>
@@ -704,9 +695,9 @@ const AdminProduct = () => {
                         onChange={handleOnchangeDetails}
                       >
                         <option value="">Chọn thương hiệu</option>
-                        {brands.map((item, key) => (
-                          <option value={item} key={key}>
-                            {item}
+                        {brandss.map((item, key) => (
+                          <option value={item.brand} key={key}>
+                            {item.brand}
                           </option>
                         ))}
                       </select>

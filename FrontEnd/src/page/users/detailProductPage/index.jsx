@@ -241,16 +241,20 @@ const DetailProduct = () => {
       <div className="max-w-screen-xl mx-auto mt-5 grid grid-cols-8">
         <div className="col-span-5">
           {image && (
-            <div className="flex justify-center items-center mb-4">
+            <div className="flex justify-center items-center mb-4 relative">
               <img
                 src={image}
                 alt="Large product"
                 className="h-[500px] w-full object-cover transition-all duration-300 transform hover:scale-105"
               />
+              {productDetail.discount > 0 && (
+                <span className="absolute top-3 left-3 bg-red-500 text-white text-xl font-semibold py-1 px-3 rounded-md">
+                  {productDetail.discount}%
+                </span>
+              )}
             </div>
           )}
 
-          {/* Hiển thị ảnh nhỏ */}
           {smallImages.length > 0 && (
             <div className="flex justify-center gap-3 mt-4 overflow-x-auto py-2">
               {[imagedefault, ...smallImages].map((img, index) => (
@@ -290,7 +294,6 @@ const DetailProduct = () => {
               </Tab>
             </TabList>
 
-            {/* Mô tả sản phẩm, chỉ hiển thị nếu có mô tả */}
             {productDetail?.description && (
               <TabPanel>
                 <h2 className="text-base text-gray-700 leading-relaxed whitespace-pre-line h-[360px] overflow-auto px-3 mt-3">
@@ -299,7 +302,6 @@ const DetailProduct = () => {
               </TabPanel>
             )}
 
-            {/* Đánh giá, chỉ hiển thị nếu có đánh giá */}
             <TabPanel>
               <div className="grid grid-cols-2 gap-5 mt-4">
                 <div className="space-y-2 h-[360px] overflow-auto pr-2">
@@ -351,7 +353,6 @@ const DetailProduct = () => {
               </div>
             </TabPanel>
 
-            {/* Hướng dẫn bảo quản */}
             <TabPanel>
               <ul className="list-disc space-y-2 text-lg text-gray-700 pl-6 mt-4 h-[360px] overflow-auto">
                 <li className="hover:text-black transition-all">
@@ -374,16 +375,9 @@ const DetailProduct = () => {
           </Tabs>
         </div>
 
-        {/* image end*/}
-
         <div className="col-span-3 ml-3 sticky top-5 self-start">
           <h1 className="uppercase text-4xl font-bold w-full">
             {productDetail.name}
-            {productDetail.discount > 0 && (
-              <span className="text-red-500 text-2xl font-semibold m-5 inline-block">
-                - {productDetail.discount} %
-              </span>
-            )}
           </h1>
 
           <ul>
@@ -394,7 +388,6 @@ const DetailProduct = () => {
           <div className="flex gap-5 items-center">
             <h1 className="text-red-500 font-bold text-2xl">
               {formatter(productDetail.price)}
-              {/* {formatter(productDetail.price)} */}
             </h1>
             <h1 className="text-gray-500 opacity-70 font-bold text-xl line-through">
               {productDetail.discount > 0 && formatter(productDetail.oldPrice)}
@@ -408,7 +401,7 @@ const DetailProduct = () => {
               <b>Size: </b>
             </li>
           </ul>
-          {/* Sizemap */}
+
           <div className="flex gap-2 items-center">
             {availableSizes.map((size) => {
               const item = productDetail.sizeStock.find((s) => s.size === size);
@@ -433,11 +426,11 @@ const DetailProduct = () => {
                   >
                     {size}
                   </button>
-                  {isAvailable && (
+                  {/* {isAvailable && (
                     <span className="absolute top-0 right-0 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold shadow-md translate-x-1/2 -translate-y-1/2">
                       {item.stock}
                     </span>
-                  )}
+                  )} */}
                 </div>
               );
             })}
@@ -469,7 +462,6 @@ const DetailProduct = () => {
           Sản phẩm liên quan
         </h1>
 
-        {/* Kiểm tra xem có sản phẩm liên quan không */}
         {Array.isArray(relatedProduct) && relatedProduct.length > 0 ? (
           <Carousel
             responsive={responsive}

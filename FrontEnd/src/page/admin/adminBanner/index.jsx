@@ -106,7 +106,7 @@ const AdminBanner = () => {
                 Hủy
               </button>
               <button
-                className="px-4 py-2 bg-black text-white font-bold rounded-lg"
+                className="px-4 py-2 bg-black text-white rounded-lg text-xl"
                 onClick={onFinish}
               >
                 Tạo
@@ -137,7 +137,7 @@ const AdminBanner = () => {
                 Hủy
               </button>
               <button
-                className="px-4 py-2 bg-black text-white font-bold rounded-lg"
+                className="px-4 py-2 bg-black text-white rounded-lg font-semibold"
                 onClick={confirmDelete}
               >
                 Xóa
@@ -153,10 +153,10 @@ const AdminBanner = () => {
     <>
       <div className="flex justify-end items-center mt-3">
         <button
-          className="px-4 py-2 bg-black text-white rounded-lg"
+          className="px-4 py-2 bg-black text-white rounded-lg text-xl"
           onClick={() => setShowCreateModal(true)}
         >
-          Tạo mới
+          Create
         </button>
       </div>
 

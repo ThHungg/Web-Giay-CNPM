@@ -1,29 +1,43 @@
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ProductCard } from "../../../component";
 import { Link } from "react-router-dom";
 import { ROUTERS } from "../../../utils/router";
 import * as productService from "../../../services/productService";
-import { useQuery } from "@tanstack/react-query";
+import * as brandService from "../../../services/brandService";
 import { FaSpinner } from "react-icons/fa";
+
 const Products = () => {
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [priceRange, setPriceRange] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 12;
+
   const fetchProductAll = async () => {
     const res = await productService.getActiveProducts();
     return res;
   };
-  const { data: products } = useQuery({
+
+  const {
+    data: products,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProductAll,
     retry: 3,
     retryDelay: 1000,
   });
 
-  const brands = ["Adidas", "Nike", "Vans", "Air Jordan", "MLB", "Converse"];
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [priceRange, setPriceRange] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const itemsPerPage = 12;
+  const { data: brandss = [], isLoading: isBrandLoading } = useQuery({
+    queryKey: ["brand"],
+    queryFn: async () => {
+      const res = await brandService.getAllBrand();
+      return res.data;
+    },
+  });
 
   const handlePriceFilter = (range) => {
     setPriceRange((prev) => (prev === range ? "" : range));
@@ -59,12 +73,6 @@ const Products = () => {
     ? products?.data.filter((product) => product.brand === selectedBrand)
     : products?.data;
 
-  const handleBrandClick = (selectedBrand) => {
-    setSelectedBrand(selectedBrand);
-    setCurrentPage(1); // Đặt lại trang khi thay đổi thương hiệu
-  };
-
-  // Áp dụng bộ lọc giá sau khi lọc theo thương hiệu
   const filteredByPrice = filterProductsByPrice(filteredProducts);
 
   const totalPages = filteredByPrice?.length
@@ -77,19 +85,17 @@ const Products = () => {
       currentPage * itemsPerPage
     ) || [];
 
-  if (Array.isArray(products)) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center mt-10">
         <FaSpinner className="w-6 h-6 text-gray-500 animate-spin" />
       </div>
     );
   }
-
   return (
     <>
       <div className="max-w-screen-xl mx-auto grid grid-cols-5">
         <div className="col-span-1 mt-5 bg-white p-4 rounded-lg shadow-md h-[450px] sticky top-5 self-start">
-          {/* Bộ lọc theo thương hiệu */}
           <div className="mb-5 flex flex-col gap-2">
             <div>
               <h1 className="text-2xl font-bold">Tìm kiếm:</h1>
@@ -106,19 +112,18 @@ const Products = () => {
               <select
                 className="border w-full p-2 rounded-lg mt-2"
                 name="brand"
-                onChange={(e) => handleBrandClick(e.target.value)}
+                onChange={(e) => setSelectedBrand(e.target.value)}
               >
                 <option value="">Chọn thương hiệu</option>
-                {brands.map((item, key) => (
-                  <option value={item} key={key}>
-                    {item}
+                {brandss.map((item, key) => (
+                  <option value={item.brand} key={key}>
+                    {item.brand}
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* Bộ lọc theo mức giá */}
           <div>
             <h1 className="text-2xl font-bold">Mức giá:</h1>
             <div className="flex gap-4 mt-2 flex-col">
@@ -187,14 +192,12 @@ const Products = () => {
                       price={product.price}
                       oldprice={product.oldPrice}
                       discount={product.discount}
-                      // rating={product.averageRating}
                     />
                   </div>
                 </Link>
               );
             })}
           </div>
-          {/* Pagination */}
           <div className="mt-5 flex justify-end">
             <button
               className="px-4 py-2 mx-2 bg-gray-200 rounded disabled:opacity-50"

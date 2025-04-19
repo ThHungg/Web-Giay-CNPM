@@ -41,7 +41,6 @@ const CheckPayment = () => {
     const { orderId, ...rests } = data;
     return await orderService.updateOrderStatus(orderId, rests);
   });
-  console.log(order.items);
 
   useEffect(() => {
     (async () => {
@@ -84,17 +83,13 @@ const CheckPayment = () => {
     <>
       <div>
         <Result
-          status={status || "info"} // Đảm bảo giá trị hợp lệ cho status
+          status={status || "info"}
           title={
             status === "success"
               ? "Thanh toán thành công"
               : "Hủy thanh toán thành công"
           }
-          subTitle={
-            status === "success"
-              ? "Order number: 2017182818828182881. Cloud server configuration takes 1-5 minutes, please wait."
-              : "There was an issue with your payment. Please try again."
-          }
+          subTitle={status === "success" ? "Cảm ơn bạn đã mua hàng" : ""}
           extra={[
             status === "success" ? (
               <Link to={ROUTERS.USER.HOME}>
